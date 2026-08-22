@@ -1,3 +1,5 @@
+import MissionPreview from "./components/MissionPreview";
+
 function App() {
   return (
     <div className="app">
@@ -12,6 +14,7 @@ function App() {
             <a href="#mission-preview">WingMatch</a>
             <a href="#journey">Build</a>
             <a href="#journey">College Launch</a>
+
             <a className="nav-launch" href="#mission-preview">
               Explore
             </a>
@@ -30,6 +33,7 @@ function App() {
             <h1>
               Don&apos;t choose a career.
               <br />
+
               <span className="hero-highlight">Test one.</span>
             </h1>
 
@@ -54,48 +58,8 @@ function App() {
             </p>
           </div>
 
-          <div
-            className="mission-card"
-            id="mission-preview"
-            aria-label="Mars descent mission preview"
-          >
-            <div className="mission-stars" />
-
-            <div className="mission-content">
-              <div className="mission-topline">
-                <span>Mission Preview</span>
-                <span>T−08:18</span>
-              </div>
-
-              <div className="mission-title">
-                <span>MARS DESCENT</span>
-                <h2>Your sensors disagree. What do you trust first?</h2>
-              </div>
-
-              <div className="telemetry">
-                <div className="telemetry-item">
-                  <div className="telemetry-label">ALTITUDE</div>
-                  <div className="telemetry-value">22.4 km</div>
-                </div>
-
-                <div className="telemetry-item">
-                  <div className="telemetry-label">FUEL</div>
-                  <div className="telemetry-value">31%</div>
-                </div>
-
-                <div className="telemetry-item">
-                  <div className="telemetry-label">NAVIGATION</div>
-                  <div className="telemetry-value">UNCERTAIN</div>
-                </div>
-
-                <div className="telemetry-item">
-                  <div className="telemetry-label">VEHICLE</div>
-                  <div className="telemetry-value status-warning">
-                    OSCILLATING
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div id="mission-preview">
+            <MissionPreview />
           </div>
         </section>
 
@@ -110,7 +74,9 @@ function App() {
             <div className="journey-grid">
               <article className="journey-card">
                 <div className="journey-number">01 / EXPLORE</div>
+
                 <h3>Test how you think.</h3>
+
                 <p>
                   Make decisions inside an aerospace mission and reveal the
                   engineering instincts behind them.
@@ -119,7 +85,9 @@ function App() {
 
               <article className="journey-card">
                 <div className="journey-number">02 / BUILD</div>
+
                 <h3>Create real evidence.</h3>
+
                 <p>
                   Turn a promising Wing into an authentic technical challenge
                   and eventually a project worth showing.
@@ -128,7 +96,9 @@ function App() {
 
               <article className="journey-card">
                 <div className="journey-number">03 / LAUNCH</div>
+
                 <h3>Know your next move.</h3>
+
                 <p>
                   Connect your Wing to majors, colleges, preparation gaps, and
                   specific actions you can take next.

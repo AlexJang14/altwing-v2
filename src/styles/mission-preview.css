@@ -1,0 +1,597 @@
+.mission-visual {
+  position: relative;
+  min-height: 590px;
+  overflow: hidden;
+
+  padding: 28px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 32px;
+
+  background:
+    radial-gradient(
+      circle at 72% 22%,
+      rgba(91, 141, 239, 0.22),
+      transparent 27%
+    ),
+    radial-gradient(
+      circle at 18% 76%,
+      rgba(255, 107, 107, 0.14),
+      transparent 30%
+    ),
+    #0d132b;
+
+  color: white;
+
+  box-shadow:
+    0 36px 80px rgba(13, 19, 43, 0.16),
+    inset 0 0 80px rgba(91, 141, 239, 0.035);
+}
+
+.mission-visual__stars {
+  position: absolute;
+  inset: 0;
+
+  opacity: 0.6;
+
+  background-image:
+    radial-gradient(circle at 13% 12%, white 0 1px, transparent 1.3px),
+    radial-gradient(circle at 25% 29%, white 0 1px, transparent 1.3px),
+    radial-gradient(circle at 54% 15%, white 0 1px, transparent 1.3px),
+    radial-gradient(circle at 72% 34%, white 0 1px, transparent 1.3px),
+    radial-gradient(circle at 91% 18%, white 0 1px, transparent 1.3px),
+    radial-gradient(circle at 88% 59%, white 0 1px, transparent 1.3px),
+    radial-gradient(circle at 39% 54%, white 0 1px, transparent 1.3px);
+}
+
+.mission-visual__header {
+  position: relative;
+  z-index: 8;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: rgba(255, 255, 255, 0.56);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 0.16em;
+}
+
+.mission-visual__header > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mission-visual__live-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #ff6b6b;
+
+  box-shadow: 0 0 0 5px rgba(255, 107, 107, 0.12);
+}
+
+.mission-visual__scene {
+  position: relative;
+
+  height: 235px;
+
+  margin-top: 12px;
+
+  overflow: hidden;
+}
+
+.mission-visual__trajectory {
+  position: absolute;
+  inset: 0;
+
+  z-index: 2;
+
+  pointer-events: none;
+}
+
+.mission-visual__trajectory svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mission-visual__trajectory-path {
+  fill: none;
+
+  stroke: rgba(91, 141, 239, 0.82);
+  stroke-width: 2;
+
+  stroke-dasharray: 5 8;
+
+  filter: drop-shadow(0 0 6px rgba(91, 141, 239, 0.65));
+
+  animation: mission-path-flow 4s linear infinite;
+}
+
+.mission-visual__trajectory-start {
+  fill: #5b8def;
+
+  filter: drop-shadow(0 0 8px rgba(91, 141, 239, 0.9));
+}
+
+.mission-visual__lander {
+  position: absolute;
+
+  left: 65%;
+  top: 41%;
+
+  z-index: 5;
+
+  width: 52px;
+  height: 62px;
+
+  transform: rotate(-7deg);
+
+  animation: lander-float 3.4s ease-in-out infinite;
+}
+
+.mission-visual__lander-body {
+  position: absolute;
+
+  left: 11px;
+  top: 6px;
+
+  width: 30px;
+  height: 29px;
+
+  border: 2px solid rgba(255, 255, 255, 0.86);
+  border-radius: 8px 8px 11px 11px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.24),
+      rgba(255, 255, 255, 0.06)
+    );
+
+  box-shadow:
+    0 0 16px rgba(91, 141, 239, 0.18),
+    inset 0 0 9px rgba(255, 255, 255, 0.08);
+}
+
+.mission-visual__lander-body::before {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+  top: -7px;
+
+  width: 15px;
+  height: 6px;
+
+  transform: translateX(-50%);
+
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 4px;
+}
+
+.mission-visual__lander-leg {
+  position: absolute;
+
+  top: 32px;
+
+  width: 2px;
+  height: 18px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  transform-origin: top;
+}
+
+.mission-visual__lander-leg::after {
+  content: "";
+
+  position: absolute;
+
+  bottom: 0;
+
+  width: 10px;
+  height: 2px;
+
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.mission-visual__lander-leg--left {
+  left: 15px;
+
+  transform: rotate(27deg);
+}
+
+.mission-visual__lander-leg--left::after {
+  left: -6px;
+}
+
+.mission-visual__lander-leg--right {
+  right: 15px;
+
+  transform: rotate(-27deg);
+}
+
+.mission-visual__lander-leg--right::after {
+  right: -6px;
+}
+
+.mission-visual__thruster {
+  position: absolute;
+
+  top: 35px;
+
+  width: 7px;
+  height: 24px;
+
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+
+  background:
+    linear-gradient(
+      to bottom,
+      #fff5b7,
+      #ffc857 35%,
+      #ff6b6b 78%,
+      transparent
+    );
+
+  filter: blur(0.15px);
+
+  opacity: 0.9;
+}
+
+.mission-visual__thruster--left {
+  left: 17px;
+}
+
+.mission-visual__thruster--right {
+  right: 17px;
+}
+
+.mission-visual__target {
+  position: absolute;
+
+  left: 71%;
+  bottom: 21px;
+
+  z-index: 4;
+
+  width: 60px;
+  height: 60px;
+
+  transform: translateX(-50%);
+}
+
+.mission-visual__target-ring {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  border: 1px solid rgba(255, 200, 87, 0.74);
+  border-radius: 50%;
+
+  transform: translate(-50%, -50%);
+}
+
+.mission-visual__target-ring--outer {
+  width: 58px;
+  height: 58px;
+
+  animation: target-pulse 2.4s ease-out infinite;
+}
+
+.mission-visual__target-ring--inner {
+  width: 28px;
+  height: 28px;
+}
+
+.mission-visual__target-dot {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #ffc857;
+
+  transform: translate(-50%, -50%);
+
+  box-shadow: 0 0 12px rgba(255, 200, 87, 0.7);
+}
+
+.mission-visual__mars {
+  position: absolute;
+
+  z-index: 1;
+
+  left: -8%;
+  right: -8%;
+  bottom: -185px;
+
+  height: 260px;
+
+  overflow: hidden;
+
+  border-radius: 50% 50% 0 0;
+
+  background:
+    radial-gradient(
+      circle at 61% 11%,
+      rgba(255, 187, 135, 0.62),
+      transparent 10%
+    ),
+    radial-gradient(
+      circle at 23% 21%,
+      rgba(120, 42, 38, 0.34),
+      transparent 13%
+    ),
+    linear-gradient(
+      180deg,
+      #e78363 0%,
+      #b64c43 55%,
+      #672f35 100%
+    );
+
+  box-shadow:
+    0 -10px 35px rgba(255, 107, 107, 0.17),
+    0 -1px 0 rgba(255, 191, 148, 0.36);
+}
+
+.mission-visual__mars-glow {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  top: -8px;
+
+  height: 18px;
+
+  background: rgba(255, 173, 128, 0.21);
+
+  filter: blur(8px);
+}
+
+.mission-visual__mars-crater {
+  position: absolute;
+
+  border: 1px solid rgba(92, 35, 38, 0.16);
+  border-radius: 50%;
+
+  background: rgba(91, 31, 34, 0.09);
+}
+
+.mission-visual__mars-crater--one {
+  left: 24%;
+  top: 36px;
+
+  width: 38px;
+  height: 15px;
+
+  transform: rotate(-6deg);
+}
+
+.mission-visual__mars-crater--two {
+  left: 55%;
+  top: 58px;
+
+  width: 58px;
+  height: 22px;
+
+  transform: rotate(4deg);
+}
+
+.mission-visual__mars-crater--three {
+  right: 17%;
+  top: 25px;
+
+  width: 31px;
+  height: 12px;
+}
+
+.mission-visual__status {
+  position: absolute;
+
+  z-index: 6;
+
+  left: 3px;
+  bottom: 24px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mission-visual__status span {
+  color: rgba(255, 255, 255, 0.43);
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 0.14em;
+}
+
+.mission-visual__status strong {
+  color: #5b8def;
+
+  font-size: 14px;
+}
+
+.mission-visual__question {
+  position: relative;
+
+  z-index: 8;
+
+  margin-top: 8px;
+}
+
+.mission-visual__question span {
+  color: #ffc857;
+
+  font-size: 11px;
+  font-weight: 850;
+
+  letter-spacing: 0.16em;
+}
+
+.mission-visual__question h2 {
+  max-width: 470px;
+
+  margin: 10px 0 0;
+
+  font-size: clamp(29px, 3vw, 38px);
+  line-height: 1.05;
+
+  letter-spacing: -0.045em;
+}
+
+.mission-visual__telemetry {
+  position: relative;
+
+  z-index: 8;
+
+  margin-top: 27px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 10px;
+}
+
+.mission-visual__metric {
+  min-width: 0;
+
+  padding: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.045);
+
+  backdrop-filter: blur(8px);
+}
+
+.mission-visual__metric span {
+  display: block;
+
+  color: rgba(255, 255, 255, 0.43);
+
+  font-size: 8px;
+  font-weight: 850;
+
+  letter-spacing: 0.12em;
+}
+
+.mission-visual__metric strong {
+  display: block;
+
+  margin-top: 7px;
+
+  overflow: hidden;
+
+  font-size: 14px;
+
+  text-overflow: ellipsis;
+}
+
+.mission-visual__metric .mission-visual__warning {
+  color: #ffc857;
+}
+
+.mission-visual__metric .mission-visual__uncertain {
+  color: #ff9b8e;
+}
+
+.mission-visual__footer {
+  position: relative;
+
+  z-index: 8;
+
+  margin-top: 17px;
+
+  display: flex;
+  justify-content: space-between;
+
+  color: rgba(255, 255, 255, 0.31);
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 0.12em;
+}
+
+@keyframes mission-path-flow {
+  to {
+    stroke-dashoffset: -52;
+  }
+}
+
+@keyframes lander-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-7deg);
+  }
+
+  50% {
+    transform: translateY(5px) rotate(-4deg);
+  }
+}
+
+@keyframes target-pulse {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+}
+
+@media (max-width: 1100px) {
+  .mission-visual {
+    min-height: 575px;
+  }
+
+  .mission-visual__telemetry {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .mission-visual {
+    min-height: 600px;
+
+    padding: 22px;
+
+    border-radius: 24px;
+  }
+
+  .mission-visual__scene {
+    height: 210px;
+  }
+
+  .mission-visual__question h2 {
+    font-size: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mission-visual__trajectory-path,
+  .mission-visual__lander,
+  .mission-visual__target-ring--outer {
+    animation: none;
+  }
+}
