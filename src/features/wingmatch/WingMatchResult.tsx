@@ -1,0 +1,921 @@
+import "./wingmatch-result.css";
+
+export interface ResultTelemetryItem {
+  label: string;
+  value: string;
+  status?: string;
+}
+
+export interface ResultMissionHistoryItem {
+  sceneId: string;
+  phase: string;
+  title: string;
+  consequence: string;
+  effects: ResultTelemetryItem[];
+}
+
+interface WingMatchResultProps {
+  wingScores: Partial<
+    Record<string, number>
+  >;
+
+  reasoningScores: Partial<
+    Record<string, number>
+  >;
+
+  missionHistory:
+    ResultMissionHistoryItem[];
+
+  onRestart?: () => void;
+  onContinue?: () => void;
+}
+
+interface WingProfile {
+  id: string;
+  name: string;
+  shortName: string;
+  description: string;
+
+  major:
+    | string
+    | string[];
+
+  projectTitle: string;
+  projectDescription: string;
+
+  extracurricular:
+    string;
+
+  courses: string[];
+
+  evidenceKeywords: string[];
+}
+
+const wingProfiles: Record<
+  string,
+  WingProfile
+> = {
+  systems: {
+    id: "systems",
+    name: "Systems Engineering",
+    shortName: "SYSTEMS",
+
+    description:
+      "You tend to look across the whole mission, balance competing constraints, and ask how one decision changes the rest of the system.",
+
+    major: [
+      "Aerospace Engineering",
+      "Systems Engineering",
+      "Industrial Engineering",
+    ],
+
+    projectTitle:
+      "Build a Mission Tradeoff Simulator",
+
+    projectDescription:
+      "Create a small simulator where mass, power, thermal margin, reliability, and mission value compete for limited resources. Let users change assumptions and watch the best plan change.",
+
+    extracurricular:
+      "Turn the simulator into a documented engineering project, publish it on GitHub, test it with other students, and present the design decisions through TSA, a science fair, engineering club, or independent research portfolio.",
+
+    courses: [
+      "AP Calculus",
+      "Physics",
+      "Computer Science",
+      "Engineering Design",
+    ],
+
+    evidenceKeywords: [
+      "THERMAL",
+      "LANDING",
+      "MISSION COMMAND",
+      "SYSTEM",
+    ],
+  },
+
+  gnc: {
+    id: "gnc",
+    name:
+      "Guidance, Navigation & Control",
+    shortName: "GNC",
+
+    description:
+      "You show interest in how a vehicle senses its state, corrects errors, and stays on the desired trajectory under uncertainty.",
+
+    major: [
+      "Aerospace Engineering",
+      "Mechanical Engineering",
+      "Robotics",
+    ],
+
+    projectTitle:
+      "Build a Lander Control Simulator",
+
+    projectDescription:
+      "Model a simplified lander trying to reach a target attitude or altitude. Let the user tune controller gain and visualize overshoot, settling time, and stability.",
+
+    extracurricular:
+      "Develop the simulator into an engineering portfolio project with experiments, graphs, design iterations, and a short technical report. It can support TSA, robotics, aerospace club, or research applications.",
+
+    courses: [
+      "AP Calculus BC",
+      "AP Physics",
+      "Computer Science",
+      "Linear Algebra later",
+    ],
+
+    evidenceKeywords: [
+      "ENTRY",
+      "SENSOR",
+      "CONTROL",
+      "LANDING",
+    ],
+  },
+
+  avionics: {
+    id: "avionics",
+    name:
+      "Avionics & Embedded Systems",
+    shortName: "AVIONICS",
+
+    description:
+      "You tend to investigate signals, electronics, communication paths, and sensor evidence before deciding what failed.",
+
+    major: [
+      "Aerospace Engineering",
+      "Electrical Engineering",
+      "Computer Engineering",
+    ],
+
+    projectTitle:
+      "Build a Spacecraft Fault Detective",
+
+    projectDescription:
+      "Create a diagnostic system that receives simulated spacecraft telemetry and asks the user or an algorithm to isolate sensor, communication, power, or computer faults.",
+
+    extracurricular:
+      "Turn the diagnostic tool into a technical demonstration with test cases and fault-injection experiments. Publish the results and use them for TSA, robotics, engineering competitions, or independent research.",
+
+    courses: [
+      "Physics",
+      "Computer Science",
+      "Electronics",
+      "Engineering",
+    ],
+
+    evidenceKeywords: [
+      "SENSOR",
+      "AVIONICS",
+      "FAULT",
+      "COMM",
+    ],
+  },
+
+  structures: {
+    id: "structures",
+    name:
+      "Aerospace Structures",
+    shortName: "STRUCTURES",
+
+    description:
+      "You focus on how forces move through a vehicle and how engineers trade mass against strength, stiffness, and failure risk.",
+
+    major: [
+      "Aerospace Engineering",
+      "Mechanical Engineering",
+      "Materials Engineering",
+    ],
+
+    projectTitle:
+      "Design the Lightest Safe Lander Leg",
+
+    projectDescription:
+      "Create several landing-leg designs, estimate their load paths, compare buckling risk and mass, and justify which structure you would actually build.",
+
+    extracurricular:
+      "Document CAD versions, calculations, failure assumptions, and design changes. The project can become a TSA engineering design entry, science fair project, CAD portfolio piece, or research starter.",
+
+    courses: [
+      "AP Physics",
+      "Calculus",
+      "Engineering",
+      "CAD",
+    ],
+
+    evidenceKeywords: [
+      "STRUCTURAL",
+      "LOAD",
+      "LANDING",
+    ],
+  },
+
+  thermal: {
+    id: "thermal",
+    name:
+      "Thermal Engineering",
+    shortName: "THERMAL",
+
+    description:
+      "You pay attention to heat, energy limits, margins, and how protecting one subsystem can create risk somewhere else.",
+
+    major: [
+      "Aerospace Engineering",
+      "Mechanical Engineering",
+    ],
+
+    projectTitle:
+      "Design a Small-Satellite Thermal Model",
+
+    projectDescription:
+      "Model how a CubeSat heats and cools in sunlight and eclipse. Explore how insulation, radiators, electronics power, and orbit assumptions change temperature.",
+
+    extracurricular:
+      "Turn the model into a simulation study with plots, design recommendations, and documented assumptions for an engineering portfolio, science fair, or aerospace research application.",
+
+    courses: [
+      "Physics",
+      "Calculus",
+      "Chemistry",
+      "Engineering",
+    ],
+
+    evidenceKeywords: [
+      "THERMAL",
+      "POWER",
+      "MISSION COMMAND",
+    ],
+  },
+
+  propulsion: {
+    id: "propulsion",
+    name:
+      "Propulsion & Energy Systems",
+    shortName: "PROPULSION",
+
+    description:
+      "You pay attention to the energy required to move a vehicle and the tradeoff between performance, efficiency, heat, and remaining reserves.",
+
+    major: [
+      "Aerospace Engineering",
+      "Mechanical Engineering",
+    ],
+
+    projectTitle:
+      "Build a Rocket Performance Explorer",
+
+    projectDescription:
+      "Create a simulation that compares vehicle mass, thrust, burn time, efficiency, and mission requirements without building an actual rocket.",
+
+    extracurricular:
+      "Turn the model into a safe computational aerospace project with scenario testing, graphs, and technical documentation for competitions, research portfolios, or aerospace clubs.",
+
+    courses: [
+      "Physics",
+      "Calculus",
+      "Chemistry",
+      "Computer Science",
+    ],
+
+    evidenceKeywords: [
+      "ENTRY",
+      "THERMAL",
+      "MISSION COMMAND",
+    ],
+  },
+
+  "mission-design": {
+    id: "mission-design",
+    name:
+      "Mission Design & Space Operations",
+    shortName: "MISSION DESIGN",
+
+    description:
+      "You tend to think about the mission objective itself: where to go, what to prioritize, what risk is acceptable, and what makes the mission worthwhile.",
+
+    major: [
+      "Aerospace Engineering",
+      "Astronomy / Astrophysics",
+      "Systems Engineering",
+    ],
+
+    projectTitle:
+      "Design a Complete Mars Micro-Mission",
+
+    projectDescription:
+      "Choose a scientific objective, landing region, spacecraft constraints, instruments, operating timeline, and mission tradeoffs. Explain why your mission deserves to exist.",
+
+    extracurricular:
+      "Develop it into a mission proposal with maps, CAD or diagrams, trade studies, and a written design review. This can support aerospace competitions, science fairs, research programs, or an independent project portfolio.",
+
+    courses: [
+      "Physics",
+      "Calculus",
+      "Astronomy",
+      "Engineering",
+    ],
+
+    evidenceKeywords: [
+      "LANDING",
+      "MISSION",
+      "SCIENCE",
+    ],
+  },
+};
+
+const reasoningLabels:
+  Record<string, string> = {
+    "systems-integration":
+      "Systems Integration",
+
+    "mission-tradeoffs":
+      "Tradeoff Reasoning",
+
+    optimization:
+      "Optimization",
+
+    iteration:
+      "Iterative Testing",
+
+    "quantitative-reasoning":
+      "Quantitative Reasoning",
+
+    "feedback-control":
+      "Feedback Thinking",
+
+    "thermal-reasoning":
+      "Thermal Reasoning",
+
+    "risk-tolerance":
+      "Risk Judgment",
+  };
+
+function humanizeKey(
+  key: string,
+) {
+  return (
+    reasoningLabels[key] ??
+    key
+      .split("-")
+      .map(
+        (word) =>
+          word.charAt(0).toUpperCase() +
+          word.slice(1),
+      )
+      .join(" ")
+  );
+}
+
+function rankScores(
+  scores:
+    Partial<
+      Record<string, number>
+    >,
+) {
+  return Object.entries(scores)
+    .filter(
+      (
+        entry,
+      ): entry is [
+        string,
+        number,
+      ] =>
+        typeof entry[1] ===
+          "number" &&
+        entry[1] > 0,
+    )
+    .sort(
+      (a, b) =>
+        b[1] - a[1],
+    );
+}
+
+function getProfile(
+  id: string,
+): WingProfile {
+  return (
+    wingProfiles[id] ?? {
+      id,
+
+      name: humanizeKey(id),
+
+      shortName:
+        humanizeKey(
+          id,
+        ).toUpperCase(),
+
+      description:
+        "Your mission behavior produced a meaningful signal in this aerospace pathway.",
+
+      major:
+        "Aerospace Engineering",
+
+      projectTitle:
+        "Build an Aerospace Investigation",
+
+      projectDescription:
+        "Turn one of the mission problems into a real technical project, test multiple approaches, and document what you learned.",
+
+      extracurricular:
+        "Document the work, publish the evidence, and develop it into an engineering portfolio activity.",
+
+      courses: [
+        "Calculus",
+        "Physics",
+        "Computer Science",
+        "Engineering",
+      ],
+
+      evidenceKeywords: [],
+    }
+  );
+}
+
+function WingMatchResult({
+  wingScores,
+  reasoningScores,
+  missionHistory,
+  onRestart,
+  onContinue,
+}: WingMatchResultProps) {
+  const rankedWings =
+    rankScores(wingScores);
+
+  const rankedReasoning =
+    rankScores(
+      reasoningScores,
+    );
+
+  const maxWingScore =
+    rankedWings[0]?.[1] ??
+    1;
+
+  const topWings =
+    rankedWings
+      .slice(0, 3)
+      .map(
+        ([id, score]) => ({
+          profile:
+            getProfile(id),
+
+          score,
+
+          relativeStrength:
+            Math.round(
+              (score /
+                maxWingScore) *
+                100,
+            ),
+        }),
+      );
+
+  const primaryWing =
+    topWings[0]?.profile ??
+    getProfile("systems");
+
+  const topReasoning =
+    rankedReasoning.slice(
+      0,
+      4,
+    );
+
+  const relevantEvidence =
+    missionHistory
+      .filter((item) => {
+        if (
+          primaryWing
+            .evidenceKeywords
+            .length === 0
+        ) {
+          return true;
+        }
+
+        const searchable =
+          `${item.phase} ${item.title}`
+            .toUpperCase();
+
+        return primaryWing.evidenceKeywords.some(
+          (keyword) =>
+            searchable.includes(
+              keyword,
+            ),
+        );
+      })
+      .slice(-3);
+
+  const evidenceToShow =
+    relevantEvidence.length >
+    0
+      ? relevantEvidence
+      : missionHistory.slice(-3);
+
+  return (
+    <main className="result-shell">
+      <section className="result-hero">
+        <div className="result-eyebrow">
+          WINGMATCH COMPLETE
+        </div>
+
+        <h1>
+          You didn't choose a
+          career.
+          <span>
+            {" "}
+            You revealed how you
+            engineer.
+          </span>
+        </h1>
+
+        <p>
+          Your result comes from
+          the decisions, tests,
+          tradeoffs, and
+          investigations you made
+          across the mission — not
+          from a personality quiz.
+        </p>
+      </section>
+
+      <section className="result-section">
+        <div className="result-section-heading">
+          <span>
+            01 / YOUR WING PROFILE
+          </span>
+
+          <h2>
+            Your strongest
+            aerospace signals
+          </h2>
+        </div>
+
+        <div className="wing-ranking">
+          {topWings.map(
+            (
+              {
+                profile,
+                score,
+                relativeStrength,
+              },
+              index,
+            ) => (
+              <article
+                className={[
+                  "wing-result-card",
+
+                  index === 0
+                    ? "wing-result-card--primary"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                key={
+                  profile.id
+                }
+              >
+                <div className="wing-result-card__rank">
+                  0{index + 1}
+                </div>
+
+                <div className="wing-result-card__copy">
+                  <span>
+                    {
+                      profile.shortName
+                    }
+                  </span>
+
+                  <h3>
+                    {profile.name}
+                  </h3>
+
+                  <p>
+                    {
+                      profile.description
+                    }
+                  </p>
+                </div>
+
+                <div className="wing-result-card__signal">
+                  <div>
+                    <span>
+                      EVIDENCE SIGNAL
+                    </span>
+
+                    <strong>
+                      {score} pts
+                    </strong>
+                  </div>
+
+                  <div className="signal-track">
+                    <div
+                      style={{
+                        width:
+                          `${relativeStrength}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              </article>
+            ),
+          )}
+        </div>
+
+        <p className="result-method-note">
+          These are relative
+          evidence signals from
+          your mission behavior,
+          not probabilities or
+          admissions predictions.
+        </p>
+      </section>
+
+      <section className="result-section">
+        <div className="result-section-heading">
+          <span>
+            02 / HOW YOU ENGINEER
+          </span>
+
+          <h2>
+            Patterns in your
+            reasoning
+          </h2>
+        </div>
+
+        <div className="reasoning-grid">
+          {topReasoning.map(
+            (
+              [id, score],
+              index,
+            ) => (
+              <article
+                className="reasoning-card"
+                key={id}
+              >
+                <span>
+                  0{index + 1}
+                </span>
+
+                <strong>
+                  {humanizeKey(
+                    id,
+                  )}
+                </strong>
+
+                <small>
+                  {score} evidence
+                  points
+                </small>
+              </article>
+            ),
+          )}
+        </div>
+      </section>
+
+      <section className="result-section">
+        <div className="result-section-heading">
+          <span>
+            03 / WHY THIS WING
+          </span>
+
+          <h2>
+            Evidence from your
+            mission
+          </h2>
+        </div>
+
+        <div className="evidence-list">
+          {evidenceToShow.map(
+            (
+              item,
+              index,
+            ) => (
+              <article
+                className="evidence-card"
+                key={`${item.sceneId}-${index}`}
+              >
+                <div className="evidence-card__number">
+                  {String(
+                    index + 1,
+                  ).padStart(
+                    2,
+                    "0",
+                  )}
+                </div>
+
+                <div>
+                  <span>
+                    {item.phase}
+                  </span>
+
+                  <h3>
+                    {item.title}
+                  </h3>
+
+                  <p>
+                    {
+                      item.consequence
+                    }
+                  </p>
+                </div>
+              </article>
+            ),
+          )}
+        </div>
+      </section>
+
+      <section className="result-section result-pathway">
+        <div className="result-section-heading">
+          <span>
+            04 / PUT ON THIS WING
+          </span>
+
+          <h2>
+            Turn the signal into
+            real evidence
+          </h2>
+        </div>
+
+        <div className="pathway-hero">
+          <div>
+            <span>
+              PRIMARY WING
+            </span>
+
+            <h3>
+              {primaryWing.name}
+            </h3>
+
+            <p>
+              {
+                primaryWing.description
+              }
+            </p>
+          </div>
+
+          <div className="pathway-majors">
+            <span>
+              RELATED MAJORS
+            </span>
+
+            {(Array.isArray(
+              primaryWing.major,
+            )
+              ? primaryWing.major
+              : [
+                  primaryWing.major,
+                ]
+            ).map(
+              (major) => (
+                <strong
+                  key={major}
+                >
+                  {major}
+                </strong>
+              ),
+            )}
+          </div>
+        </div>
+
+        <div className="action-grid">
+          <article className="action-card">
+            <span>
+              BUILD
+            </span>
+
+            <h3>
+              {
+                primaryWing.projectTitle
+              }
+            </h3>
+
+            <p>
+              {
+                primaryWing.projectDescription
+              }
+            </p>
+
+            <div className="action-time">
+              3-WEEK STARTER
+              PROJECT
+            </div>
+          </article>
+
+          <article className="action-card">
+            <span>
+              EXTRACURRICULAR
+            </span>
+
+            <h3>
+              Make the work count.
+            </h3>
+
+            <p>
+              {
+                primaryWing.extracurricular
+              }
+            </p>
+
+            <div className="action-time">
+              BUILD → TEST →
+              DOCUMENT → SHARE
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="result-section">
+        <div className="result-section-heading">
+          <span>
+            05 / COLLEGE LAUNCH
+          </span>
+
+          <h2>
+            Start preparing for
+            the wing
+          </h2>
+        </div>
+
+        <div className="college-launch-grid">
+          <article>
+            <span>
+              HIGH-SCHOOL
+              FOUNDATION
+            </span>
+
+            <div className="course-tags">
+              {primaryWing.courses.map(
+                (course) => (
+                  <strong
+                    key={course}
+                  >
+                    {course}
+                  </strong>
+                ),
+              )}
+            </div>
+          </article>
+
+          <article>
+            <span>
+              NEXT EVIDENCE
+            </span>
+
+            <h3>
+              Don't just say
+              you're interested.
+            </h3>
+
+            <p>
+              Build something,
+              test it, document the
+              tradeoffs, and show
+              what changed because
+              of your decisions.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="result-footer">
+        <div>
+          <span>
+            EXPLORE. BUILD.
+            LAUNCH.
+          </span>
+
+          <h2>
+            Your Wing is a
+            starting point, not a
+            label.
+          </h2>
+        </div>
+
+        <div className="result-actions">
+          {onRestart && (
+            <button
+              type="button"
+              className="result-button result-button--secondary"
+              onClick={
+                onRestart
+              }
+            >
+              Fly the mission again
+            </button>
+          )}
+
+          {onContinue && (
+            <button
+              type="button"
+              className="result-button result-button--primary"
+              onClick={
+                onContinue
+              }
+            >
+              Build my Wing
+            </button>
+          )}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export default WingMatchResult;
