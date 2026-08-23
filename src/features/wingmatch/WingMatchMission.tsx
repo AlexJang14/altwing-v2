@@ -15,6 +15,9 @@ import type { StructureScanResult } from "./StructureScanPanel";
 import FaultIsolationPanel from "./FaultIsolationPanel";
 import type { FaultIsolationResult } from "./FaultIsolationPanel";
 
+import FinalMissionPanel from "./FinalMissionPanel";
+import type { FinalMissionResult } from "./FinalMissionPanel";
+
 import MissionVisual from "./MissionVisual";
 
 import {
@@ -26,6 +29,7 @@ import { thermalManagementMission } from "./thermalMission";
 import { landingSiteMission } from "./landingMission";
 import { structureMission } from "./structureMission";
 import { faultIsolationMission } from "./faultMission";
+import { finalMission } from "./finalMission";
 
 import type {
   ControllerMissionScene,
@@ -43,6 +47,7 @@ interface WingMatchMissionProps {
 }
 
 type WingScores = Partial<Record<WingId, number>>;
+
 type ReasoningScores = Partial<
   Record<ReasoningSignal, number>
 >;
@@ -68,6 +73,7 @@ const activeMissionScenes: MissionScene[] = [
   landingSiteMission,
   structureMission,
   faultIsolationMission,
+  finalMission,
 ];
 
 function isControllerMission(
@@ -371,11 +377,67 @@ function getFaultConsequence(
   return "You attributed the fault to the data bus. That remains possible, but the strongest communication-path evidence points elsewhere.";
 }
 
+function getFinalEffects(
+  result: FinalMissionResult,
+): TelemetryItem[] {
+  return [
+    {
+      label: "COMMS",
+      value:
+        `${result.allocations.communications} pts`,
+      status: "nominal",
+    },
+    {
+      label: "SAFETY",
+      value:
+        `${result.allocations.safety} pts`,
+      status: "nominal",
+    },
+    {
+      label: "SCIENCE",
+      value:
+        `${result.allocations.science} pts`,
+      status: "nominal",
+    },
+    {
+      label: "VERIFY",
+      value:
+        `${result.allocations.verification} pts`,
+      status: "nominal",
+    },
+  ];
+}
+
+function getFinalConsequence(
+  result: FinalMissionResult,
+) {
+  switch (
+    result.dominantPriority
+  ) {
+    case "communications":
+      return "You made restoring the communication link the mission's highest priority, protecting the ability to return data and command the vehicle.";
+
+    case "safety":
+      return "You prioritized vehicle survival and system margin before extending surface operations.";
+
+    case "science":
+      return "You accepted tighter operational margins to protect the remaining science opportunity.";
+
+    case "verification":
+      return "You prioritized confidence in the vehicle state before committing additional mission resources.";
+
+    default:
+      return "You created a final systems-level mission plan under competing constraints.";
+  }
+}
+
 function WingMatchMission({
   onExit,
 }: WingMatchMissionProps) {
-  const [sceneIndex, setSceneIndex] =
-    useState(0);
+  const [
+    sceneIndex,
+    setSceneIndex,
+  ] = useState(0);
 
   const [
     previewOption,
@@ -397,14 +459,6 @@ function WingMatchMission({
     controllerLocked,
     setControllerLocked,
   ] = useState(false);
-
-const [
-  ,
-  setControllerResult,
-] =
-  useState<ControllerTuningResult | null>(
-    null,
-  );
 
   const [
     thermalLocked,
@@ -455,6 +509,19 @@ const [
     setFaultResult,
   ] =
     useState<FaultIsolationResult | null>(
+      null,
+    );
+
+  const [
+    finalLocked,
+    setFinalLocked,
+  ] = useState(false);
+
+  const [
+    finalResult,
+    setFinalResult,
+  ] =
+    useState<FinalMissionResult | null>(
       null,
     );
 
@@ -515,6 +582,11 @@ const [
       ? scene
       : null;
 
+  const finalScene =
+    scene.id === "mission-command"
+      ? scene
+      : null;
+
   const previousDecision =
     missionHistory.length > 0
       ? missionHistory[
@@ -561,11 +633,21 @@ const [
       }
 
       if (
+        finalScene &&
+        finalResult
+      ) {
+        return getFinalEffects(
+          finalResult,
+        );
+      }
+
+      if (
         controllerScene ||
         thermalScene ||
         landingScene ||
         structureScene ||
         faultScene ||
+        finalScene ||
         !previewOption
       ) {
         return scene.telemetry;
@@ -581,10 +663,12 @@ const [
       landingScene,
       structureScene,
       faultScene,
+      finalScene,
       thermalResult,
       landingResult,
       structureResult,
       faultResult,
+      finalResult,
       previewOption,
       scene.telemetry,
     ]);
@@ -615,7 +699,6 @@ const [
     setCommittedOption(null);
 
     setControllerLocked(false);
-    setControllerResult(null);
 
     setThermalLocked(false);
     setThermalResult(null);
@@ -628,6 +711,9 @@ const [
 
     setFaultLocked(false);
     setFaultResult(null);
+
+    setFinalLocked(false);
+    setFinalResult(null);
 
     window.scrollTo({
       top: 0,
@@ -672,7 +758,8 @@ const [
       thermalScene ||
       landingScene ||
       structureScene ||
-      faultScene
+      faultScene ||
+      finalScene
     ) {
       return;
     }
@@ -847,7 +934,6 @@ const [
       },
     ]);
 
-    setControllerResult(result);
     setControllerLocked(true);
 
     showDecisionFlash(
@@ -1298,6 +1384,155 @@ const [
     );
   }
 
+  function handleFinalLock(
+    result: FinalMissionResult,
+  ) {
+    if (
+      !finalScene ||
+      finalLocked
+    ) {
+      return;
+    }
+
+    const balanceScore =
+      result.balanceSpread <= 20
+        ? 3
+        : result.balanceSpread <= 40
+          ? 2
+          : 1;
+
+    const iterationScore =
+      result.adjustments >= 12
+        ? 3
+        : result.adjustments >= 6
+          ? 2
+          : 1;
+
+    const incomingWingScores:
+      WingScores = {
+        systems: 3,
+
+        avionics:
+          result.allocations
+            .communications >= 25
+            ? 2
+            : 1,
+
+        "mission-design":
+          result.allocations
+            .science >= 25
+            ? 2
+            : 1,
+
+        gnc:
+          result.allocations
+            .verification >= 25
+            ? 2
+            : 1,
+      };
+
+    const incomingReasoningScores:
+      ReasoningScores = {
+        "systems-integration": 3,
+
+        "mission-tradeoffs": 3,
+
+        optimization:
+          balanceScore,
+
+        iteration:
+          iterationScore,
+
+        "quantitative-reasoning":
+          2,
+      };
+
+    const nextWingScores =
+      addScores(
+        wingScores,
+        incomingWingScores,
+      );
+
+    const nextReasoningScores =
+      addScores(
+        reasoningScores,
+        incomingReasoningScores,
+      );
+
+    const effects =
+      getFinalEffects(result);
+
+    const consequence =
+      getFinalConsequence(
+        result,
+      );
+
+    const title =
+      `${result.dominantPriorityName} prioritized`;
+
+    setWingScores(
+      nextWingScores,
+    );
+
+    setReasoningScores(
+      nextReasoningScores,
+    );
+
+    setMissionHistory([
+      ...missionHistory,
+      {
+        sceneId: scene.id,
+        phase: scene.phase,
+        title,
+        consequence,
+        effects,
+      },
+    ]);
+
+    setFinalResult(result);
+    setFinalLocked(true);
+
+    console.group(
+      "AltWing WingMatch — Mission 08",
+    );
+
+    console.log(
+      "Final mission allocation:",
+      result,
+    );
+
+    console.log(
+      "FINAL Wing scores:",
+      nextWingScores,
+    );
+
+    console.log(
+      "FINAL Reasoning scores:",
+      nextReasoningScores,
+    );
+
+    console.log(
+      "FINAL Mission history:",
+      [
+        ...missionHistory,
+        {
+          sceneId: scene.id,
+          phase: scene.phase,
+          title,
+          consequence,
+          effects,
+        },
+      ],
+    );
+
+    console.groupEnd();
+
+    showDecisionFlash(
+      title,
+      effects,
+    );
+  }
+
   return (
     <main className="wingmatch-shell">
       {commitFlash && (
@@ -1352,6 +1587,7 @@ const [
           className="wingmatch-brand"
           type="button"
           onClick={onExit}
+          aria-label="Return to AltWing home"
         >
           <span>Alt</span>
           <strong>Wing</strong>
@@ -1401,7 +1637,9 @@ const [
             </div>
 
             <span>
-              {scene.timeRemaining}
+              {
+                scene.timeRemaining
+              }
             </span>
           </div>
 
@@ -1456,7 +1694,8 @@ const [
             !thermalScene &&
             !landingScene &&
             !structureScene &&
-            !faultScene && (
+            !faultScene &&
+            !finalScene && (
               <MissionVisual
                 sceneId={scene.id}
                 altitude={
@@ -1474,7 +1713,9 @@ const [
             </span>
 
             <h1>
-              {scene.situation}
+              {
+                scene.situation
+              }
             </h1>
           </div>
 
@@ -1483,6 +1724,7 @@ const [
             !landingScene &&
             !structureScene &&
             !faultScene &&
+            !finalScene &&
             previewOption &&
             !committedOption && (
               <div className="projected-effect">
@@ -1583,12 +1825,14 @@ const [
                     ? "STRUCTURAL ANALYSIS"
                     : faultScene
                       ? "AVIONICS DIAGNOSTICS"
-                      : `DECISION ${String(
-                          scene.missionNumber,
-                        ).padStart(
-                          2,
-                          "0",
-                        )}`}
+                      : finalScene
+                        ? "MISSION COMMAND"
+                        : `DECISION ${String(
+                            scene.missionNumber,
+                          ).padStart(
+                            2,
+                            "0",
+                          )}`}
           </div>
 
           <h2>
@@ -1598,8 +1842,11 @@ const [
           {controllerScene ? (
             <>
               <p className="decision-hint">
-                Change the gain and watch
-                how the vehicle responds.
+                Change the gain and
+                watch how the vehicle
+                responds. Test the
+                control behavior before
+                locking the setting.
               </p>
 
               <div
@@ -1624,9 +1871,10 @@ const [
           ) : thermalScene ? (
             <>
               <p className="decision-hint">
-                Cooling power is limited.
-                Protect critical systems
-                while preserving reserve.
+                Cooling power is
+                limited. Protect
+                critical systems while
+                preserving reserve.
               </p>
 
               <div
@@ -1644,13 +1892,37 @@ const [
                   }
                 />
               </div>
+
+              {thermalLocked &&
+                thermalResult && (
+                  <div className="committed-status">
+                    <div>
+                      <span>
+                        THERMAL PLAN
+                        LOCKED
+                      </span>
+
+                      <strong>
+                        {
+                          thermalResult.state
+                        }
+                      </strong>
+                    </div>
+
+                    <p>
+                      {getThermalConsequence(
+                        thermalResult,
+                      )}
+                    </p>
+                  </div>
+                )}
             </>
           ) : landingScene ? (
             <>
               <p className="decision-hint">
-                Compare the reachable sites
-                before committing the
-                landing.
+                Compare the reachable
+                sites before committing
+                the landing.
               </p>
 
               <div
@@ -1668,13 +1940,42 @@ const [
                   }
                 />
               </div>
+
+              {landingLocked &&
+                landingResult && (
+                  <div className="committed-status">
+                    <div>
+                      <span>
+                        LANDING SITE
+                        LOCKED
+                      </span>
+
+                      <strong>
+                        {
+                          landingResult.siteName
+                        }
+                      </strong>
+                    </div>
+
+                    <p>
+                      Compared{" "}
+                      {
+                        landingResult.comparisons
+                      }{" "}
+                      of 3 reachable
+                      sites before
+                      commitment.
+                    </p>
+                  </div>
+                )}
             </>
           ) : structureScene ? (
             <>
               <p className="decision-hint">
-                Inspect the load path and
-                choose where reinforcement
-                matters most.
+                Inspect the load path
+                and choose where
+                reinforcement matters
+                most.
               </p>
 
               <div
@@ -1692,14 +1993,49 @@ const [
                   }
                 />
               </div>
+
+              {structureLocked &&
+                structureResult && (
+                  <div className="committed-status">
+                    <div>
+                      <span>
+                        REINFORCEMENT
+                        LOCKED
+                      </span>
+
+                      <strong>
+                        {
+                          structureResult.zoneName
+                        }
+                      </strong>
+                    </div>
+
+                    <p>
+                      Inspected{" "}
+                      {
+                        structureResult.inspections
+                      }{" "}
+                      of 4 structural
+                      zones before
+                      commitment.
+                    </p>
+
+                    <p>
+                      {getStructureConsequence(
+                        structureResult,
+                      )}
+                    </p>
+                  </div>
+                )}
             </>
           ) : faultScene ? (
             <>
               <p className="decision-hint">
                 You can run only three
-                diagnostic tests. Gather
-                evidence before committing
-                to a fault hypothesis.
+                diagnostic tests.
+                Gather evidence before
+                committing to a fault
+                hypothesis.
               </p>
 
               <div
@@ -1747,10 +2083,61 @@ const [
                         faultResult,
                       )}
                     </p>
+                  </div>
+                )}
+            </>
+          ) : finalScene ? (
+            <>
+              <p className="decision-hint">
+                You control the final
+                100 mission points.
+                Allocate them across
+                competing objectives
+                before executing the
+                final mission plan.
+              </p>
+
+              <div
+                style={{
+                  marginTop:
+                    "18px",
+                }}
+              >
+                <FinalMissionPanel
+                  locked={
+                    finalLocked
+                  }
+                  onLock={
+                    handleFinalLock
+                  }
+                />
+              </div>
+
+              {finalLocked &&
+                finalResult && (
+                  <div className="committed-status">
+                    <div>
+                      <span>
+                        FINAL PLAN
+                        EXECUTED
+                      </span>
+
+                      <strong>
+                        {
+                          finalResult.dominantPriorityName
+                        }
+                      </strong>
+                    </div>
+
+                    <p>
+                      {getFinalConsequence(
+                        finalResult,
+                      )}
+                    </p>
 
                     <div className="committed-next">
-                      Mission 08 —
-                      final mission
+                      WingMatch Result —
+                      next build
                     </div>
                   </div>
                 )}
@@ -1758,9 +2145,9 @@ const [
           ) : (
             <>
               <p className="decision-hint">
-                No perfect answer. Choose
-                the tradeoff you would
-                accept.
+                No perfect answer.
+                Choose the tradeoff you
+                would accept.
               </p>
 
               <div className="decision-options">
@@ -1773,6 +2160,10 @@ const [
                       previewOption?.id ===
                       option.id;
 
+                    const isCommitted =
+                      committedOption?.id ===
+                      option.id;
+
                     return (
                       <button
                         type="button"
@@ -1783,6 +2174,9 @@ const [
                           "decision-option",
                           isSelected
                             ? "decision-option--selected"
+                            : "",
+                          isCommitted
+                            ? "decision-option--committed"
                             : "",
                         ]
                           .filter(Boolean)
@@ -1798,8 +2192,7 @@ const [
                       >
                         <div className="decision-option-number">
                           {String(
-                            index +
-                              1,
+                            index + 1,
                           ).padStart(
                             2,
                             "0",
