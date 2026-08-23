@@ -1,0 +1,618 @@
+.mission-viz {
+  position: relative;
+
+  height: 285px;
+  margin-top: 14px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      circle at 65% 28%,
+      rgba(91, 141, 239, 0.17),
+      transparent 30%
+    ),
+    #0d1430;
+}
+
+.mission-viz__stars {
+  position: absolute;
+  inset: 0;
+
+  opacity: 0.5;
+
+  background-image:
+    radial-gradient(circle at 9% 18%, white 0 1px, transparent 1.4px),
+    radial-gradient(circle at 21% 56%, white 0 1px, transparent 1.4px),
+    radial-gradient(circle at 41% 20%, white 0 1px, transparent 1.4px),
+    radial-gradient(circle at 60% 61%, white 0 1px, transparent 1.4px),
+    radial-gradient(circle at 77% 17%, white 0 1px, transparent 1.4px),
+    radial-gradient(circle at 90% 44%, white 0 1px, transparent 1.4px);
+}
+
+.mission-viz__readout {
+  position: absolute;
+
+  left: 21px;
+  bottom: 18px;
+
+  z-index: 8;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mission-viz__readout span {
+  color: rgba(255, 255, 255, 0.36);
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+}
+
+.mission-viz__readout strong {
+  color: #5b8def;
+
+  font-size: 16px;
+}
+
+/* ------------------------------------------------ */
+/* MISSION 01 — ATMOSPHERIC ENTRY */
+/* ------------------------------------------------ */
+
+.entry-viz__trajectory {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+.entry-viz__path {
+  fill: none;
+
+  stroke: rgba(91, 141, 239, 0.82);
+  stroke-width: 2;
+
+  stroke-dasharray: 7 9;
+
+  animation: mission-visual-path 4s linear infinite;
+}
+
+.entry-viz__start {
+  fill: #5b8def;
+
+  filter: drop-shadow(
+    0 0 8px rgba(91, 141, 239, 0.9)
+  );
+}
+
+.entry-viz__capsule {
+  position: absolute;
+
+  left: 69%;
+  top: 50%;
+
+  width: 39px;
+  height: 58px;
+
+  transform: rotate(-19deg);
+
+  transition:
+    left 300ms ease,
+    top 300ms ease,
+    transform 300ms ease;
+}
+
+.entry-viz__capsule--active {
+  left: 71%;
+  top: 53%;
+
+  transform: rotate(-14deg);
+}
+
+.entry-viz__capsule-body {
+  position: absolute;
+
+  left: 7px;
+
+  width: 25px;
+  height: 32px;
+
+  border: 2px solid rgba(255, 255, 255, 0.86);
+  border-radius: 45% 45% 36% 36%;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.entry-viz__flame {
+  position: absolute;
+
+  left: 9px;
+  top: 29px;
+
+  width: 21px;
+  height: 27px;
+
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+
+  background:
+    linear-gradient(
+      to bottom,
+      #fff2a7,
+      #ffc857 30%,
+      #ff6b6b 70%,
+      transparent
+    );
+
+  filter: blur(1px);
+}
+
+.entry-viz__atmosphere {
+  position: absolute;
+
+  left: -5%;
+  right: -5%;
+  bottom: 51px;
+
+  height: 42px;
+
+  border-top: 1px solid rgba(255, 151, 111, 0.55);
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 -11px 30px rgba(255, 107, 107, 0.14);
+}
+
+.entry-viz__mars {
+  position: absolute;
+
+  left: -10%;
+  right: -10%;
+  bottom: -150px;
+
+  height: 220px;
+
+  border-radius: 50% 50% 0 0;
+
+  background:
+    radial-gradient(
+      circle at 27% 13%,
+      rgba(105, 43, 42, 0.34),
+      transparent 12%
+    ),
+    radial-gradient(
+      circle at 68% 18%,
+      rgba(255, 196, 143, 0.24),
+      transparent 12%
+    ),
+    linear-gradient(
+      180deg,
+      #db7258,
+      #9c403d 63%,
+      #542733
+    );
+}
+
+.entry-viz__mars-glow {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  top: -9px;
+
+  height: 18px;
+
+  background: rgba(255, 158, 112, 0.2);
+
+  filter: blur(8px);
+}
+
+.entry-viz__heat {
+  position: absolute;
+
+  right: 22px;
+  top: 21px;
+
+  z-index: 8;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.entry-viz__heat span {
+  color: rgba(255, 255, 255, 0.34);
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.entry-viz__heat strong {
+  color: #ffc857;
+
+  font-size: 15px;
+}
+
+/* ------------------------------------------------ */
+/* MISSION 02 — SENSOR DISAGREEMENT */
+/* ------------------------------------------------ */
+
+.mission-viz--sensor {
+  background:
+    radial-gradient(
+      circle at 50% 55%,
+      rgba(91, 141, 239, 0.11),
+      transparent 38%
+    ),
+    linear-gradient(
+      180deg,
+      #0d1430 0%,
+      #0b1129 100%
+    );
+}
+
+.sensor-viz__title {
+  position: absolute;
+
+  left: 21px;
+  top: 18px;
+
+  z-index: 8;
+
+  color: rgba(255, 255, 255, 0.35);
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+}
+
+.sensor-viz__track {
+  position: absolute;
+
+  left: 27px;
+  right: 27px;
+
+  z-index: 4;
+
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.sensor-viz__track--radar {
+  top: 72px;
+}
+
+.sensor-viz__track--inertial {
+  top: 145px;
+}
+
+.sensor-viz__track > div:first-child {
+  width: 122px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sensor-viz__track span {
+  color: rgba(255, 255, 255, 0.38);
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+}
+
+.sensor-viz__track strong {
+  font-size: 14px;
+}
+
+.sensor-viz__track--radar strong {
+  color: #ff958a;
+}
+
+.sensor-viz__track--inertial strong {
+  color: #5b8def;
+}
+
+.sensor-viz__line {
+  position: absolute;
+
+  left: 136px;
+  right: 0;
+  top: 13px;
+
+  height: 1px;
+
+  opacity: 0.72;
+}
+
+.sensor-viz__track--radar .sensor-viz__line {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #ff6b6b 0 7px,
+      transparent 7px 13px
+    );
+}
+
+.sensor-viz__track--inertial .sensor-viz__line {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #5b8def 0 7px,
+      transparent 7px 13px
+    );
+}
+
+.sensor-viz__track--active {
+  transform: translateX(5px);
+}
+
+.sensor-viz__track--active strong {
+  text-shadow: 0 0 14px rgba(91, 141, 239, 0.8);
+}
+
+.sensor-viz__track--testing {
+  animation: radar-test 700ms ease-in-out infinite alternate;
+}
+
+.sensor-viz__lander {
+  position: absolute;
+
+  right: 72px;
+  top: 100px;
+
+  z-index: 7;
+
+  width: 54px;
+  height: 72px;
+}
+
+.sensor-viz__lander-body {
+  position: absolute;
+
+  left: 12px;
+  top: 5px;
+
+  width: 30px;
+  height: 35px;
+
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 9px 9px 12px 12px;
+
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.sensor-viz__lander-leg {
+  position: absolute;
+
+  top: 37px;
+
+  width: 2px;
+  height: 21px;
+
+  background: rgba(255, 255, 255, 0.66);
+
+  transform-origin: top;
+}
+
+.sensor-viz__lander-leg--left {
+  left: 17px;
+
+  transform: rotate(28deg);
+}
+
+.sensor-viz__lander-leg--right {
+  right: 17px;
+
+  transform: rotate(-28deg);
+}
+
+.sensor-viz__beam {
+  position: absolute;
+
+  left: 24px;
+  top: 57px;
+
+  width: 6px;
+  height: 78px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255, 107, 107, 0.62),
+      transparent
+    );
+
+  clip-path:
+    polygon(40% 0, 60% 0, 100% 100%, 0 100%);
+
+  opacity: 0.6;
+}
+
+.sensor-viz__disagreement {
+  position: absolute;
+
+  left: 51%;
+  top: 105px;
+
+  z-index: 8;
+
+  padding: 9px 11px;
+
+  border: 1px solid rgba(255, 200, 87, 0.23);
+  border-radius: 9px;
+
+  background: rgba(255, 200, 87, 0.06);
+
+  transform: translateX(-50%);
+
+  text-align: center;
+}
+
+.sensor-viz__disagreement span {
+  display: block;
+
+  color: rgba(255, 255, 255, 0.37);
+
+  font-size: 6px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.sensor-viz__disagreement strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #ffc857;
+
+  font-size: 13px;
+}
+
+.sensor-viz__third-signal,
+.sensor-viz__fused {
+  position: absolute;
+
+  left: 50%;
+  bottom: 24px;
+
+  z-index: 9;
+
+  min-width: 145px;
+
+  padding: 8px 12px;
+
+  border-radius: 9px;
+
+  transform: translateX(-50%);
+
+  text-align: center;
+
+  animation: sensor-result-in 220ms ease both;
+}
+
+.sensor-viz__third-signal {
+  border: 1px solid rgba(91, 141, 239, 0.28);
+
+  background: rgba(91, 141, 239, 0.09);
+}
+
+.sensor-viz__fused {
+  border: 1px solid rgba(103, 220, 170, 0.3);
+
+  background: rgba(103, 220, 170, 0.08);
+}
+
+.sensor-viz__third-signal span,
+.sensor-viz__fused span {
+  display: block;
+
+  color: rgba(255, 255, 255, 0.39);
+
+  font-size: 6px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.sensor-viz__third-signal strong,
+.sensor-viz__fused strong {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 10px;
+}
+
+.sensor-viz__third-signal strong {
+  color: #5b8def;
+}
+
+.sensor-viz__fused strong {
+  color: #7ce1b1;
+}
+
+.sensor-viz__fault-check {
+  position: absolute;
+
+  right: 24px;
+  bottom: 25px;
+
+  z-index: 9;
+
+  padding: 8px 10px;
+
+  border: 1px solid rgba(255, 200, 87, 0.25);
+  border-radius: 8px;
+
+  background: rgba(255, 200, 87, 0.07);
+
+  color: #ffc857;
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+
+  animation: sensor-result-in 220ms ease both;
+}
+
+@keyframes mission-visual-path {
+  to {
+    stroke-dashoffset: -64;
+  }
+}
+
+@keyframes radar-test {
+  from {
+    opacity: 0.42;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sensor-result-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (max-width: 650px) {
+  .mission-viz {
+    height: 235px;
+  }
+
+  .sensor-viz__lander {
+    right: 38px;
+  }
+
+  .sensor-viz__disagreement {
+    left: 49%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry-viz__path,
+  .sensor-viz__track--testing,
+  .sensor-viz__third-signal,
+  .sensor-viz__fused,
+  .sensor-viz__fault-check {
+    animation: none;
+  }
+}

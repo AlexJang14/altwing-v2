@@ -59,3 +59,29 @@ export interface MissionScene {
   telemetry: TelemetryItem[];
   options: MissionOption[];
 }
+
+export interface ControllerTuningConfig {
+  parameterLabel: string;
+  parameterShortLabel: string;
+
+  min: number;
+  max: number;
+  step: number;
+
+  initialValue: number;
+
+  stableRange: {
+    min: number;
+    max: number;
+  };
+
+  labels: {
+    low: string;
+    high: string;
+  };
+}
+
+export interface ControllerMissionScene extends MissionScene {
+  interaction: "controller-tuning";
+  controller: ControllerTuningConfig;
+}

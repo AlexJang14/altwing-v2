@@ -1,4 +1,7 @@
-import type { MissionScene } from "./types";
+import type {
+  ControllerMissionScene,
+  MissionScene,
+} from "./types";
 
 export const missionScenes: MissionScene[] = [
   {
@@ -393,4 +396,87 @@ export const missionScenes: MissionScene[] = [
       },
     ],
   },
+];
+
+/*
+  Mission 03 is intentionally NOT inside missionScenes yet.
+
+  We are designing its controller-tuning interaction first so the
+  current Mission 01 → Mission 02 experience stays fully working.
+*/
+
+export const controlOscillationMission: ControllerMissionScene = {
+  id: "control-oscillation",
+  missionNumber: 3,
+  totalMissions: 8,
+
+  phase: "CONTROL OSCILLATION",
+  timeRemaining: "T−08:18",
+  altitude: "8.6 km",
+
+  situation:
+    "The landing burn has started, but the vehicle keeps overshooting its commanded pitch angle. Each correction triggers another correction in the opposite direction.",
+
+  question:
+    "Tune the controller so the lander responds quickly without feeding the oscillation.",
+
+  telemetry: [
+    {
+      label: "PITCH RATE",
+      value: "±8.4°/s",
+      status: "warning",
+    },
+    {
+      label: "OVERSHOOT",
+      value: "28%",
+      status: "warning",
+    },
+    {
+      label: "SETTLING TIME",
+      value: ">12 sec",
+      status: "warning",
+    },
+    {
+      label: "FUEL",
+      value: "31%",
+      status: "nominal",
+    },
+  ],
+
+  /*
+    Mission 03 will not use normal answer cards.
+    The slider interaction will replace these options.
+  */
+  options: [],
+
+  interaction: "controller-tuning",
+
+  controller: {
+    parameterLabel: "Controller Gain",
+    parameterShortLabel: "GAIN",
+
+    min: 0.4,
+    max: 1.4,
+    step: 0.05,
+
+    initialValue: 1.2,
+
+    /*
+      Internal simulator range.
+      We will NOT display this as "the correct answer."
+    */
+    stableRange: {
+      min: 0.7,
+      max: 0.9,
+    },
+
+    labels: {
+      low: "SLOW RESPONSE",
+      high: "AGGRESSIVE RESPONSE",
+    },
+  },
+};
+export const activeMissionScenes: MissionScene[] = [
+  ...missionScenes,
+  controlOscillationMission,
 ];
