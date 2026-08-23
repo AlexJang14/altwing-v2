@@ -427,8 +427,28 @@ function getFinalConsequence(
 function WingMatchMission({
   onExit,
 }: WingMatchMissionProps) {
-  const [sceneIndex, setSceneIndex] =
-    useState(0);
+ const [sceneIndex, setSceneIndex] =
+  useState(() => {
+    const params =
+      new URLSearchParams(
+        window.location.search,
+      );
+
+    const requestedMission =
+      Number(
+        params.get("mission"),
+      );
+
+    if (
+      requestedMission >= 1 &&
+      requestedMission <=
+        activeMissionScenes.length
+    ) {
+      return requestedMission - 1;
+    }
+
+    return 0;
+  });
 
   const [
     previewOption,
