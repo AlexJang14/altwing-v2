@@ -9,6 +9,9 @@ import type { ThermalAllocationResult } from "./ThermalAllocationPanel";
 import LandingSitePanel from "./LandingSitePanel";
 import type { LandingSiteResult } from "./LandingSitePanel";
 
+import StructureScanPanel from "./StructureScanPanel";
+import type { StructureScanResult } from "./StructureScanPanel";
+
 import MissionVisual from "./MissionVisual";
 
 import {
@@ -18,6 +21,7 @@ import {
 
 import { thermalManagementMission } from "./thermalMission";
 import { landingSiteMission } from "./landingMission";
+import { structureMission } from "./structureMission";
 
 import type {
   ControllerMissionScene,
@@ -35,10 +39,7 @@ interface WingMatchMissionProps {
 }
 
 type WingScores = Partial<Record<WingId, number>>;
-
-type ReasoningScores = Partial<
-  Record<ReasoningSignal, number>
->;
+type ReasoningScores = Partial<Record<ReasoningSignal, number>>;
 
 interface MissionHistoryItem {
   sceneId: string;
@@ -59,6 +60,7 @@ const activeMissionScenes: MissionScene[] = [
   controlOscillationMission,
   thermalManagementMission,
   landingSiteMission,
+  structureMission,
 ];
 
 function isControllerMission(
@@ -66,8 +68,7 @@ function isControllerMission(
 ): scene is ControllerMissionScene {
   return (
     "interaction" in scene &&
-    (scene as ControllerMissionScene).interaction ===
-      "controller-tuning"
+    (scene as ControllerMissionScene).interaction === "controller-tuning"
   );
 }
 
@@ -94,9 +95,7 @@ function mergeTelemetry(
 
 function addScores<T extends string>(
   current: Partial<Record<T, number>>,
-  incoming:
-    | Partial<Record<T, number>>
-    | undefined,
+  incoming: Partial<Record<T, number>> | undefined,
 ) {
   const next = { ...current };
 
@@ -104,18 +103,15 @@ function addScores<T extends string>(
     return next;
   }
 
-  Object.entries(incoming).forEach(
-    ([key, value]) => {
-      if (typeof value !== "number") {
-        return;
-      }
+  Object.entries(incoming).forEach(([key, value]) => {
+    if (typeof value !== "number") {
+      return;
+    }
 
-      const typedKey = key as T;
+    const typedKey = key as T;
 
-      next[typedKey] =
-        (next[typedKey] ?? 0) + value;
-    },
-  );
+    next[typedKey] = (next[typedKey] ?? 0) + value;
+  });
 
   return next;
 }
@@ -127,37 +123,22 @@ function getThermalEffects(
     {
       label: "ENGINE TEMP",
       value: `${result.engineTemp}%`,
-      status:
-        result.engineTemp <= 112
-          ? "nominal"
-          : "warning",
+      status: result.engineTemp <= 112 ? "nominal" : "warning",
     },
-
     {
       label: "BATTERY RISK",
       value: `${result.batteryRisk}%`,
-      status:
-        result.batteryRisk <= 30
-          ? "nominal"
-          : "warning",
+      status: result.batteryRisk <= 30 ? "nominal" : "warning",
     },
-
     {
       label: "AVIONICS MARGIN",
       value: `${result.avionicsMargin}%`,
-      status:
-        result.avionicsMargin >= 35
-          ? "nominal"
-          : "warning",
+      status: result.avionicsMargin >= 35 ? "nominal" : "warning",
     },
-
     {
       label: "RESERVE",
       value: `${result.reserve}%`,
-      status:
-        result.reserve >= 10
-          ? "nominal"
-          : "warning",
+      status: result.reserve >= 10 ? "nominal" : "warning",
     },
   ];
 }
@@ -195,25 +176,16 @@ function getLandingEffects(
       value: result.siteName,
       status: "nominal",
     },
-
     {
       label: "SLOPE",
       value: `${result.slope}°`,
-      status:
-        result.slope <= 4
-          ? "nominal"
-          : "warning",
+      status: result.slope <= 4 ? "nominal" : "warning",
     },
-
     {
       label: "ROCK RISK",
       value: result.rockRisk,
-      status:
-        result.rockRisk === "LOW"
-          ? "nominal"
-          : "warning",
+      status: result.rockRisk === "LOW" ? "nominal" : "warning",
     },
-
     {
       label: "SCIENCE",
       value: result.scienceValue,
@@ -236,100 +208,108 @@ function getLandingConsequence(
   return "You accepted greater surface hazard in exchange for the highest science opportunity.";
 }
 
+function getStructureEffects(
+  result: StructureScanResult,
+): TelemetryItem[] {
+  return [
+    {
+      label: "TARGET",
+      value: result.zoneName,
+      status: "nominal",
+    },
+    {
+      label: "STRAIN",
+      value: `${result.strain}%`,
+      status: result.strain >= 65 ? "warning" : "nominal",
+    },
+    {
+      label: "BUCKLING MARGIN",
+      value: result.bucklingMargin.toFixed(2),
+      status: result.bucklingMargin < 1.3 ? "warning" : "nominal",
+    },
+    {
+      label: "ADDED MASS",
+      value: `+${result.reinforcementMass} kg`,
+      status:
+        result.reinforcementMass <= 1.5
+          ? "nominal"
+          : "warning",
+    },
+  ];
+}
+
+function getStructureConsequence(
+  result: StructureScanResult,
+) {
+  switch (result.zoneId) {
+    case "main-strut":
+      return "You reinforced the highest-compression member. Buckling risk falls, but the reinforcement consumes a significant share of the remaining mass margin.";
+
+    case "lower-joint":
+      return "You reinforced a joint carrying combined compression and bending, gaining protection with relatively modest added mass.";
+
+    case "upper-joint":
+      return "You reinforced a structurally healthy load-transfer point, preserving it further but leaving higher-load regions unchanged.";
+
+    case "footpad":
+      return "You reinforced the surface-contact element. Contact robustness improves, but the primary compression load path receives little additional support.";
+
+    default:
+      return "The reinforcement changes the landing leg's structural margin.";
+  }
+}
+
 function WingMatchMission({
   onExit,
 }: WingMatchMissionProps) {
-  const [sceneIndex, setSceneIndex] =
-    useState(0);
+  const [sceneIndex, setSceneIndex] = useState(0);
 
-  const [
-    previewOption,
-    setPreviewOption,
-  ] =
-    useState<MissionOption | null>(
-      null,
-    );
+  const [previewOption, setPreviewOption] =
+    useState<MissionOption | null>(null);
 
-  const [
-    committedOption,
-    setCommittedOption,
-  ] =
-    useState<MissionOption | null>(
-      null,
-    );
+  const [committedOption, setCommittedOption] =
+    useState<MissionOption | null>(null);
 
-  const [
-    controllerLocked,
-    setControllerLocked,
-  ] = useState(false);
+  const [controllerLocked, setControllerLocked] =
+    useState(false);
 
-  const [
-    controllerResult,
-    setControllerResult,
-  ] =
-    useState<ControllerTuningResult | null>(
-      null,
-    );
+  const [controllerResult, setControllerResult] =
+    useState<ControllerTuningResult | null>(null);
 
-  const [
-    thermalLocked,
-    setThermalLocked,
-  ] = useState(false);
+  const [thermalLocked, setThermalLocked] =
+    useState(false);
 
-  const [
-    thermalResult,
-    setThermalResult,
-  ] =
-    useState<ThermalAllocationResult | null>(
-      null,
-    );
+  const [thermalResult, setThermalResult] =
+    useState<ThermalAllocationResult | null>(null);
 
-  const [
-    landingLocked,
-    setLandingLocked,
-  ] = useState(false);
+  const [landingLocked, setLandingLocked] =
+    useState(false);
 
-  const [
-    landingResult,
-    setLandingResult,
-  ] =
-    useState<LandingSiteResult | null>(
-      null,
-    );
+  const [landingResult, setLandingResult] =
+    useState<LandingSiteResult | null>(null);
 
-  const [
-    commitFlash,
-    setCommitFlash,
-  ] =
-    useState<CommitFlashData | null>(
-      null,
-    );
+  const [structureLocked, setStructureLocked] =
+    useState(false);
 
-  const [
-    wingScores,
-    setWingScores,
-  ] = useState<WingScores>({});
+  const [structureResult, setStructureResult] =
+    useState<StructureScanResult | null>(null);
 
-  const [
-    reasoningScores,
-    setReasoningScores,
-  ] =
+  const [commitFlash, setCommitFlash] =
+    useState<CommitFlashData | null>(null);
+
+  const [wingScores, setWingScores] =
+    useState<WingScores>({});
+
+  const [reasoningScores, setReasoningScores] =
     useState<ReasoningScores>({});
 
-  const [
-    missionHistory,
-    setMissionHistory,
-  ] = useState<MissionHistoryItem[]>(
-    [],
-  );
+  const [missionHistory, setMissionHistory] =
+    useState<MissionHistoryItem[]>([]);
 
-  const scene =
-    activeMissionScenes[sceneIndex];
+  const scene = activeMissionScenes[sceneIndex];
 
   const controllerScene =
-    isControllerMission(scene)
-      ? scene
-      : null;
+    isControllerMission(scene) ? scene : null;
 
   const thermalScene =
     scene.id === "thermal-management"
@@ -337,69 +317,66 @@ function WingMatchMission({
       : null;
 
   const landingScene =
-    scene.id ===
-    "landing-site-selection"
+    scene.id === "landing-site-selection"
+      ? scene
+      : null;
+
+  const structureScene =
+    scene.id === "structural-load-path"
       ? scene
       : null;
 
   const previousDecision =
     missionHistory.length > 0
-      ? missionHistory[
-          missionHistory.length - 1
-        ]
+      ? missionHistory[missionHistory.length - 1]
       : null;
 
-  const visibleTelemetry =
-    useMemo(() => {
-      if (
-        thermalScene &&
-        thermalResult
-      ) {
-        return getThermalEffects(
-          thermalResult,
-        );
-      }
+  const visibleTelemetry = useMemo(() => {
+    if (thermalScene && thermalResult) {
+      return getThermalEffects(thermalResult);
+    }
 
-      if (
-        landingScene &&
-        landingResult
-      ) {
-        return getLandingEffects(
-          landingResult,
-        );
-      }
+    if (landingScene && landingResult) {
+      return getLandingEffects(landingResult);
+    }
 
-      if (
-        controllerScene ||
-        thermalScene ||
-        landingScene ||
-        !previewOption
-      ) {
-        return scene.telemetry;
-      }
+    if (structureScene && structureResult) {
+      return getStructureEffects(structureResult);
+    }
 
-      return mergeTelemetry(
-        scene.telemetry,
-        previewOption.telemetryChanges,
-      );
-    }, [
-      controllerScene,
-      thermalScene,
-      landingScene,
-      thermalResult,
-      landingResult,
-      previewOption,
+    if (
+      controllerScene ||
+      thermalScene ||
+      landingScene ||
+      structureScene ||
+      !previewOption
+    ) {
+      return scene.telemetry;
+    }
+
+    return mergeTelemetry(
       scene.telemetry,
-    ]);
+      previewOption.telemetryChanges,
+    );
+  }, [
+    controllerScene,
+    thermalScene,
+    landingScene,
+    structureScene,
+    thermalResult,
+    landingResult,
+    structureResult,
+    previewOption,
+    scene.telemetry,
+  ]);
 
-  const projectedLabels =
-    useMemo(() => {
-      return new Set(
-        previewOption?.telemetryChanges.map(
-          (item) => item.label,
-        ) ?? [],
-      );
-    }, [previewOption]);
+  const projectedLabels = useMemo(() => {
+    return new Set(
+      previewOption?.telemetryChanges.map(
+        (item) => item.label,
+      ) ?? [],
+    );
+  }, [previewOption]);
 
   const hasNextBuiltScene =
     sceneIndex <
@@ -425,6 +402,9 @@ function WingMatchMission({
 
     setLandingLocked(false);
     setLandingResult(null);
+
+    setStructureLocked(false);
+    setStructureResult(null);
 
     window.scrollTo({
       top: 0,
@@ -467,34 +447,31 @@ function WingMatchMission({
       committedOption ||
       controllerScene ||
       thermalScene ||
-      landingScene
+      landingScene ||
+      structureScene
     ) {
       return;
     }
 
-    const nextWingScores =
-      addScores(
-        wingScores,
-        previewOption.scores.wings,
-      );
+    const nextWingScores = addScores(
+      wingScores,
+      previewOption.scores.wings,
+    );
 
-    const nextReasoningScores =
-      addScores(
-        reasoningScores,
-        previewOption.scores.reasoning,
-      );
+    const nextReasoningScores = addScores(
+      reasoningScores,
+      previewOption.scores.reasoning,
+    );
 
-    const historyItem:
-      MissionHistoryItem = {
-        sceneId: scene.id,
-        phase: scene.phase,
-        title:
-          previewOption.title,
-        consequence:
-          previewOption.consequence,
-        effects:
-          previewOption.telemetryChanges,
-      };
+    const historyItem: MissionHistoryItem = {
+      sceneId: scene.id,
+      phase: scene.phase,
+      title: previewOption.title,
+      consequence:
+        previewOption.consequence,
+      effects:
+        previewOption.telemetryChanges,
+    };
 
     const nextHistory = [
       ...missionHistory,
@@ -507,9 +484,7 @@ function WingMatchMission({
       nextReasoningScores,
     );
 
-    setMissionHistory(
-      nextHistory,
-    );
+    setMissionHistory(nextHistory);
 
     setCommittedOption(
       previewOption,
@@ -545,8 +520,7 @@ function WingMatchMission({
   }
 
   function handleControllerLock(
-    result:
-      ControllerTuningResult,
+    result: ControllerTuningResult,
   ) {
     if (
       !controllerScene ||
@@ -573,16 +547,14 @@ function WingMatchMission({
         : 1;
 
     const optimizationScore =
-      result.responseState ===
-      "balanced"
+      result.responseState === "balanced"
         ? 2
         : 1;
 
-    const incomingWingScores:
-      WingScores = {
-        gnc: 3,
-        systems: 1,
-      };
+    const incomingWingScores: WingScores = {
+      gnc: 3,
+      systems: 1,
+    };
 
     const incomingReasoningScores:
       ReasoningScores = {
@@ -611,46 +583,39 @@ function WingMatchMission({
         incomingReasoningScores,
       );
 
-    const effects:
-      TelemetryItem[] = [
-        {
-          label: "GAIN",
-          value:
-            result.value.toFixed(2),
-          status:
-            result.responseState ===
-            "balanced"
-              ? "nominal"
-              : "warning",
-        },
-
-        {
-          label: "OVERSHOOT",
-          value:
-            `${result.overshoot}%`,
-          status:
-            result.overshoot <= 12
-              ? "nominal"
-              : "warning",
-        },
-
-        {
-          label: "SETTLING",
-          value:
-            `${result.settlingTime}s`,
-          status:
-            result.settlingTime <= 6
-              ? "nominal"
-              : "warning",
-        },
-      ];
+    const effects: TelemetryItem[] = [
+      {
+        label: "GAIN",
+        value:
+          result.value.toFixed(2),
+        status:
+          result.responseState ===
+          "balanced"
+            ? "nominal"
+            : "warning",
+      },
+      {
+        label: "OVERSHOOT",
+        value: `${result.overshoot}%`,
+        status:
+          result.overshoot <= 12
+            ? "nominal"
+            : "warning",
+      },
+      {
+        label: "SETTLING",
+        value: `${result.settlingTime}s`,
+        status:
+          result.settlingTime <= 6
+            ? "nominal"
+            : "warning",
+      },
+    ];
 
     const consequence =
-      result.responseState ===
-      "balanced"
+      result.responseState === "balanced"
         ? "The lander settles toward the commanded attitude without feeding the oscillation."
-        : result.responseState ===
-            "slow"
+        : result.responseState === "slow"
           ? "The lander remains stable, but the control response is slow."
           : "The response remains aggressive and continues to overshoot the target.";
 
@@ -681,10 +646,7 @@ function WingMatchMission({
       historyItem,
     ]);
 
-    setControllerResult(
-      result,
-    );
-
+    setControllerResult(result);
     setControllerLocked(true);
 
     console.group(
@@ -710,8 +672,7 @@ function WingMatchMission({
   }
 
   function handleThermalLock(
-    result:
-      ThermalAllocationResult,
+    result: ThermalAllocationResult,
   ) {
     if (
       !thermalScene ||
@@ -730,21 +691,20 @@ function WingMatchMission({
     const balanced =
       result.state === "balanced";
 
-    const incomingWingScores:
-      WingScores = {
-        thermal: 3,
-        systems: 2,
+    const incomingWingScores: WingScores = {
+      thermal: 3,
+      systems: 2,
 
-        propulsion:
-          result.engine >= 35
-            ? 1
-            : 0,
+      propulsion:
+        result.engine >= 35
+          ? 1
+          : 0,
 
-        avionics:
-          result.avionics >= 20
-            ? 1
-            : 0,
-      };
+      avionics:
+        result.avionics >= 20
+          ? 1
+          : 0,
+    };
 
     const incomingReasoningScores:
       ReasoningScores = {
@@ -951,6 +911,142 @@ function WingMatchMission({
       incomingReasoningScores,
     );
 
+    console.groupEnd();
+
+    showDecisionFlash(
+      title,
+      effects,
+    );
+  }
+
+  function handleStructureLock(
+    result: StructureScanResult,
+  ) {
+    if (
+      !structureScene ||
+      structureLocked
+    ) {
+      return;
+    }
+
+    const inspectionScore =
+      result.inspections >= 4
+        ? 3
+        : result.inspections >= 2
+          ? 2
+          : 1;
+
+    const loadPathScore =
+      result.zoneId === "main-strut"
+        ? 3
+        : result.zoneId === "lower-joint"
+          ? 2
+          : 1;
+
+    const massEfficiencyScore =
+      result.reinforcementMass <= 1.5
+        ? 3
+        : result.reinforcementMass <= 2.5
+          ? 2
+          : 1;
+
+    /*
+      "structures" is intentionally asserted here so
+      Mission 06 can produce a Structures Wing signal
+      even if the current WingId union has not yet been
+      expanded during this prototype phase.
+    */
+    const incomingWingScores = {
+      structures: 3,
+      systems: 2,
+      "mission-design": 1,
+    } as WingScores;
+
+    const incomingReasoningScores:
+      ReasoningScores = {
+        "systems-integration":
+          inspectionScore,
+
+        "quantitative-reasoning":
+          inspectionScore,
+
+        "mission-tradeoffs":
+          massEfficiencyScore,
+
+        optimization:
+          loadPathScore,
+
+        iteration:
+          inspectionScore,
+      };
+
+    const nextWingScores =
+      addScores(
+        wingScores,
+        incomingWingScores,
+      );
+
+    const nextReasoningScores =
+      addScores(
+        reasoningScores,
+        incomingReasoningScores,
+      );
+
+    const effects =
+      getStructureEffects(result);
+
+    const consequence =
+      getStructureConsequence(
+        result,
+      );
+
+    const title =
+      `${result.zoneName} reinforced`;
+
+    const historyItem:
+      MissionHistoryItem = {
+        sceneId: scene.id,
+        phase: scene.phase,
+        title,
+        consequence,
+        effects,
+      };
+
+    setWingScores(
+      nextWingScores,
+    );
+
+    setReasoningScores(
+      nextReasoningScores,
+    );
+
+    setMissionHistory([
+      ...missionHistory,
+      historyItem,
+    ]);
+
+    setStructureResult(result);
+    setStructureLocked(true);
+
+    console.group(
+      "AltWing WingMatch — Mission 06",
+    );
+
+    console.log(
+      "Structural diagnosis:",
+      result,
+    );
+
+    console.log(
+      "Zones inspected:",
+      result.inspectedZones,
+    );
+
+    console.log(
+      "Behavior scoring:",
+      incomingReasoningScores,
+    );
+
     console.log(
       "Cumulative Wing scores:",
       nextWingScores,
@@ -988,21 +1084,13 @@ function WingMatchMission({
             <div className="commit-flash-effects">
               {commitFlash.effects.map(
                 (change) => (
-                  <div
-                    key={
-                      change.label
-                    }
-                  >
+                  <div key={change.label}>
                     <small>
-                      {
-                        change.label
-                      }
+                      {change.label}
                     </small>
 
                     <b>
-                      {
-                        change.value
-                      }
+                      {change.value}
                     </b>
                   </div>
                 ),
@@ -1086,36 +1174,24 @@ function WingMatchMission({
 
                 <div className="mission-continuity-main">
                   <strong>
-                    {
-                      previousDecision.title
-                    }
+                    {previousDecision.title}
                   </strong>
 
                   <span>
-                    {
-                      previousDecision.phase
-                    }
+                    {previousDecision.phase}
                   </span>
                 </div>
 
                 <div className="mission-continuity-effects">
                   {previousDecision.effects.map(
                     (change) => (
-                      <div
-                        key={
-                          change.label
-                        }
-                      >
+                      <div key={change.label}>
                         <small>
-                          {
-                            change.label
-                          }
+                          {change.label}
                         </small>
 
                         <b>
-                          {
-                            change.value
-                          }
+                          {change.value}
                         </b>
                       </div>
                     ),
@@ -1126,7 +1202,8 @@ function WingMatchMission({
 
           {!controllerScene &&
             !thermalScene &&
-            !landingScene && (
+            !landingScene &&
+            !structureScene && (
               <MissionVisual
                 sceneId={scene.id}
                 altitude={scene.altitude}
@@ -1149,6 +1226,7 @@ function WingMatchMission({
           {!controllerScene &&
             !thermalScene &&
             !landingScene &&
+            !structureScene &&
             previewOption &&
             !committedOption && (
               <div className="projected-effect">
@@ -1164,20 +1242,14 @@ function WingMatchMission({
                           change.status ??
                           "nominal"
                         }`}
-                        key={
-                          change.label
-                        }
+                        key={change.label}
                       >
                         <span>
-                          {
-                            change.label
-                          }
+                          {change.label}
                         </span>
 
                         <strong>
-                          {
-                            change.value
-                          }
+                          {change.value}
                         </strong>
                       </div>
                     ),
@@ -1198,27 +1270,21 @@ function WingMatchMission({
                   <div
                     className={[
                       "wingmatch-metric",
-
                       `wingmatch-metric--${
                         item.status ??
                         "nominal"
                       }`,
-
                       isProjected
                         ? "wingmatch-metric--projected"
                         : "",
                     ]
                       .filter(Boolean)
                       .join(" ")}
-                    key={
-                      item.label
-                    }
+                    key={item.label}
                   >
                     <div className="wingmatch-metric-heading">
                       <span>
-                        {
-                          item.label
-                        }
+                        {item.label}
                       </span>
 
                       {isProjected &&
@@ -1247,12 +1313,14 @@ function WingMatchMission({
                 ? "THERMAL CONTROL"
                 : landingScene
                   ? "LANDING ANALYSIS"
-                  : `DECISION ${String(
-                      scene.missionNumber,
-                    ).padStart(
-                      2,
-                      "0",
-                    )}`}
+                  : structureScene
+                    ? "STRUCTURAL ANALYSIS"
+                    : `DECISION ${String(
+                        scene.missionNumber,
+                      ).padStart(
+                        2,
+                        "0",
+                      )}`}
           </div>
 
           <h2>
@@ -1268,11 +1336,7 @@ function WingMatchMission({
                 before you lock it.
               </p>
 
-              <div
-                style={{
-                  marginTop: "18px",
-                }}
-              >
+              <div style={{ marginTop: "18px" }}>
                 <ControlTuningPanel
                   config={
                     controllerScene.controller
@@ -1314,11 +1378,7 @@ function WingMatchMission({
                 reserve.
               </p>
 
-              <div
-                style={{
-                  marginTop: "18px",
-                }}
-              >
+              <div style={{ marginTop: "18px" }}>
                 <ThermalAllocationPanel
                   locked={
                     thermalLocked
@@ -1362,11 +1422,7 @@ function WingMatchMission({
                 you would accept.
               </p>
 
-              <div
-                style={{
-                  marginTop: "18px",
-                }}
-              >
+              <div style={{ marginTop: "18px" }}>
                 <LandingSitePanel
                   locked={
                     landingLocked
@@ -1386,23 +1442,68 @@ function WingMatchMission({
                       </span>
 
                       <strong>
-                        {
-                          landingResult.siteName
-                        }
+                        {landingResult.siteName}
                       </strong>
                     </div>
 
                     <p>
                       Compared{" "}
-                      {
-                        landingResult.comparisons
-                      }{" "}
+                      {landingResult.comparisons}{" "}
                       of 3 reachable sites
                       before commitment.
                     </p>
+                  </div>
+                )}
+            </>
+          ) : structureScene ? (
+            <>
+              <p className="decision-hint">
+                Inspect the landing-leg load
+                path. Compare strain,
+                buckling margin, and added
+                reinforcement mass before
+                committing.
+              </p>
+
+              <div style={{ marginTop: "18px" }}>
+                <StructureScanPanel
+                  locked={
+                    structureLocked
+                  }
+                  onLock={
+                    handleStructureLock
+                  }
+                />
+              </div>
+
+              {structureLocked &&
+                structureResult && (
+                  <div className="committed-status">
+                    <div>
+                      <span>
+                        REINFORCEMENT LOCKED
+                      </span>
+
+                      <strong>
+                        {structureResult.zoneName}
+                      </strong>
+                    </div>
+
+                    <p>
+                      Inspected{" "}
+                      {structureResult.inspections}{" "}
+                      of 4 structural zones
+                      before commitment.
+                    </p>
+
+                    <p>
+                      {getStructureConsequence(
+                        structureResult,
+                      )}
+                    </p>
 
                     <div className="committed-next">
-                      Mission 06 — next build
+                      Mission 07 — next build
                     </div>
                   </div>
                 )}
@@ -1432,28 +1533,20 @@ function WingMatchMission({
                     return (
                       <button
                         type="button"
-                        key={
-                          option.id
-                        }
+                        key={option.id}
                         className={[
                           "decision-option",
-
                           isSelected
                             ? "decision-option--selected"
                             : "",
-
                           isCommitted
                             ? "decision-option--committed"
                             : "",
                         ]
-                          .filter(
-                            Boolean,
-                          )
+                          .filter(Boolean)
                           .join(" ")}
                         onClick={() =>
-                          handleChoose(
-                            option,
-                          )
+                          handleChoose(option)
                         }
                         disabled={Boolean(
                           committedOption,
@@ -1470,15 +1563,11 @@ function WingMatchMission({
 
                         <div className="decision-option-copy">
                           <strong>
-                            {
-                              option.title
-                            }
+                            {option.title}
                           </strong>
 
                           <p>
-                            {
-                              option.description
-                            }
+                            {option.description}
                           </p>
                         </div>
                       </button>
