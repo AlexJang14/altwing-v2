@@ -18,6 +18,7 @@ import type { FaultIsolationResult } from "./FaultIsolationPanel";
 import FinalMissionPanel from "./FinalMissionPanel";
 import type { FinalMissionResult } from "./FinalMissionPanel";
 
+import WingMatchResult from "./WingMatchResult";
 import MissionVisual from "./MissionVisual";
 
 import {
@@ -264,8 +265,7 @@ function getStructureEffects(
     },
     {
       label: "BUCKLING MARGIN",
-      value:
-        result.bucklingMargin.toFixed(2),
+      value: result.bucklingMargin.toFixed(2),
       status:
         result.bucklingMargin < 1.3
           ? "warning"
@@ -273,8 +273,7 @@ function getStructureEffects(
     },
     {
       label: "ADDED MASS",
-      value:
-        `+${result.reinforcementMass} kg`,
+      value: `+${result.reinforcementMass} kg`,
       status:
         result.reinforcementMass <= 1.5
           ? "nominal"
@@ -383,26 +382,22 @@ function getFinalEffects(
   return [
     {
       label: "COMMS",
-      value:
-        `${result.allocations.communications} pts`,
+      value: `${result.allocations.communications} pts`,
       status: "nominal",
     },
     {
       label: "SAFETY",
-      value:
-        `${result.allocations.safety} pts`,
+      value: `${result.allocations.safety} pts`,
       status: "nominal",
     },
     {
       label: "SCIENCE",
-      value:
-        `${result.allocations.science} pts`,
+      value: `${result.allocations.science} pts`,
       status: "nominal",
     },
     {
       label: "VERIFY",
-      value:
-        `${result.allocations.verification} pts`,
+      value: `${result.allocations.verification} pts`,
       status: "nominal",
     },
   ];
@@ -411,9 +406,7 @@ function getFinalEffects(
 function getFinalConsequence(
   result: FinalMissionResult,
 ) {
-  switch (
-    result.dominantPriority
-  ) {
+  switch (result.dominantPriority) {
     case "communications":
       return "You made restoring the communication link the mission's highest priority, protecting the ability to return data and command the vehicle.";
 
@@ -434,10 +427,8 @@ function getFinalConsequence(
 function WingMatchMission({
   onExit,
 }: WingMatchMissionProps) {
-  const [
-    sceneIndex,
-    setSceneIndex,
-  ] = useState(0);
+  const [sceneIndex, setSceneIndex] =
+    useState(0);
 
   const [
     previewOption,
@@ -526,6 +517,11 @@ function WingMatchMission({
     );
 
   const [
+    showResult,
+    setShowResult,
+  ] = useState(false);
+
+  const [
     commitFlash,
     setCommitFlash,
   ] =
@@ -547,9 +543,10 @@ function WingMatchMission({
   const [
     missionHistory,
     setMissionHistory,
-  ] = useState<MissionHistoryItem[]>(
-    [],
-  );
+  ] =
+    useState<MissionHistoryItem[]>(
+      [],
+    );
 
   const scene =
     activeMissionScenes[sceneIndex];
@@ -565,20 +562,17 @@ function WingMatchMission({
       : null;
 
   const landingScene =
-    scene.id ===
-    "landing-site-selection"
+    scene.id === "landing-site-selection"
       ? scene
       : null;
 
   const structureScene =
-    scene.id ===
-    "structural-load-path"
+    scene.id === "structural-load-path"
       ? scene
       : null;
 
   const faultScene =
-    scene.id ===
-    "avionics-fault-isolation"
+    scene.id === "avionics-fault-isolation"
       ? scene
       : null;
 
@@ -686,6 +680,43 @@ function WingMatchMission({
     sceneIndex <
     activeMissionScenes.length - 1;
 
+  function resetMissionState() {
+    setSceneIndex(0);
+
+    setPreviewOption(null);
+    setCommittedOption(null);
+
+    setControllerLocked(false);
+
+    setThermalLocked(false);
+    setThermalResult(null);
+
+    setLandingLocked(false);
+    setLandingResult(null);
+
+    setStructureLocked(false);
+    setStructureResult(null);
+
+    setFaultLocked(false);
+    setFaultResult(null);
+
+    setFinalLocked(false);
+    setFinalResult(null);
+
+    setCommitFlash(null);
+
+    setWingScores({});
+    setReasoningScores({});
+    setMissionHistory([]);
+
+    setShowResult(false);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
   function advanceMission() {
     if (!hasNextBuiltScene) {
       return;
@@ -740,6 +771,27 @@ function WingMatchMission({
     }, 1200);
   }
 
+  function showFinalResult(
+    title: string,
+    effects: TelemetryItem[],
+  ) {
+    setCommitFlash({
+      title,
+      effects,
+      continues: false,
+    });
+
+    window.setTimeout(() => {
+      setCommitFlash(null);
+      setShowResult(true);
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 1200);
+  }
+
   function handleChoose(
     option: MissionOption,
   ) {
@@ -780,8 +832,7 @@ function WingMatchMission({
       MissionHistoryItem = {
         sceneId: scene.id,
         phase: scene.phase,
-        title:
-          previewOption.title,
+        title: previewOption.title,
         consequence:
           previewOption.consequence,
         effects:
@@ -812,8 +863,7 @@ function WingMatchMission({
   }
 
   function handleControllerLock(
-    result:
-      ControllerTuningResult,
+    result: ControllerTuningResult,
   ) {
     if (
       !controllerScene ||
@@ -943,8 +993,7 @@ function WingMatchMission({
   }
 
   function handleThermalLock(
-    result:
-      ThermalAllocationResult,
+    result: ThermalAllocationResult,
   ) {
     if (
       !thermalScene ||
@@ -1347,37 +1396,6 @@ function WingMatchMission({
     setFaultResult(result);
     setFaultLocked(true);
 
-    console.group(
-      "AltWing WingMatch — Mission 07",
-    );
-
-    console.log(
-      "Fault diagnosis:",
-      result,
-    );
-
-    console.log(
-      "Tests selected:",
-      result.testsRun,
-    );
-
-    console.log(
-      "Behavior scoring:",
-      incomingReasoningScores,
-    );
-
-    console.log(
-      "Cumulative Wing scores:",
-      nextWingScores,
-    );
-
-    console.log(
-      "Cumulative Reasoning scores:",
-      nextReasoningScores,
-    );
-
-    console.groupEnd();
-
     showDecisionFlash(
       title,
       effects,
@@ -1434,7 +1452,6 @@ function WingMatchMission({
     const incomingReasoningScores:
       ReasoningScores = {
         "systems-integration": 3,
-
         "mission-tradeoffs": 3,
 
         optimization:
@@ -1470,15 +1487,7 @@ function WingMatchMission({
     const title =
       `${result.dominantPriorityName} prioritized`;
 
-    setWingScores(
-      nextWingScores,
-    );
-
-    setReasoningScores(
-      nextReasoningScores,
-    );
-
-    setMissionHistory([
+    const finalHistory = [
       ...missionHistory,
       {
         sceneId: scene.id,
@@ -1487,49 +1496,66 @@ function WingMatchMission({
         consequence,
         effects,
       },
-    ]);
+    ];
+
+    setWingScores(
+      nextWingScores,
+    );
+
+    setReasoningScores(
+      nextReasoningScores,
+    );
+
+    setMissionHistory(
+      finalHistory,
+    );
 
     setFinalResult(result);
     setFinalLocked(true);
 
     console.group(
-      "AltWing WingMatch — Mission 08",
+      "AltWing WingMatch — COMPLETE",
     );
 
     console.log(
-      "Final mission allocation:",
-      result,
-    );
-
-    console.log(
-      "FINAL Wing scores:",
+      "Final Wing scores:",
       nextWingScores,
     );
 
     console.log(
-      "FINAL Reasoning scores:",
+      "Final Reasoning scores:",
       nextReasoningScores,
     );
 
     console.log(
-      "FINAL Mission history:",
-      [
-        ...missionHistory,
-        {
-          sceneId: scene.id,
-          phase: scene.phase,
-          title,
-          consequence,
-          effects,
-        },
-      ],
+      "Mission history:",
+      finalHistory,
     );
 
     console.groupEnd();
 
-    showDecisionFlash(
+    showFinalResult(
       title,
       effects,
+    );
+  }
+
+  if (showResult) {
+    return (
+      <WingMatchResult
+        wingScores={
+          wingScores
+        }
+        reasoningScores={
+          reasoningScores
+        }
+        missionHistory={
+          missionHistory
+        }
+        onRestart={
+          resetMissionState
+        }
+      />
     );
   }
 
@@ -1576,7 +1602,7 @@ function WingMatchMission({
             <p>
               {commitFlash.continues
                 ? "MISSION CONTINUES"
-                : "MISSION DATA RECORDED"}
+                : "GENERATING WINGMATCH"}
             </p>
           </div>
         </div>
@@ -1637,9 +1663,7 @@ function WingMatchMission({
             </div>
 
             <span>
-              {
-                scene.timeRemaining
-              }
+              {scene.timeRemaining}
             </span>
           </div>
 
@@ -1697,7 +1721,9 @@ function WingMatchMission({
             !faultScene &&
             !finalScene && (
               <MissionVisual
-                sceneId={scene.id}
+                sceneId={
+                  scene.id
+                }
                 altitude={
                   scene.altitude
                 }
@@ -1713,9 +1739,7 @@ function WingMatchMission({
             </span>
 
             <h1>
-              {
-                scene.situation
-              }
+              {scene.situation}
             </h1>
           </div>
 
@@ -1892,30 +1916,6 @@ function WingMatchMission({
                   }
                 />
               </div>
-
-              {thermalLocked &&
-                thermalResult && (
-                  <div className="committed-status">
-                    <div>
-                      <span>
-                        THERMAL PLAN
-                        LOCKED
-                      </span>
-
-                      <strong>
-                        {
-                          thermalResult.state
-                        }
-                      </strong>
-                    </div>
-
-                    <p>
-                      {getThermalConsequence(
-                        thermalResult,
-                      )}
-                    </p>
-                  </div>
-                )}
             </>
           ) : landingScene ? (
             <>
@@ -1940,34 +1940,6 @@ function WingMatchMission({
                   }
                 />
               </div>
-
-              {landingLocked &&
-                landingResult && (
-                  <div className="committed-status">
-                    <div>
-                      <span>
-                        LANDING SITE
-                        LOCKED
-                      </span>
-
-                      <strong>
-                        {
-                          landingResult.siteName
-                        }
-                      </strong>
-                    </div>
-
-                    <p>
-                      Compared{" "}
-                      {
-                        landingResult.comparisons
-                      }{" "}
-                      of 3 reachable
-                      sites before
-                      commitment.
-                    </p>
-                  </div>
-                )}
             </>
           ) : structureScene ? (
             <>
@@ -1993,40 +1965,6 @@ function WingMatchMission({
                   }
                 />
               </div>
-
-              {structureLocked &&
-                structureResult && (
-                  <div className="committed-status">
-                    <div>
-                      <span>
-                        REINFORCEMENT
-                        LOCKED
-                      </span>
-
-                      <strong>
-                        {
-                          structureResult.zoneName
-                        }
-                      </strong>
-                    </div>
-
-                    <p>
-                      Inspected{" "}
-                      {
-                        structureResult.inspections
-                      }{" "}
-                      of 4 structural
-                      zones before
-                      commitment.
-                    </p>
-
-                    <p>
-                      {getStructureConsequence(
-                        structureResult,
-                      )}
-                    </p>
-                  </div>
-                )}
             </>
           ) : faultScene ? (
             <>
@@ -2053,38 +1991,6 @@ function WingMatchMission({
                   }
                 />
               </div>
-
-              {faultLocked &&
-                faultResult && (
-                  <div className="committed-status">
-                    <div>
-                      <span>
-                        DIAGNOSIS LOCKED
-                      </span>
-
-                      <strong>
-                        {
-                          faultResult.faultName
-                        }
-                      </strong>
-                    </div>
-
-                    <p>
-                      Ran{" "}
-                      {
-                        faultResult.testCount
-                      }{" "}
-                      of 3 available
-                      diagnostic tests.
-                    </p>
-
-                    <p>
-                      {getFaultConsequence(
-                        faultResult,
-                      )}
-                    </p>
-                  </div>
-                )}
             </>
           ) : finalScene ? (
             <>
@@ -2136,8 +2042,8 @@ function WingMatchMission({
                     </p>
 
                     <div className="committed-next">
-                      WingMatch Result —
-                      next build
+                      Generating your
+                      WingMatch...
                     </div>
                   </div>
                 )}
