@@ -1,8 +1,24 @@
 import { useMemo, useState } from "react";
+
 import ControlTuningPanel from "./ControlTuningPanel";
 import type { ControllerTuningResult } from "./ControlTuningPanel";
+
+import ThermalAllocationPanel from "./ThermalAllocationPanel";
+import type { ThermalAllocationResult } from "./ThermalAllocationPanel";
+
+import LandingSitePanel from "./LandingSitePanel";
+import type { LandingSiteResult } from "./LandingSitePanel";
+
 import MissionVisual from "./MissionVisual";
-import { activeMissionScenes } from "./missionScenes";
+
+import {
+  controlOscillationMission,
+  missionScenes,
+} from "./missionScenes";
+
+import { thermalManagementMission } from "./thermalMission";
+import { landingSiteMission } from "./landingMission";
+
 import type {
   ControllerMissionScene,
   MissionOption,
@@ -11,6 +27,7 @@ import type {
   TelemetryItem,
   WingId,
 } from "./types";
+
 import "./wingmatch.css";
 
 interface WingMatchMissionProps {
@@ -18,7 +35,10 @@ interface WingMatchMissionProps {
 }
 
 type WingScores = Partial<Record<WingId, number>>;
-type ReasoningScores = Partial<Record<ReasoningSignal, number>>;
+
+type ReasoningScores = Partial<
+  Record<ReasoningSignal, number>
+>;
 
 interface MissionHistoryItem {
   sceneId: string;
@@ -33,6 +53,13 @@ interface CommitFlashData {
   effects: TelemetryItem[];
   continues: boolean;
 }
+
+const activeMissionScenes: MissionScene[] = [
+  ...missionScenes,
+  controlOscillationMission,
+  thermalManagementMission,
+  landingSiteMission,
+];
 
 function isControllerMission(
   scene: MissionScene,
@@ -67,7 +94,9 @@ function mergeTelemetry(
 
 function addScores<T extends string>(
   current: Partial<Record<T, number>>,
-  incoming: Partial<Record<T, number>> | undefined,
+  incoming:
+    | Partial<Record<T, number>>
+    | undefined,
 ) {
   const next = { ...current };
 
@@ -75,18 +104,136 @@ function addScores<T extends string>(
     return next;
   }
 
-  Object.entries(incoming).forEach(([key, value]) => {
-    if (typeof value !== "number") {
-      return;
-    }
+  Object.entries(incoming).forEach(
+    ([key, value]) => {
+      if (typeof value !== "number") {
+        return;
+      }
 
-    const typedKey = key as T;
+      const typedKey = key as T;
 
-    next[typedKey] =
-      (next[typedKey] ?? 0) + value;
-  });
+      next[typedKey] =
+        (next[typedKey] ?? 0) + value;
+    },
+  );
 
   return next;
+}
+
+function getThermalEffects(
+  result: ThermalAllocationResult,
+): TelemetryItem[] {
+  return [
+    {
+      label: "ENGINE TEMP",
+      value: `${result.engineTemp}%`,
+      status:
+        result.engineTemp <= 112
+          ? "nominal"
+          : "warning",
+    },
+
+    {
+      label: "BATTERY RISK",
+      value: `${result.batteryRisk}%`,
+      status:
+        result.batteryRisk <= 30
+          ? "nominal"
+          : "warning",
+    },
+
+    {
+      label: "AVIONICS MARGIN",
+      value: `${result.avionicsMargin}%`,
+      status:
+        result.avionicsMargin >= 35
+          ? "nominal"
+          : "warning",
+    },
+
+    {
+      label: "RESERVE",
+      value: `${result.reserve}%`,
+      status:
+        result.reserve >= 10
+          ? "nominal"
+          : "warning",
+    },
+  ];
+}
+
+function getThermalConsequence(
+  result: ThermalAllocationResult,
+) {
+  switch (result.state) {
+    case "balanced":
+      return "Critical systems remain protected while the vehicle preserves cooling reserve for the rest of the descent.";
+
+    case "engine-risk":
+      return "The vehicle preserves power elsewhere, but engine temperature remains above the preferred thermal margin.";
+
+    case "battery-risk":
+      return "Engine cooling improves, but battery thermal risk remains elevated.";
+
+    case "avionics-risk":
+      return "The thermal plan leaves too little avionics margin for the remaining descent.";
+
+    case "low-reserve":
+      return "Current temperatures improve, but almost no cooling reserve remains for unexpected conditions.";
+
+    default:
+      return "The thermal allocation changes the vehicle's remaining margins.";
+  }
+}
+
+function getLandingEffects(
+  result: LandingSiteResult,
+): TelemetryItem[] {
+  return [
+    {
+      label: "LANDING SITE",
+      value: result.siteName,
+      status: "nominal",
+    },
+
+    {
+      label: "SLOPE",
+      value: `${result.slope}°`,
+      status:
+        result.slope <= 4
+          ? "nominal"
+          : "warning",
+    },
+
+    {
+      label: "ROCK RISK",
+      value: result.rockRisk,
+      status:
+        result.rockRisk === "LOW"
+          ? "nominal"
+          : "warning",
+    },
+
+    {
+      label: "SCIENCE",
+      value: result.scienceValue,
+      status: "nominal",
+    },
+  ];
+}
+
+function getLandingConsequence(
+  result: LandingSiteResult,
+) {
+  if (result.siteId === "site-a") {
+    return "You prioritized safer terrain, accepting a larger fuel cost and more limited science return.";
+  }
+
+  if (result.siteId === "site-b") {
+    return "You accepted moderate terrain risk for a strong balance of fuel efficiency and science value.";
+  }
+
+  return "You accepted greater surface hazard in exchange for the highest science opportunity.";
 }
 
 function WingMatchMission({
@@ -95,11 +242,21 @@ function WingMatchMission({
   const [sceneIndex, setSceneIndex] =
     useState(0);
 
-  const [previewOption, setPreviewOption] =
-    useState<MissionOption | null>(null);
+  const [
+    previewOption,
+    setPreviewOption,
+  ] =
+    useState<MissionOption | null>(
+      null,
+    );
 
-  const [committedOption, setCommittedOption] =
-    useState<MissionOption | null>(null);
+  const [
+    committedOption,
+    setCommittedOption,
+  ] =
+    useState<MissionOption | null>(
+      null,
+    );
 
   const [
     controllerLocked,
@@ -114,34 +271,74 @@ function WingMatchMission({
       null,
     );
 
-  const [commitFlash, setCommitFlash] =
-    useState<CommitFlashData | null>(null);
+  const [
+    thermalLocked,
+    setThermalLocked,
+  ] = useState(false);
 
-  const [wingScores, setWingScores] =
-    useState<WingScores>({});
+  const [
+    thermalResult,
+    setThermalResult,
+  ] =
+    useState<ThermalAllocationResult | null>(
+      null,
+    );
+
+  const [
+    landingLocked,
+    setLandingLocked,
+  ] = useState(false);
+
+  const [
+    landingResult,
+    setLandingResult,
+  ] =
+    useState<LandingSiteResult | null>(
+      null,
+    );
+
+  const [
+    commitFlash,
+    setCommitFlash,
+  ] =
+    useState<CommitFlashData | null>(
+      null,
+    );
+
+  const [
+    wingScores,
+    setWingScores,
+  ] = useState<WingScores>({});
 
   const [
     reasoningScores,
     setReasoningScores,
-  ] = useState<ReasoningScores>({});
+  ] =
+    useState<ReasoningScores>({});
 
   const [
     missionHistory,
     setMissionHistory,
-  ] = useState<MissionHistoryItem[]>([]);
+  ] = useState<MissionHistoryItem[]>(
+    [],
+  );
 
   const scene =
     activeMissionScenes[sceneIndex];
 
-  /*
-    IMPORTANT:
-    controllerScene is either the actual Mission 03
-    ControllerMissionScene object or null.
-
-    This replaces the old boolean controllerMission.
-  */
   const controllerScene =
     isControllerMission(scene)
+      ? scene
+      : null;
+
+  const thermalScene =
+    scene.id === "thermal-management"
+      ? scene
+      : null;
+
+  const landingScene =
+    scene.id ===
+    "landing-site-selection"
       ? scene
       : null;
 
@@ -152,31 +349,57 @@ function WingMatchMission({
         ]
       : null;
 
-  const visibleTelemetry = useMemo(() => {
-    if (
-      controllerScene ||
-      !previewOption
-    ) {
-      return scene.telemetry;
-    }
+  const visibleTelemetry =
+    useMemo(() => {
+      if (
+        thermalScene &&
+        thermalResult
+      ) {
+        return getThermalEffects(
+          thermalResult,
+        );
+      }
 
-    return mergeTelemetry(
+      if (
+        landingScene &&
+        landingResult
+      ) {
+        return getLandingEffects(
+          landingResult,
+        );
+      }
+
+      if (
+        controllerScene ||
+        thermalScene ||
+        landingScene ||
+        !previewOption
+      ) {
+        return scene.telemetry;
+      }
+
+      return mergeTelemetry(
+        scene.telemetry,
+        previewOption.telemetryChanges,
+      );
+    }, [
+      controllerScene,
+      thermalScene,
+      landingScene,
+      thermalResult,
+      landingResult,
+      previewOption,
       scene.telemetry,
-      previewOption.telemetryChanges,
-    );
-  }, [
-    controllerScene,
-    previewOption,
-    scene.telemetry,
-  ]);
+    ]);
 
-  const projectedLabels = useMemo(() => {
-    return new Set(
-      previewOption?.telemetryChanges.map(
-        (item) => item.label,
-      ) ?? [],
-    );
-  }, [previewOption]);
+  const projectedLabels =
+    useMemo(() => {
+      return new Set(
+        previewOption?.telemetryChanges.map(
+          (item) => item.label,
+        ) ?? [],
+      );
+    }, [previewOption]);
 
   const hasNextBuiltScene =
     sceneIndex <
@@ -196,6 +419,12 @@ function WingMatchMission({
 
     setControllerLocked(false);
     setControllerResult(null);
+
+    setThermalLocked(false);
+    setThermalResult(null);
+
+    setLandingLocked(false);
+    setLandingResult(null);
 
     window.scrollTo({
       top: 0,
@@ -236,15 +465,18 @@ function WingMatchMission({
     if (
       !previewOption ||
       committedOption ||
-      controllerScene
+      controllerScene ||
+      thermalScene ||
+      landingScene
     ) {
       return;
     }
 
-    const nextWingScores = addScores(
-      wingScores,
-      previewOption.scores.wings,
-    );
+    const nextWingScores =
+      addScores(
+        wingScores,
+        previewOption.scores.wings,
+      );
 
     const nextReasoningScores =
       addScores(
@@ -252,11 +484,12 @@ function WingMatchMission({
         previewOption.scores.reasoning,
       );
 
-    const historyItem: MissionHistoryItem =
-      {
+    const historyItem:
+      MissionHistoryItem = {
         sceneId: scene.id,
         phase: scene.phase,
-        title: previewOption.title,
+        title:
+          previewOption.title,
         consequence:
           previewOption.consequence,
         effects:
@@ -274,9 +507,13 @@ function WingMatchMission({
       nextReasoningScores,
     );
 
-    setMissionHistory(nextHistory);
+    setMissionHistory(
+      nextHistory,
+    );
 
-    setCommittedOption(previewOption);
+    setCommittedOption(
+      previewOption,
+    );
 
     console.group(
       `AltWing WingMatch — Mission ${String(
@@ -299,11 +536,6 @@ function WingMatchMission({
       nextReasoningScores,
     );
 
-    console.log(
-      "Mission history:",
-      nextHistory,
-    );
-
     console.groupEnd();
 
     showDecisionFlash(
@@ -313,7 +545,8 @@ function WingMatchMission({
   }
 
   function handleControllerLock(
-    result: ControllerTuningResult,
+    result:
+      ControllerTuningResult,
   ) {
     if (
       !controllerScene ||
@@ -322,13 +555,6 @@ function WingMatchMission({
       return;
     }
 
-    /*
-      Mission 03 scores behavior,
-      not just the final slider value.
-
-      Testing several settings increases
-      iteration / feedback-control signals.
-    */
     const iterationScore =
       result.adjustments >= 3
         ? 3
@@ -347,18 +573,19 @@ function WingMatchMission({
         : 1;
 
     const optimizationScore =
-      result.responseState === "balanced"
+      result.responseState ===
+      "balanced"
         ? 2
         : 1;
 
-    const incomingWingScores: WingScores =
-      {
+    const incomingWingScores:
+      WingScores = {
         gnc: 3,
         systems: 1,
       };
 
-    const incomingReasoningScores: ReasoningScores =
-      {
+    const incomingReasoningScores:
+      ReasoningScores = {
         "feedback-control":
           feedbackScore,
 
@@ -372,10 +599,11 @@ function WingMatchMission({
           optimizationScore,
       };
 
-    const nextWingScores = addScores(
-      wingScores,
-      incomingWingScores,
-    );
+    const nextWingScores =
+      addScores(
+        wingScores,
+        incomingWingScores,
+      );
 
     const nextReasoningScores =
       addScores(
@@ -383,46 +611,46 @@ function WingMatchMission({
         incomingReasoningScores,
       );
 
-    const finalGainStatus =
-      result.responseState === "balanced"
-        ? "nominal"
-        : "warning";
+    const effects:
+      TelemetryItem[] = [
+        {
+          label: "GAIN",
+          value:
+            result.value.toFixed(2),
+          status:
+            result.responseState ===
+            "balanced"
+              ? "nominal"
+              : "warning",
+        },
 
-    const overshootStatus =
-      result.overshoot <= 12
-        ? "nominal"
-        : "warning";
+        {
+          label: "OVERSHOOT",
+          value:
+            `${result.overshoot}%`,
+          status:
+            result.overshoot <= 12
+              ? "nominal"
+              : "warning",
+        },
 
-    const settlingStatus =
-      result.settlingTime <= 6
-        ? "nominal"
-        : "warning";
-
-    const effects: TelemetryItem[] = [
-      {
-        label: "GAIN",
-        value:
-          result.value.toFixed(2),
-        status: finalGainStatus,
-      },
-
-      {
-        label: "OVERSHOOT",
-        value: `${result.overshoot}%`,
-        status: overshootStatus,
-      },
-
-      {
-        label: "SETTLING",
-        value: `${result.settlingTime}s`,
-        status: settlingStatus,
-      },
-    ];
+        {
+          label: "SETTLING",
+          value:
+            `${result.settlingTime}s`,
+          status:
+            result.settlingTime <= 6
+              ? "nominal"
+              : "warning",
+        },
+      ];
 
     const consequence =
-      result.responseState === "balanced"
+      result.responseState ===
+      "balanced"
         ? "The lander settles toward the commanded attitude without feeding the oscillation."
-        : result.responseState === "slow"
+        : result.responseState ===
+            "slow"
           ? "The lander remains stable, but the control response is slow."
           : "The response remains aggressive and continues to overshoot the target.";
 
@@ -431,8 +659,8 @@ function WingMatchMission({
         2,
       )}`;
 
-    const historyItem: MissionHistoryItem =
-      {
+    const historyItem:
+      MissionHistoryItem = {
         sceneId: scene.id,
         phase: scene.phase,
         title,
@@ -440,20 +668,23 @@ function WingMatchMission({
         effects,
       };
 
-    const nextHistory = [
-      ...missionHistory,
-      historyItem,
-    ];
-
-    setWingScores(nextWingScores);
+    setWingScores(
+      nextWingScores,
+    );
 
     setReasoningScores(
       nextReasoningScores,
     );
 
-    setMissionHistory(nextHistory);
+    setMissionHistory([
+      ...missionHistory,
+      historyItem,
+    ]);
 
-    setControllerResult(result);
+    setControllerResult(
+      result,
+    );
+
     setControllerLocked(true);
 
     console.group(
@@ -466,7 +697,257 @@ function WingMatchMission({
     );
 
     console.log(
-      "Behavior-based scoring:",
+      "Behavior scoring:",
+      incomingReasoningScores,
+    );
+
+    console.groupEnd();
+
+    showDecisionFlash(
+      title,
+      effects,
+    );
+  }
+
+  function handleThermalLock(
+    result:
+      ThermalAllocationResult,
+  ) {
+    if (
+      !thermalScene ||
+      thermalLocked
+    ) {
+      return;
+    }
+
+    const iterationScore =
+      result.adjustments >= 6
+        ? 3
+        : result.adjustments >= 2
+          ? 2
+          : 1;
+
+    const balanced =
+      result.state === "balanced";
+
+    const incomingWingScores:
+      WingScores = {
+        thermal: 3,
+        systems: 2,
+
+        propulsion:
+          result.engine >= 35
+            ? 1
+            : 0,
+
+        avionics:
+          result.avionics >= 20
+            ? 1
+            : 0,
+      };
+
+    const incomingReasoningScores:
+      ReasoningScores = {
+        "thermal-reasoning": 3,
+
+        "systems-integration": 2,
+
+        "mission-tradeoffs":
+          balanced ? 3 : 2,
+
+        optimization:
+          balanced ? 3 : 1,
+
+        iteration:
+          iterationScore,
+
+        "quantitative-reasoning":
+          result.adjustments >= 2
+            ? 2
+            : 1,
+      };
+
+    const nextWingScores =
+      addScores(
+        wingScores,
+        incomingWingScores,
+      );
+
+    const nextReasoningScores =
+      addScores(
+        reasoningScores,
+        incomingReasoningScores,
+      );
+
+    const effects =
+      getThermalEffects(result);
+
+    const consequence =
+      getThermalConsequence(
+        result,
+      );
+
+    const title =
+      balanced
+        ? "Balanced thermal allocation"
+        : "Thermal allocation locked";
+
+    const historyItem:
+      MissionHistoryItem = {
+        sceneId: scene.id,
+        phase: scene.phase,
+        title,
+        consequence,
+        effects,
+      };
+
+    setWingScores(
+      nextWingScores,
+    );
+
+    setReasoningScores(
+      nextReasoningScores,
+    );
+
+    setMissionHistory([
+      ...missionHistory,
+      historyItem,
+    ]);
+
+    setThermalResult(result);
+    setThermalLocked(true);
+
+    console.group(
+      "AltWing WingMatch — Mission 04",
+    );
+
+    console.log(
+      "Thermal allocation:",
+      result,
+    );
+
+    console.log(
+      "Behavior scoring:",
+      incomingReasoningScores,
+    );
+
+    console.groupEnd();
+
+    showDecisionFlash(
+      title,
+      effects,
+    );
+  }
+
+  function handleLandingLock(
+    result: LandingSiteResult,
+  ) {
+    if (
+      !landingScene ||
+      landingLocked
+    ) {
+      return;
+    }
+
+    const comparisonScore =
+      result.comparisons >= 3
+        ? 3
+        : result.comparisons >= 2
+          ? 2
+          : 1;
+
+    const riskScore =
+      result.siteId === "site-c"
+        ? 3
+        : result.siteId === "site-b"
+          ? 2
+          : 1;
+
+    const incomingWingScores:
+      WingScores = {
+        "mission-design": 3,
+        systems: 2,
+        gnc: 1,
+      };
+
+    const incomingReasoningScores:
+      ReasoningScores = {
+        "mission-tradeoffs": 3,
+
+        optimization:
+          comparisonScore,
+
+        "systems-integration":
+          comparisonScore,
+
+        "risk-tolerance":
+          riskScore,
+
+        "quantitative-reasoning":
+          result.comparisons >= 2
+            ? 2
+            : 1,
+      };
+
+    const nextWingScores =
+      addScores(
+        wingScores,
+        incomingWingScores,
+      );
+
+    const nextReasoningScores =
+      addScores(
+        reasoningScores,
+        incomingReasoningScores,
+      );
+
+    const effects =
+      getLandingEffects(result);
+
+    const consequence =
+      getLandingConsequence(
+        result,
+      );
+
+    const title =
+      `${result.siteName} selected`;
+
+    const historyItem:
+      MissionHistoryItem = {
+        sceneId: scene.id,
+        phase: scene.phase,
+        title,
+        consequence,
+        effects,
+      };
+
+    setWingScores(
+      nextWingScores,
+    );
+
+    setReasoningScores(
+      nextReasoningScores,
+    );
+
+    setMissionHistory([
+      ...missionHistory,
+      historyItem,
+    ]);
+
+    setLandingResult(result);
+    setLandingLocked(true);
+
+    console.group(
+      "AltWing WingMatch — Mission 05",
+    );
+
+    console.log(
+      "Landing result:",
+      result,
+    );
+
+    console.log(
+      "Behavior scoring:",
       incomingReasoningScores,
     );
 
@@ -478,11 +959,6 @@ function WingMatchMission({
     console.log(
       "Cumulative Reasoning scores:",
       nextReasoningScores,
-    );
-
-    console.log(
-      "Mission history:",
-      nextHistory,
     );
 
     console.groupEnd();
@@ -512,13 +988,21 @@ function WingMatchMission({
             <div className="commit-flash-effects">
               {commitFlash.effects.map(
                 (change) => (
-                  <div key={change.label}>
+                  <div
+                    key={
+                      change.label
+                    }
+                  >
                     <small>
-                      {change.label}
+                      {
+                        change.label
+                      }
                     </small>
 
                     <b>
-                      {change.value}
+                      {
+                        change.value
+                      }
                     </b>
                   </div>
                 ),
@@ -640,15 +1124,17 @@ function WingMatchMission({
               </div>
             )}
 
-          {!controllerScene && (
-            <MissionVisual
-              sceneId={scene.id}
-              altitude={scene.altitude}
-              previewOptionId={
-                previewOption?.id
-              }
-            />
-          )}
+          {!controllerScene &&
+            !thermalScene &&
+            !landingScene && (
+              <MissionVisual
+                sceneId={scene.id}
+                altitude={scene.altitude}
+                previewOptionId={
+                  previewOption?.id
+                }
+              />
+            )}
 
           <div className="wingmatch-phase">
             <span>
@@ -661,6 +1147,8 @@ function WingMatchMission({
           </div>
 
           {!controllerScene &&
+            !thermalScene &&
+            !landingScene &&
             previewOption &&
             !committedOption && (
               <div className="projected-effect">
@@ -722,11 +1210,15 @@ function WingMatchMission({
                     ]
                       .filter(Boolean)
                       .join(" ")}
-                    key={item.label}
+                    key={
+                      item.label
+                    }
                   >
                     <div className="wingmatch-metric-heading">
                       <span>
-                        {item.label}
+                        {
+                          item.label
+                        }
                       </span>
 
                       {isProjected &&
@@ -751,9 +1243,16 @@ function WingMatchMission({
           <div className="decision-kicker">
             {controllerScene
               ? "FLIGHT CONTROL"
-              : `DECISION ${String(
-                  scene.missionNumber,
-                ).padStart(2, "0")}`}
+              : thermalScene
+                ? "THERMAL CONTROL"
+                : landingScene
+                  ? "LANDING ANALYSIS"
+                  : `DECISION ${String(
+                      scene.missionNumber,
+                    ).padStart(
+                      2,
+                      "0",
+                    )}`}
           </div>
 
           <h2>
@@ -802,23 +1301,108 @@ function WingMatchMission({
                         )}
                       </strong>
                     </div>
+                  </div>
+                )}
+            </>
+          ) : thermalScene ? (
+            <>
+              <p className="decision-hint">
+                Cooling power is limited.
+                Protect the systems you
+                think matter most while
+                preserving contingency
+                reserve.
+              </p>
+
+              <div
+                style={{
+                  marginTop: "18px",
+                }}
+              >
+                <ThermalAllocationPanel
+                  locked={
+                    thermalLocked
+                  }
+                  onLock={
+                    handleThermalLock
+                  }
+                />
+              </div>
+
+              {thermalLocked &&
+                thermalResult && (
+                  <div className="committed-status">
+                    <div>
+                      <span>
+                        THERMAL PLAN LOCKED
+                      </span>
+
+                      <strong>
+                        {thermalResult.state ===
+                        "balanced"
+                          ? "Balanced"
+                          : "Tradeoff active"}
+                      </strong>
+                    </div>
 
                     <p>
+                      {getThermalConsequence(
+                        thermalResult,
+                      )}
+                    </p>
+                  </div>
+                )}
+            </>
+          ) : landingScene ? (
+            <>
+              <p className="decision-hint">
+                Compare the reachable sites.
+                There is no perfect landing
+                zone — decide which tradeoff
+                you would accept.
+              </p>
+
+              <div
+                style={{
+                  marginTop: "18px",
+                }}
+              >
+                <LandingSitePanel
+                  locked={
+                    landingLocked
+                  }
+                  onLock={
+                    handleLandingLock
+                  }
+                />
+              </div>
+
+              {landingLocked &&
+                landingResult && (
+                  <div className="committed-status">
+                    <div>
+                      <span>
+                        LANDING SITE LOCKED
+                      </span>
+
+                      <strong>
+                        {
+                          landingResult.siteName
+                        }
+                      </strong>
+                    </div>
+
+                    <p>
+                      Compared{" "}
                       {
-                        controllerResult.adjustments
+                        landingResult.comparisons
                       }{" "}
-                      adjustment
-                      {controllerResult.adjustments ===
-                      1
-                        ? ""
-                        : "s"}{" "}
-                      tested before
-                      commitment.
+                      of 3 reachable sites
+                      before commitment.
                     </p>
 
                     <div className="committed-next">
-                      Mission 04 —
-                      next build
+                      Mission 06 — next build
                     </div>
                   </div>
                 )}
@@ -833,7 +1417,10 @@ function WingMatchMission({
 
               <div className="decision-options">
                 {scene.options.map(
-                  (option, index) => {
+                  (
+                    option,
+                    index,
+                  ) => {
                     const isSelected =
                       previewOption?.id ===
                       option.id;
@@ -916,29 +1503,6 @@ function WingMatchMission({
                     : "Select a tradeoff"}
                 </button>
               )}
-
-              {committedOption &&
-                !hasNextBuiltScene && (
-                  <div className="committed-status">
-                    <div>
-                      <span>
-                        DECISION COMMITTED
-                      </span>
-
-                      <strong>
-                        {
-                          committedOption.title
-                        }
-                      </strong>
-                    </div>
-
-                    <p>
-                      {
-                        committedOption.consequence
-                      }
-                    </p>
-                  </div>
-                )}
             </>
           )}
         </aside>

@@ -1,0 +1,419 @@
+.landing-panel {
+  padding: 24px;
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+
+  background:
+    radial-gradient(
+      circle at 80% 5%,
+      rgba(255, 200, 87, 0.1),
+      transparent 30%
+    ),
+    rgba(255, 255, 255, 0.035);
+
+  color: white;
+}
+
+.landing-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.landing-panel__header span {
+  color: #ffc857;
+
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.15em;
+}
+
+.landing-panel__header h2 {
+  margin: 7px 0 0;
+
+  font-size: 27px;
+  letter-spacing: -0.04em;
+}
+
+.landing-panel__counter {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+
+  color: white;
+
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.landing-panel__counter small {
+  color: rgba(255, 255, 255, 0.35);
+
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.landing-map {
+  position: relative;
+
+  height: 220px;
+
+  margin-top: 20px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+
+  background:
+    radial-gradient(
+      circle at 50% 130%,
+      #c8674f 0%,
+      #783d42 36%,
+      #151a32 72%
+    );
+}
+
+.landing-map__grid {
+  position: absolute;
+  inset: 0;
+
+  opacity: 0.12;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.2)
+        1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.2)
+        1px,
+      transparent 1px
+    );
+
+  background-size: 35px 35px;
+}
+
+.landing-map__crater {
+  position: absolute;
+
+  border: 1px solid rgba(30, 20, 29, 0.38);
+  border-radius: 50%;
+
+  background: rgba(34, 20, 31, 0.12);
+
+  box-shadow:
+    inset 5px 5px 10px
+      rgba(28, 18, 28, 0.2);
+}
+
+.landing-map__crater--1 {
+  width: 65px;
+  height: 27px;
+
+  left: 8%;
+  top: 35%;
+}
+
+.landing-map__crater--2 {
+  width: 95px;
+  height: 38px;
+
+  right: 7%;
+  bottom: 12%;
+}
+
+.landing-map__crater--3 {
+  width: 48px;
+  height: 19px;
+
+  left: 42%;
+  bottom: 16%;
+}
+
+.landing-map__trajectory {
+  position: absolute;
+
+  left: 50%;
+  top: 13px;
+
+  z-index: 5;
+
+  transform: translateX(-50%);
+
+  color: rgba(255, 255, 255, 0.32);
+
+  font-size: 6px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.landing-map__path {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+.landing-map__path path {
+  fill: none;
+
+  stroke: rgba(91, 141, 239, 0.7);
+  stroke-width: 2;
+
+  stroke-dasharray: 7 8;
+}
+
+.landing-map__path circle {
+  fill: #5b8def;
+
+  filter:
+    drop-shadow(
+      0 0 6px
+      rgba(91, 141, 239, 0.8)
+    );
+}
+
+.landing-map__site {
+  position: absolute;
+
+  z-index: 8;
+
+  width: 34px;
+  height: 34px;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+
+  background: #111936;
+
+  transform: translate(-50%, -50%);
+
+  color: white;
+
+  font-size: 9px;
+  font-weight: 850;
+
+  cursor: pointer;
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.landing-map__site:hover:not(
+    :disabled
+  ) {
+  transform:
+    translate(-50%, -50%)
+    scale(1.08);
+}
+
+.landing-map__site--selected {
+  border-color: #ffc857;
+
+  background: #ffc857;
+
+  color: #0d132b;
+
+  box-shadow:
+    0 0 0 7px
+      rgba(255, 200, 87, 0.12);
+}
+
+.landing-sites {
+  margin-top: 14px;
+
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.landing-site-card {
+  min-width: 0;
+
+  padding: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 11px;
+
+  background: rgba(255, 255, 255, 0.025);
+
+  color: white;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.landing-site-card:hover:not(
+    :disabled
+  ) {
+  transform: translateY(-1px);
+
+  border-color:
+    rgba(91, 141, 239, 0.3);
+}
+
+.landing-site-card--selected {
+  border-color:
+    rgba(255, 200, 87, 0.55);
+
+  background:
+    rgba(255, 200, 87, 0.065);
+}
+
+.landing-site-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.landing-site-card__top strong {
+  font-size: 11px;
+}
+
+.landing-site-card__top small {
+  color: #5b8def;
+
+  font-size: 5px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.landing-site-card__metrics {
+  margin-top: 11px;
+
+  display: grid;
+  grid-template-columns:
+    repeat(2, 1fr);
+  gap: 7px;
+}
+
+.landing-site-card__metrics div {
+  min-width: 0;
+}
+
+.landing-site-card__metrics span {
+  display: block;
+
+  color: rgba(255, 255, 255, 0.27);
+
+  font-size: 5px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.landing-site-card__metrics b {
+  display: block;
+
+  margin-top: 3px;
+
+  overflow: hidden;
+
+  color: rgba(255, 255, 255, 0.82);
+
+  font-size: 8px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.landing-site-card p {
+  margin: 10px 0 0;
+
+  color: rgba(255, 255, 255, 0.38);
+
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.landing-selection {
+  margin-top: 14px;
+  padding: 12px 13px;
+
+  border-left: 2px solid #ffc857;
+
+  background:
+    rgba(255, 200, 87, 0.045);
+}
+
+.landing-selection span {
+  display: block;
+
+  color: #ffc857;
+
+  font-size: 6px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.landing-selection strong {
+  display: block;
+
+  margin-top: 4px;
+
+  font-size: 13px;
+}
+
+.landing-selection p {
+  margin: 4px 0 0;
+
+  color: rgba(255, 255, 255, 0.43);
+
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.landing-selection--empty {
+  color: rgba(255, 255, 255, 0.35);
+
+  font-size: 9px;
+}
+
+.landing-lock {
+  width: 100%;
+  min-height: 46px;
+
+  margin-top: 15px;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: #ff6b6b;
+
+  color: white;
+
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.landing-lock:disabled {
+  opacity: 0.4;
+
+  cursor: default;
+}
+
+@media (max-width: 700px) {
+  .landing-sites {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-map {
+    height: 190px;
+  }
+}
