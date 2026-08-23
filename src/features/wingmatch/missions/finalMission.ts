@@ -1,4 +1,4 @@
-import type { MissionScene } from "./types";
+import type { MissionScene } from "../engine/types";
 
 export const finalMission: MissionScene = {
   id: "mission-command",

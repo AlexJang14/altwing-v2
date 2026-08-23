@@ -1,36 +1,36 @@
 import { useMemo, useState } from "react";
 
-import ControlTuningPanel from "./ControlTuningPanel";
-import type { ControllerTuningResult } from "./ControlTuningPanel";
+import ControlTuningPanel from "../interactions/ControlTuningPanel";
+import type { ControllerTuningResult } from "../interactions/ControlTuningPanel";
 
-import ThermalAllocationPanel from "./ThermalAllocationPanel";
-import type { ThermalAllocationResult } from "./ThermalAllocationPanel";
+import ThermalAllocationPanel from "../interactions/ThermalAllocationPanel";
+import type { ThermalAllocationResult } from "../interactions/ThermalAllocationPanel";
 
-import LandingSitePanel from "./LandingSitePanel";
-import type { LandingSiteResult } from "./LandingSitePanel";
+import LandingSitePanel from "../interactions/LandingSitePanel";
+import type { LandingSiteResult } from "../interactions/LandingSitePanel";
 
-import StructureScanPanel from "./StructureScanPanel";
-import type { StructureScanResult } from "./StructureScanPanel";
+import StructureScanPanel from "../interactions/StructureScanPanel";
+import type { StructureScanResult } from "../interactions/StructureScanPanel";
 
-import FaultIsolationPanel from "./FaultIsolationPanel";
-import type { FaultIsolationResult } from "./FaultIsolationPanel";
+import FaultIsolationPanel from "../interactions/FaultIsolationPanel";
+import type { FaultIsolationResult } from "../interactions/FaultIsolationPanel";
 
-import FinalMissionPanel from "./FinalMissionPanel";
-import type { FinalMissionResult } from "./FinalMissionPanel";
+import FinalMissionPanel from "../interactions/FinalMissionPanel";
+import type { FinalMissionResult } from "../interactions/FinalMissionPanel";
 
-import WingMatchResult from "./WingMatchResult";
-import MissionVisual from "./MissionVisual";
+import WingMatchResult from "../result/WingMatchResult";
+import MissionVisual from "../visuals/MissionVisual";
 
 import {
   controlOscillationMission,
   missionScenes,
 } from "./missionScenes";
 
-import { thermalManagementMission } from "./thermalMission";
-import { landingSiteMission } from "./landingMission";
-import { structureMission } from "./structureMission";
-import { faultIsolationMission } from "./faultMission";
-import { finalMission } from "./finalMission";
+import { thermalManagementMission } from "../missions/thermalMission";
+import { landingSiteMission } from "../missions/landingMission";
+import { structureMission } from "../missions/structureMission";
+import { faultIsolationMission } from "../missions/faultMission";
+import { finalMission } from "../missions/finalMission";
 
 import type {
   ControllerMissionScene,
@@ -41,7 +41,7 @@ import type {
   WingId,
 } from "./types";
 
-import "./wingmatch.css";
+import "../styles/wingmatch.css";
 
 interface WingMatchMissionProps {
   onExit: () => void;

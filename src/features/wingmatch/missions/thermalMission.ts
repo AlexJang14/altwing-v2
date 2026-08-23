@@ -1,4 +1,4 @@
-import type { MissionScene } from "./types";
+import type { MissionScene } from "../engine/types";
 
 export const thermalManagementMission: MissionScene = {
   id: "thermal-management",

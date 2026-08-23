@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { ControllerTuningConfig } from "./types";
+import type { ControllerTuningConfig } from "../engine/types";
 import "./control-tuning.css";
 
 export interface ControllerTuningResult {

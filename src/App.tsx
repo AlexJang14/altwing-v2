@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MissionPreview from "./components/MissionPreview";
-import WingMatchMission from "./features/wingmatch/WingMatchMission";
+import WingMatchMission from "./features/wingmatch/engine/WingMatchMission";
 
 type AppView = "home" | "wingmatch";
 
