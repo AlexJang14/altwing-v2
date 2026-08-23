@@ -1,0 +1,250 @@
+.fault-panel {
+  padding: 24px;
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+
+  background:
+    radial-gradient(
+      circle at 85% 5%,
+      rgba(91, 141, 239, 0.12),
+      transparent 30%
+    ),
+    rgba(255, 255, 255, 0.035);
+
+  color: white;
+}
+
+.fault-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.fault-header span {
+  color: #5b8def;
+
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.15em;
+}
+
+.fault-header h2 {
+  margin: 7px 0 0;
+
+  font-size: 27px;
+  letter-spacing: -0.04em;
+}
+
+.fault-budget {
+  text-align: right;
+
+  color: #ffc857;
+
+  font-size: 26px;
+  font-weight: 850;
+}
+
+.fault-budget small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: rgba(255, 255, 255, 0.32);
+
+  font-size: 6px;
+  letter-spacing: 0.1em;
+}
+
+.fault-symptom {
+  margin-top: 20px;
+  padding: 14px;
+
+  border-left: 2px solid #ff6b6b;
+
+  background: rgba(255, 107, 107, 0.05);
+}
+
+.fault-symptom span {
+  display: block;
+
+  color: #ff6b6b;
+
+  font-size: 6px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.fault-symptom strong {
+  display: block;
+
+  margin-top: 5px;
+
+  font-size: 14px;
+}
+
+.fault-symptom p {
+  margin: 6px 0 0;
+
+  color: rgba(255, 255, 255, 0.43);
+
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.fault-tests {
+  margin-top: 15px;
+
+  display: grid;
+  gap: 8px;
+}
+
+.fault-test {
+  padding: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.025);
+  color: white;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.fault-test > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fault-test strong {
+  font-size: 9px;
+}
+
+.fault-test span {
+  color: #5b8def;
+
+  font-size: 6px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.fault-test p {
+  margin: 7px 0 0;
+
+  color: rgba(255, 255, 255, 0.45);
+
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.fault-test--complete {
+  border-color: rgba(91, 141, 239, 0.4);
+
+  background: rgba(91, 141, 239, 0.05);
+}
+
+.fault-evidence {
+  margin-top: 14px;
+  padding-top: 12px;
+
+  display: flex;
+  justify-content: space-between;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fault-evidence span {
+  color: rgba(255, 255, 255, 0.35);
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.fault-evidence strong {
+  font-size: 14px;
+}
+
+.fault-evidence small {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.fault-hypotheses {
+  margin-top: 17px;
+
+  display: grid;
+  gap: 7px;
+}
+
+.fault-hypotheses > span {
+  margin-bottom: 2px;
+
+  color: rgba(255, 255, 255, 0.35);
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.fault-hypothesis {
+  padding: 11px;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 9px;
+
+  background: rgba(255, 255, 255, 0.02);
+  color: white;
+
+  cursor: pointer;
+}
+
+.fault-hypothesis > span {
+  width: 11px;
+  height: 11px;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+}
+
+.fault-hypothesis strong {
+  font-size: 9px;
+}
+
+.fault-hypothesis--selected {
+  border-color: rgba(255, 200, 87, 0.55);
+
+  background: rgba(255, 200, 87, 0.05);
+}
+
+.fault-hypothesis--selected > span {
+  border: 3px solid #ffc857;
+}
+
+.fault-lock {
+  width: 100%;
+  min-height: 46px;
+
+  margin-top: 16px;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: #ff6b6b;
+  color: white;
+
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.fault-lock:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
