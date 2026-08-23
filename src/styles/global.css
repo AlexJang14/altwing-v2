@@ -411,3 +411,52 @@ img {
     padding: 22px;
   }
 }
+.nav-text-button {
+  padding: 0;
+
+  background: transparent;
+  color: var(--color-text-soft);
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: color var(--transition-fast);
+}
+
+.nav-text-button:hover {
+  color: var(--color-deep-space);
+}
+
+.mission-preview-button {
+  width: 100%;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  text-align: inherit;
+
+  cursor: pointer;
+}
+
+.mission-preview-button .mission-visual {
+  transition:
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
+}
+
+.mission-preview-button:hover .mission-visual {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 42px 90px rgba(13, 19, 43, 0.2),
+    inset 0 0 80px rgba(91, 141, 239, 0.04);
+}
+
+.nav-launch {
+  cursor: pointer;
+}

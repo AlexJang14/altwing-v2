@@ -1,6 +1,23 @@
+import { useState } from "react";
 import MissionPreview from "./components/MissionPreview";
+import WingMatchMission from "./features/wingmatch/WingMatchMission";
+
+type AppView = "home" | "wingmatch";
 
 function App() {
+  const [view, setView] = useState<AppView>("home");
+
+  if (view === "wingmatch") {
+    return (
+      <WingMatchMission
+        onExit={() => {
+          setView("home");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
+    );
+  }
+
   return (
     <div className="app">
       <header className="site-header">
@@ -11,13 +28,24 @@ function App() {
           </a>
 
           <div className="nav-links">
-            <a href="#mission-preview">WingMatch</a>
+            <button
+              type="button"
+              className="nav-text-button"
+              onClick={() => setView("wingmatch")}
+            >
+              WingMatch
+            </button>
+
             <a href="#journey">Build</a>
             <a href="#journey">College Launch</a>
 
-            <a className="nav-launch" href="#mission-preview">
+            <button
+              type="button"
+              className="nav-launch"
+              onClick={() => setView("wingmatch")}
+            >
               Explore
-            </a>
+            </button>
           </div>
         </nav>
       </header>
@@ -33,7 +61,6 @@ function App() {
             <h1>
               Don&apos;t choose a career.
               <br />
-
               <span className="hero-highlight">Test one.</span>
             </h1>
 
@@ -44,9 +71,13 @@ function App() {
             </p>
 
             <div className="hero-actions">
-              <a className="button button-primary" href="#mission-preview">
+              <button
+                type="button"
+                className="button button-primary"
+                onClick={() => setView("wingmatch")}
+              >
                 Explore WingMatch
-              </a>
+              </button>
 
               <a className="button button-secondary" href="#journey">
                 See how AltWing works
@@ -58,9 +89,14 @@ function App() {
             </p>
           </div>
 
-          <div id="mission-preview">
+          <button
+            type="button"
+            className="mission-preview-button"
+            onClick={() => setView("wingmatch")}
+            aria-label="Launch Mars descent WingMatch mission"
+          >
             <MissionPreview />
-          </div>
+          </button>
         </section>
 
         <section className="journey-section" id="journey">
@@ -74,7 +110,6 @@ function App() {
             <div className="journey-grid">
               <article className="journey-card">
                 <div className="journey-number">01 / EXPLORE</div>
-
                 <h3>Test how you think.</h3>
 
                 <p>
@@ -85,7 +120,6 @@ function App() {
 
               <article className="journey-card">
                 <div className="journey-number">02 / BUILD</div>
-
                 <h3>Create real evidence.</h3>
 
                 <p>
@@ -96,7 +130,6 @@ function App() {
 
               <article className="journey-card">
                 <div className="journey-number">03 / LAUNCH</div>
-
                 <h3>Know your next move.</h3>
 
                 <p>

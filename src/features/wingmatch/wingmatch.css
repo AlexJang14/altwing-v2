@@ -1,0 +1,702 @@
+.wingmatch-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      rgba(91, 141, 239, 0.12),
+      transparent 30%
+    ),
+    #080d20;
+  color: white;
+}
+
+.wingmatch-header {
+  min-height: 72px;
+  padding: 0 34px;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 30px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 13, 32, 0.88);
+  backdrop-filter: blur(16px);
+}
+
+.wingmatch-brand {
+  justify-self: start;
+
+  padding: 0;
+
+  background: transparent;
+  color: white;
+
+  font-size: 21px;
+  font-weight: 850;
+  letter-spacing: -0.045em;
+
+  cursor: pointer;
+}
+
+.wingmatch-brand strong {
+  color: #ff6b6b;
+}
+
+.wingmatch-progress {
+  width: 250px;
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 13px;
+
+  color: rgba(255, 255, 255, 0.5);
+
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.wingmatch-progress-track {
+  height: 3px;
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.wingmatch-progress-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: #5b8def;
+}
+
+.wingmatch-exit {
+  justify-self: end;
+
+  padding: 9px 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.wingmatch-main {
+  width: min(1440px, calc(100% - 56px));
+  min-height: calc(100vh - 72px);
+
+  margin: 0 auto;
+  padding: 28px 0;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(390px, 0.92fr);
+  gap: 24px;
+}
+
+.wingmatch-flight,
+.decision-panel {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 26px;
+
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.wingmatch-flight {
+  padding: 25px;
+
+  overflow: hidden;
+}
+
+.wingmatch-flight-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  color: rgba(255, 255, 255, 0.43);
+
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.15em;
+}
+
+.wingmatch-flight-topline > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wingmatch-live-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #ff6b6b;
+
+  box-shadow: 0 0 0 5px rgba(255, 107, 107, 0.11);
+}
+
+.entry-visual {
+  position: relative;
+
+  height: 285px;
+
+  margin-top: 14px;
+
+  overflow: hidden;
+
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      circle at 65% 30%,
+      rgba(91, 141, 239, 0.16),
+      transparent 27%
+    ),
+    #0d1430;
+}
+
+.entry-stars {
+  position: absolute;
+  inset: 0;
+
+  opacity: 0.6;
+
+  background-image:
+    radial-gradient(circle at 8% 19%, white 0 1px, transparent 1.4px),
+    radial-gradient(circle at 23% 51%, white 0 1px, transparent 1.4px),
+    radial-gradient(circle at 42% 18%, white 0 1px, transparent 1.4px),
+    radial-gradient(circle at 61% 58%, white 0 1px, transparent 1.4px),
+    radial-gradient(circle at 77% 22%, white 0 1px, transparent 1.4px),
+    radial-gradient(circle at 89% 48%, white 0 1px, transparent 1.4px);
+}
+
+.entry-trajectory {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+.entry-path {
+  fill: none;
+
+  stroke: rgba(91, 141, 239, 0.85);
+  stroke-width: 2;
+
+  stroke-dasharray: 7 9;
+
+  animation: entry-path-flow 4s linear infinite;
+}
+
+.entry-start {
+  fill: #5b8def;
+
+  filter: drop-shadow(0 0 8px rgba(91, 141, 239, 0.9));
+}
+
+.entry-capsule {
+  position: absolute;
+
+  left: 69%;
+  top: 51%;
+
+  width: 38px;
+  height: 55px;
+
+  transform: rotate(-19deg);
+
+  transition:
+    transform 350ms ease,
+    left 350ms ease,
+    top 350ms ease;
+}
+
+.entry-capsule--active {
+  left: 71%;
+  top: 54%;
+
+  transform: rotate(-15deg);
+}
+
+.entry-capsule-body {
+  position: absolute;
+
+  left: 7px;
+
+  width: 24px;
+  height: 31px;
+
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 45% 45% 36% 36%;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.entry-capsule-flame {
+  position: absolute;
+
+  left: 9px;
+  top: 28px;
+
+  width: 20px;
+  height: 25px;
+
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+
+  background: linear-gradient(
+    to bottom,
+    #ffc857,
+    #ff6b6b 62%,
+    transparent
+  );
+
+  filter: blur(1px);
+
+  opacity: 0.85;
+}
+
+.entry-atmosphere {
+  position: absolute;
+
+  left: -5%;
+  right: -5%;
+  bottom: 52px;
+
+  height: 40px;
+
+  border-top: 1px solid rgba(255, 150, 111, 0.5);
+
+  border-radius: 50%;
+
+  box-shadow: 0 -12px 28px rgba(255, 107, 107, 0.12);
+}
+
+.entry-mars {
+  position: absolute;
+
+  left: -10%;
+  right: -10%;
+  bottom: -150px;
+
+  height: 220px;
+
+  border-radius: 50% 50% 0 0;
+
+  background:
+    radial-gradient(
+      circle at 28% 12%,
+      rgba(104, 43, 42, 0.35),
+      transparent 12%
+    ),
+    radial-gradient(
+      circle at 68% 18%,
+      rgba(255, 196, 143, 0.24),
+      transparent 12%
+    ),
+    linear-gradient(
+      180deg,
+      #db7258,
+      #9c403d 63%,
+      #542733
+    );
+}
+
+.entry-mars-glow {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  top: -9px;
+
+  height: 18px;
+
+  background: rgba(255, 158, 112, 0.21);
+
+  filter: blur(8px);
+}
+
+.entry-altitude {
+  position: absolute;
+
+  left: 22px;
+  bottom: 22px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.entry-altitude span {
+  color: rgba(255, 255, 255, 0.38);
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.entry-altitude strong {
+  color: #5b8def;
+
+  font-size: 17px;
+}
+
+.wingmatch-phase {
+  margin-top: 24px;
+}
+
+.wingmatch-phase span {
+  color: #ffc857;
+
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.wingmatch-phase h1 {
+  max-width: 790px;
+
+  margin: 10px 0 0;
+
+  font-size: clamp(23px, 2.2vw, 34px);
+  line-height: 1.2;
+
+  letter-spacing: -0.035em;
+}
+
+.wingmatch-telemetry {
+  margin-top: 23px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.wingmatch-metric {
+  min-width: 0;
+
+  padding: 12px 13px;
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 11px;
+
+  background: rgba(255, 255, 255, 0.035);
+
+  transition:
+    border-color 250ms ease,
+    background 250ms ease,
+    transform 250ms ease;
+}
+
+.wingmatch-metric span {
+  display: block;
+
+  color: rgba(255, 255, 255, 0.37);
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+}
+
+.wingmatch-metric strong {
+  display: block;
+
+  margin-top: 5px;
+
+  overflow: hidden;
+
+  color: white;
+
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wingmatch-metric--warning {
+  border-color: rgba(255, 200, 87, 0.2);
+
+  background: rgba(255, 200, 87, 0.045);
+}
+
+.wingmatch-metric--warning strong {
+  color: #ffc857;
+}
+
+.wingmatch-metric--uncertain {
+  border-color: rgba(255, 107, 107, 0.2);
+
+  background: rgba(255, 107, 107, 0.045);
+}
+
+.wingmatch-metric--uncertain strong {
+  color: #ff9b91;
+}
+
+.decision-panel {
+  padding: 28px;
+
+  align-self: start;
+}
+
+.decision-kicker {
+  color: #5b8def;
+
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.15em;
+}
+
+.decision-panel h2 {
+  margin: 13px 0 0;
+
+  font-size: clamp(28px, 2.6vw, 39px);
+  line-height: 1.06;
+
+  letter-spacing: -0.045em;
+}
+
+.decision-hint {
+  margin: 14px 0 0;
+
+  color: rgba(255, 255, 255, 0.47);
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.decision-options {
+  margin-top: 22px;
+
+  display: grid;
+  gap: 9px;
+}
+
+.decision-option {
+  width: 100%;
+
+  padding: 15px;
+
+  display: grid;
+  grid-template-columns: 31px 1fr;
+  gap: 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 13px;
+
+  background: rgba(255, 255, 255, 0.035);
+  color: white;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.decision-option:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  border-color: rgba(91, 141, 239, 0.5);
+
+  background: rgba(91, 141, 239, 0.075);
+}
+
+.decision-option--selected {
+  border-color: rgba(91, 141, 239, 0.8);
+
+  background: rgba(91, 141, 239, 0.12);
+}
+
+.decision-option--committed {
+  border-color: rgba(255, 200, 87, 0.55);
+
+  background: rgba(255, 200, 87, 0.08);
+}
+
+.decision-option:disabled {
+  cursor: default;
+}
+
+.decision-option-number {
+  color: rgba(255, 255, 255, 0.28);
+
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.decision-option strong {
+  display: block;
+
+  font-size: 14px;
+}
+
+.decision-option p {
+  margin: 6px 0 0;
+
+  color: rgba(255, 255, 255, 0.47);
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.commit-button {
+  width: 100%;
+  min-height: 48px;
+
+  margin-top: 17px;
+
+  border-radius: 999px;
+
+  background: #ff6b6b;
+  color: white;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.commit-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.commit-button:disabled {
+  opacity: 0.25;
+
+  cursor: not-allowed;
+}
+
+.decision-result {
+  margin-top: 18px;
+  padding: 19px;
+
+  border: 1px solid rgba(255, 200, 87, 0.18);
+  border-radius: 15px;
+
+  background: rgba(255, 200, 87, 0.055);
+}
+
+.decision-result-label {
+  color: #ffc857;
+
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.decision-result h3 {
+  margin: 9px 0 0;
+
+  font-size: 18px;
+}
+
+.decision-result p {
+  margin: 8px 0 0;
+
+  color: rgba(255, 255, 255, 0.58);
+
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.decision-result-status {
+  margin-top: 15px;
+
+  color: #5b8def;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.next-mission-placeholder {
+  width: 100%;
+
+  margin-top: 14px;
+  padding: 12px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes entry-path-flow {
+  to {
+    stroke-dashoffset: -64;
+  }
+}
+
+@media (max-width: 1050px) {
+  .wingmatch-header {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .wingmatch-progress {
+    width: 190px;
+  }
+
+  .wingmatch-main {
+    grid-template-columns: 1fr;
+  }
+
+  .decision-panel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 650px) {
+  .wingmatch-header {
+    padding: 0 18px;
+  }
+
+  .wingmatch-progress {
+    display: none;
+  }
+
+  .wingmatch-main {
+    width: calc(100% - 28px);
+
+    padding-top: 14px;
+  }
+
+  .wingmatch-flight,
+  .decision-panel {
+    padding: 18px;
+
+    border-radius: 20px;
+  }
+
+  .entry-visual {
+    height: 235px;
+  }
+
+  .wingmatch-telemetry {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry-path {
+    animation: none;
+  }
+}
