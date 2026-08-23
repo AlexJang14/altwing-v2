@@ -19,6 +19,7 @@ import FinalMissionPanel from "../interactions/FinalMissionPanel";
 import type { FinalMissionResult } from "../interactions/FinalMissionPanel";
 
 import WingMatchResult from "../result/WingMatchResult";
+import BuildWing from "../build/BuildWing";
 import MissionVisual from "../visuals/MissionVisual";
 
 import {
@@ -427,7 +428,8 @@ function getFinalConsequence(
 function WingMatchMission({
   onExit,
 }: WingMatchMissionProps) {
- const [sceneIndex, setSceneIndex] =
+   const [showBuild, setShowBuild] = useState(false);
+const [sceneIndex, setSceneIndex] =
   useState(() => {
     const params =
       new URLSearchParams(
@@ -1560,6 +1562,36 @@ function WingMatchMission({
     );
   }
 
+  const topWingEntry = Object.entries(wingScores).sort(
+    ([, scoreA], [, scoreB]) =>
+      (scoreB ?? 0) - (scoreA ?? 0),
+  )[0];
+
+  const topWingId = topWingEntry?.[0] ?? "systems";
+
+  const wingNames: Record<string, string> = {
+    systems: "Systems Engineering",
+    gnc: "Guidance, Navigation & Control",
+    avionics: "Avionics",
+    structures: "Structures",
+    thermal: "Thermal Engineering",
+    propulsion: "Propulsion",
+    "mission-design": "Mission Design",
+  };
+
+  const topWingName =
+    wingNames[topWingId] ?? "Aerospace Engineering";
+
+  if (showBuild) {
+    return (
+      <BuildWing
+        wingId={topWingId}
+        wingName={topWingName}
+        onBack={() => setShowBuild(false)}
+      />
+    );
+  }
+
   if (showResult) {
     return (
       <WingMatchResult
@@ -1575,7 +1607,8 @@ function WingMatchMission({
         onRestart={
           resetMissionState
         }
-      />
+              onContinue={() => setShowBuild(true)}
+/>
     );
   }
 
