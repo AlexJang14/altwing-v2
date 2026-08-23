@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./build-wing.css";
+import ProjectPortfolio from "./ProjectPortfolio";
 
 interface BuildWingProps {
   wingId: string;
@@ -2012,6 +2013,8 @@ function BuildWing({
   wingName,
   onBack,
 }: BuildWingProps) {
+  const [showPortfolio, setShowPortfolio] = useState(false);
+
   const [previewWingId, setPreviewWingId] =
     useState(wingId);
 
@@ -2154,6 +2157,36 @@ function BuildWing({
     );
   }
 
+  function completeAllForPreview() {
+    if (!import.meta.env.DEV) {
+      return;
+    }
+
+    const previewEvidence: EvidenceStore = {};
+
+    plan.steps.forEach((step) => {
+      const record: EvidenceRecord = {};
+
+      step.evidenceFields.forEach((evidenceField) => {
+        record[evidenceField.key] =
+          `Preview evidence for ${evidenceField.label.toLowerCase()} in ${step.title}.`;
+      });
+
+      previewEvidence[step.id] = record;
+    });
+
+    setEvidence(previewEvidence);
+
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify(previewEvidence),
+    );
+
+    setDraft(
+      previewEvidence[activeStep.id] ?? {},
+    );
+  }
+
   function resetEvidence() {
     const confirmed =
       window.confirm(
@@ -2212,6 +2245,8 @@ function BuildWing({
       nextEvidence = {};
     }
 
+    setShowPortfolio(false);
+
     setPreviewWingId(
       nextWingId,
     );
@@ -2228,6 +2263,22 @@ function BuildWing({
       nextEvidence[
         nextPlan.steps[0].id
       ] ?? {},
+    );
+  }
+
+  if (showPortfolio) {
+    return (
+      <ProjectPortfolio
+        wingName={displayWingName}
+        project={plan.project}
+        question={plan.question}
+        finalArtifact={plan.finalArtifact}
+        steps={plan.steps}
+        evidence={evidence}
+        onBack={() =>
+          setShowPortfolio(false)
+        }
+      />
     );
   }
 
@@ -2685,6 +2736,50 @@ function BuildWing({
           DOCUMENT
           <b>→</b>
           SHARE
+        </div>
+
+        {import.meta.env.DEV && (
+          <button
+            type="button"
+            className="dev-complete-preview"
+            onClick={completeAllForPreview}
+          >
+            DEV — Complete all for preview
+          </button>
+        )}
+
+        <div className="portfolio-launch">
+          <div>
+            <span>
+              PROJECT PORTFOLIO
+            </span>
+
+            <h3>
+              Turn your evidence into something you can use.
+            </h3>
+
+            <p>
+              Complete all six checkpoints to generate your
+              engineering portfolio and extracurricular-ready drafts.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="generate-portfolio-button"
+            disabled={
+              completedCount !==
+              plan.steps.length
+            }
+            onClick={() =>
+              setShowPortfolio(true)
+            }
+          >
+            {completedCount ===
+            plan.steps.length
+              ? "Generate my project portfolio →"
+              : `${completedCount} / ${plan.steps.length} evidence saved`}
+          </button>
         </div>
 
         {completedCount > 0 && (
