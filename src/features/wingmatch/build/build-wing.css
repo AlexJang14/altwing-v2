@@ -995,3 +995,84 @@
     text-align: left;
   }
 }
+
+/* DEV PATHWAY PREVIEW */
+
+.build-dev-switcher {
+  margin-top: 14px;
+  padding: 12px 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  border:
+    1px dashed
+    rgba(91, 141, 239, 0.4);
+
+  border-radius: 11px;
+
+  background:
+    rgba(91, 141, 239, 0.05);
+}
+
+.build-dev-switcher > div {
+  display: grid;
+  gap: 3px;
+}
+
+.build-dev-switcher span {
+  color: #5b8def;
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+.build-dev-switcher strong {
+  font-size: 10px;
+  color:
+    rgba(255, 255, 255, 0.6);
+}
+
+.build-dev-switcher select {
+  min-width: 240px;
+  height: 38px;
+
+  padding: 0 12px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
+
+  border-radius: 8px;
+
+  outline: none;
+
+  background: #111a3b;
+  color: white;
+
+  font: inherit;
+  font-size: 10px;
+
+  cursor: pointer;
+}
+
+.build-dev-switcher select:focus {
+  border-color:
+    rgba(91, 141, 239, 0.75);
+}
+
+@media (max-width: 580px) {
+  .build-dev-switcher {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .build-dev-switcher select {
+    width: 100%;
+    min-width: 0;
+  }
+}

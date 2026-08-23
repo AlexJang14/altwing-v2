@@ -1993,6 +1993,16 @@ const plans: Record<string, BuildPlan> = {
   "mission-design": missionDesignPlan,
 };
 
+const wingLabels: Record<string, string> = {
+  systems: "Systems Engineering",
+  gnc: "Guidance, Navigation & Control",
+  structures: "Structures",
+  avionics: "Avionics",
+  thermal: "Thermal Engineering",
+  propulsion: "Propulsion",
+  "mission-design": "Mission Design",
+};
+
 /* =========================================================
    COMPONENT
    ========================================================= */
@@ -2002,11 +2012,24 @@ function BuildWing({
   wingName,
   onBack,
 }: BuildWingProps) {
+  const [previewWingId, setPreviewWingId] =
+    useState(wingId);
+
+  const effectiveWingId =
+    import.meta.env.DEV
+      ? previewWingId
+      : wingId;
+
   const plan =
-    plans[wingId] ?? genericPlan;
+    plans[effectiveWingId] ??
+    genericPlan;
+
+  const displayWingName =
+    wingLabels[effectiveWingId] ??
+    wingName;
 
   const storageKey =
-    `altwing-evidence-v1-${wingId}`;
+    `altwing-evidence-v1-${effectiveWingId}`;
 
   const [evidence, setEvidence] =
     useState<EvidenceStore>(() => {
@@ -2154,6 +2177,60 @@ function BuildWing({
     setDraft({});
   }
 
+  function handlePreviewWingChange(
+    nextWingId: string,
+  ) {
+    const nextPlan =
+      plans[nextWingId] ??
+      genericPlan;
+
+    const nextStorageKey =
+      `altwing-evidence-v1-${nextWingId}`;
+
+    let nextEvidence: EvidenceStore =
+      {};
+
+    try {
+      const saved =
+        localStorage.getItem(
+          nextStorageKey,
+        );
+
+      if (saved) {
+        const parsed =
+          JSON.parse(saved);
+
+        if (
+          parsed &&
+          typeof parsed ===
+            "object"
+        ) {
+          nextEvidence = parsed;
+        }
+      }
+    } catch {
+      nextEvidence = {};
+    }
+
+    setPreviewWingId(
+      nextWingId,
+    );
+
+    setEvidence(
+      nextEvidence,
+    );
+
+    setActiveStepId(
+      nextPlan.steps[0].id,
+    );
+
+    setDraft(
+      nextEvidence[
+        nextPlan.steps[0].id
+      ] ?? {},
+    );
+  }
+
   return (
     <main className="build-wing">
       <header className="build-wing-nav">
@@ -2169,12 +2246,45 @@ function BuildWing({
         </strong>
       </header>
 
+      {import.meta.env.DEV && (
+        <section className="build-dev-switcher">
+          <div>
+            <span>DEV PREVIEW</span>
+            <strong>
+              Wing pathway switcher
+            </strong>
+          </div>
+
+          <select
+            value={previewWingId}
+            onChange={(event) =>
+              handlePreviewWingChange(
+                event.target.value,
+              )
+            }
+          >
+            {Object.entries(
+              wingLabels,
+            ).map(
+              ([id, label]) => (
+                <option
+                  key={id}
+                  value={id}
+                >
+                  {label}
+                </option>
+              ),
+            )}
+          </select>
+        </section>
+      )}
+
       <section className="build-wing-hero">
         <span className="build-kicker">
           PUT ON YOUR WING
         </span>
 
-        <h1>{wingName}</h1>
+        <h1>{displayWingName}</h1>
 
         <p>
           You discovered how you
