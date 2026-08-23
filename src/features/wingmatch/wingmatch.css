@@ -700,3 +700,393 @@
     animation: none;
   }
 }
+/* Mission 01 UX V2 */
+
+.wingmatch-phase h1 {
+  max-width: 690px;
+  font-size: clamp(21px, 1.8vw, 29px);
+  line-height: 1.18;
+}
+
+.decision-panel {
+  padding: 24px;
+}
+
+.decision-panel h2 {
+  font-size: clamp(25px, 2.2vw, 34px);
+}
+
+.decision-hint {
+  margin-top: 9px;
+}
+
+.decision-options {
+  margin-top: 17px;
+  gap: 7px;
+}
+
+.decision-option {
+  min-height: 73px;
+  padding: 12px 14px;
+  grid-template-columns: 29px 1fr;
+  align-items: center;
+}
+
+.decision-option strong {
+  font-size: 13px;
+}
+
+.decision-option p {
+  margin-top: 4px;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.decision-option-copy {
+  min-width: 0;
+}
+
+.projected-effect {
+  margin-top: 18px;
+  padding: 13px 14px;
+
+  border: 1px solid rgba(91, 141, 239, 0.2);
+  border-radius: 12px;
+
+  background: rgba(91, 141, 239, 0.055);
+}
+
+.projected-effect-heading {
+  color: #5b8def;
+
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.15em;
+}
+
+.projected-effect-items {
+  margin-top: 9px;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.projected-effect-item {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+
+  padding: 9px 10px;
+
+  border-radius: 8px;
+
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.projected-effect-item span {
+  overflow: hidden;
+
+  color: rgba(255, 255, 255, 0.43);
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projected-effect-item strong {
+  color: white;
+
+  font-size: 11px;
+}
+
+.projected-effect-item--warning strong {
+  color: #ffc857;
+}
+
+.projected-effect-item--uncertain strong {
+  color: #ff9b91;
+}
+
+.wingmatch-metric-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.wingmatch-metric-heading em {
+  color: #5b8def;
+
+  font-size: 6px;
+  font-style: normal;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.wingmatch-metric--projected {
+  border-color: rgba(91, 141, 239, 0.42);
+
+  background: rgba(91, 141, 239, 0.09);
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 7px 20px rgba(91, 141, 239, 0.08);
+}
+
+.committed-status {
+  margin-top: 16px;
+  padding-top: 14px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.committed-status > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.committed-status span {
+  color: #ffc857;
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+}
+
+.committed-status strong {
+  font-size: 12px;
+}
+
+.committed-status p {
+  margin: 9px 0 0;
+
+  color: rgba(255, 255, 255, 0.5);
+
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.committed-next {
+  margin-top: 10px;
+
+  color: #5b8def;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.commit-flash {
+  position: fixed;
+  inset: 0;
+
+  z-index: 100;
+
+  display: grid;
+  place-items: center;
+
+  padding: 24px;
+
+  background: rgba(4, 7, 18, 0.55);
+
+  backdrop-filter: blur(7px);
+
+  animation: commit-overlay-in 180ms ease both;
+}
+
+.commit-flash-inner {
+  width: min(390px, 100%);
+
+  padding: 27px;
+
+  border: 1px solid rgba(255, 200, 87, 0.3);
+  border-radius: 20px;
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 200, 87, 0.12),
+      transparent 48%
+    ),
+    #111832;
+
+  text-align: center;
+
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.38);
+
+  animation: commit-card-in 230ms ease both;
+}
+
+.commit-flash-inner > span {
+  color: #ffc857;
+
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+}
+
+.commit-flash-inner > strong {
+  display: block;
+
+  margin-top: 9px;
+
+  font-size: 20px;
+}
+
+.commit-flash-effects {
+  margin-top: 20px;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.commit-flash-effects div {
+  padding: 11px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.commit-flash-effects small {
+  display: block;
+
+  color: rgba(255, 255, 255, 0.38);
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.commit-flash-effects b {
+  display: block;
+
+  margin-top: 5px;
+
+  color: white;
+
+  font-size: 12px;
+}
+
+.commit-flash-inner > p {
+  margin: 19px 0 0;
+
+  color: #5b8def;
+
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.15em;
+}
+
+@keyframes commit-overlay-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes commit-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .commit-flash,
+  .commit-flash-inner {
+    animation: none;
+  }
+}
+/* Multi-scene mission continuity */
+
+.mission-continuity {
+  margin-top: 16px;
+  padding: 12px 14px;
+
+  border: 1px solid rgba(91, 141, 239, 0.16);
+  border-radius: 11px;
+
+  background: rgba(91, 141, 239, 0.045);
+}
+
+.mission-continuity-label {
+  color: #5b8def;
+
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.15em;
+}
+
+.mission-continuity-main {
+  margin-top: 7px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.mission-continuity-main strong {
+  font-size: 12px;
+}
+
+.mission-continuity-main span {
+  color: rgba(255, 255, 255, 0.34);
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+
+.mission-continuity-effects {
+  margin-top: 9px;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.mission-continuity-effects div {
+  padding: 6px 8px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  border-radius: 7px;
+
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.mission-continuity-effects small {
+  color: rgba(255, 255, 255, 0.34);
+
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.mission-continuity-effects b {
+  color: rgba(255, 255, 255, 0.8);
+
+  font-size: 9px;
+}

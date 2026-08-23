@@ -11,10 +11,10 @@ export const missionScenes: MissionScene[] = [
     altitude: "108 km",
 
     situation:
-      "The cargo lander has entered the Martian atmosphere. Plasma is building around the vehicle, communications are becoming unreliable, and heating is running slightly above the predicted model.",
+      "The lander is entering Mars at 5.4 km/s. Heating is running 8% above the model while communications are degrading.",
 
     question:
-      "You have only seconds before the vehicle reaches peak heating. What do you prioritize first?",
+      "Peak heating arrives in seconds. What do you protect first?",
 
     telemetry: [
       {
@@ -43,13 +43,13 @@ export const missionScenes: MissionScene[] = [
       {
         id: "thermal-margin",
 
-        title: "Protect the thermal margin",
+        title: "Protect thermal margin",
 
         description:
-          "Adjust the entry attitude slightly to reduce heating, even if the trajectory moves closer to the edge of the landing corridor.",
+          "Reduce heating. Accept less trajectory margin.",
 
         consequence:
-          "Peak heating decreases, but the guidance system now has less trajectory margin to work with.",
+          "Peak heating falls, but guidance has less room to correct the trajectory later.",
 
         telemetryChanges: [
           {
@@ -82,13 +82,13 @@ export const missionScenes: MissionScene[] = [
       {
         id: "hold-corridor",
 
-        title: "Hold the planned corridor",
+        title: "Hold the corridor",
 
         description:
-          "Keep the current entry attitude while monitoring whether the temperature increase remains within the vehicle's certified margin.",
+          "Preserve the planned path. Accept more thermal exposure.",
 
         consequence:
-          "The trajectory remains highly predictable, but the vehicle accepts additional thermal uncertainty.",
+          "The trajectory stays predictable, but the vehicle carries more thermal uncertainty.",
 
         telemetryChanges: [
           {
@@ -121,13 +121,13 @@ export const missionScenes: MissionScene[] = [
       {
         id: "verify-model",
 
-        title: "Verify before changing course",
+        title: "Verify the signals",
 
         description:
-          "Compare multiple temperature sensors and the predicted heating curve before commanding a trajectory change.",
+          "Cross-check sensor evidence. Spend time before acting.",
 
         consequence:
-          "You spend precious seconds diagnosing the discrepancy, but gain stronger evidence about whether the warning is real.",
+          "You lose several seconds, but gain stronger evidence about whether the thermal warning is real.",
 
         telemetryChanges: [
           {
@@ -160,13 +160,13 @@ export const missionScenes: MissionScene[] = [
       {
         id: "optimize-entry",
 
-        title: "Recalculate the best tradeoff",
+        title: "Reoptimize entry",
 
         description:
-          "Use the updated thermal data to compute a new entry attitude that balances heating, range, and landing accuracy.",
+          "Balance heating, range, and landing accuracy.",
 
         consequence:
-          "The vehicle adopts a new compromise trajectory instead of optimizing a single subsystem.",
+          "The vehicle adopts a compromise trajectory instead of protecting any single subsystem.",
 
         telemetryChanges: [
           {
@@ -192,6 +192,202 @@ export const missionScenes: MissionScene[] = [
             optimization: 3,
             "mission-tradeoffs": 3,
             "quantitative-reasoning": 2,
+          },
+        },
+      },
+    ],
+  },
+
+  {
+    id: "sensor-disagreement",
+    missionNumber: 2,
+    totalMissions: 8,
+
+    phase: "SENSOR DISAGREEMENT",
+    timeRemaining: "T−11:47",
+    altitude: "15.2 km",
+
+    situation:
+      "The vehicle has cleared peak heating. Radar altitude reads 14.2 km, but the inertial navigation solution estimates 16.1 km. The landing burn depends on knowing which estimate is closer to reality.",
+
+    question:
+      "Two systems disagree. What do you trust next?",
+
+    telemetry: [
+      {
+        label: "RADAR ALT",
+        value: "14.2 km",
+        status: "uncertain",
+      },
+      {
+        label: "INERTIAL ALT",
+        value: "16.1 km",
+        status: "uncertain",
+      },
+      {
+        label: "DISAGREEMENT",
+        value: "1.9 km",
+        status: "warning",
+      },
+      {
+        label: "BURN WINDOW",
+        value: "47 sec",
+        status: "warning",
+      },
+    ],
+
+    options: [
+      {
+        id: "independent-check",
+
+        title: "Find independent evidence",
+
+        description:
+          "Check a third signal before trusting either estimate.",
+
+        consequence:
+          "Confidence improves, but several seconds of the burn-planning window are consumed.",
+
+        telemetryChanges: [
+          {
+            label: "STATE CONFIDENCE",
+            value: "RISING",
+            status: "nominal",
+          },
+          {
+            label: "BURN WINDOW",
+            value: "41 sec",
+            status: "warning",
+          },
+        ],
+
+        scores: {
+          wings: {
+            avionics: 3,
+            systems: 2,
+            gnc: 1,
+          },
+
+          reasoning: {
+            "evidence-first": 3,
+            "systems-integration": 2,
+            iteration: 1,
+          },
+        },
+      },
+
+      {
+        id: "trust-inertial",
+
+        title: "Trust the inertial solution",
+
+        description:
+          "Use the vehicle dynamics model. Treat radar as suspect.",
+
+        consequence:
+          "The guidance solution stays continuous, but a modeling error could shift the burn timing.",
+
+        telemetryChanges: [
+          {
+            label: "GUIDANCE",
+            value: "CONTINUOUS",
+            status: "nominal",
+          },
+          {
+            label: "MODEL RISK",
+            value: "ELEVATED",
+            status: "warning",
+          },
+        ],
+
+        scores: {
+          wings: {
+            gnc: 3,
+            "mission-design": 1,
+            systems: 1,
+          },
+
+          reasoning: {
+            "physical-modeling": 3,
+            "feedback-control": 2,
+            "risk-tolerance": 2,
+          },
+        },
+      },
+
+      {
+        id: "isolate-radar",
+
+        title: "Isolate the radar fault",
+
+        description:
+          "Test whether the radar stream shows a sensor-specific failure.",
+
+        consequence:
+          "Fault isolation may identify a bad sensor, but diagnosis costs valuable descent time.",
+
+        telemetryChanges: [
+          {
+            label: "RADAR HEALTH",
+            value: "TESTING",
+            status: "uncertain",
+          },
+          {
+            label: "DECISION TIME",
+            value: "−6 sec",
+            status: "warning",
+          },
+        ],
+
+        scores: {
+          wings: {
+            avionics: 3,
+            systems: 1,
+          },
+
+          reasoning: {
+            "evidence-first": 2,
+            iteration: 3,
+            "quantitative-reasoning": 1,
+          },
+        },
+      },
+
+      {
+        id: "fuse-estimates",
+
+        title: "Fuse all available estimates",
+
+        description:
+          "Combine the signals instead of choosing a single winner.",
+
+        consequence:
+          "The vehicle gains a blended state estimate, but the result depends on how each sensor is weighted.",
+
+        telemetryChanges: [
+          {
+            label: "FUSED ALT",
+            value: "15.4 km",
+            status: "nominal",
+          },
+          {
+            label: "UNCERTAINTY",
+            value: "±0.6 km",
+            status: "warning",
+          },
+        ],
+
+        scores: {
+          wings: {
+            gnc: 3,
+            avionics: 2,
+            systems: 2,
+          },
+
+          reasoning: {
+            optimization: 2,
+            "quantitative-reasoning": 3,
+            "systems-integration": 3,
           },
         },
       },

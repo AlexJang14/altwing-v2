@@ -15,6 +15,12 @@ interface WingMatchMissionProps {
 type WingScores = Partial<Record<WingId, number>>;
 type ReasoningScores = Partial<Record<ReasoningSignal, number>>;
 
+interface DecisionHistoryItem {
+  sceneId: string;
+  phase: string;
+  option: MissionOption;
+}
+
 function mergeTelemetry(
   baseTelemetry: TelemetryItem[],
   changes: TelemetryItem[],
@@ -52,6 +58,7 @@ function addScores<T extends string>(
     }
 
     const typedKey = key as T;
+
     next[typedKey] = (next[typedKey] ?? 0) + value;
   });
 
@@ -59,7 +66,7 @@ function addScores<T extends string>(
 }
 
 function WingMatchMission({ onExit }: WingMatchMissionProps) {
-  const scene = missionScenes[0];
+  const [sceneIndex, setSceneIndex] = useState(0);
 
   const [previewOption, setPreviewOption] =
     useState<MissionOption | null>(null);
@@ -67,9 +74,22 @@ function WingMatchMission({ onExit }: WingMatchMissionProps) {
   const [committedOption, setCommittedOption] =
     useState<MissionOption | null>(null);
 
+  const [showCommitFlash, setShowCommitFlash] = useState(false);
+
   const [wingScores, setWingScores] = useState<WingScores>({});
   const [reasoningScores, setReasoningScores] =
     useState<ReasoningScores>({});
+
+  const [decisionHistory, setDecisionHistory] = useState<
+    DecisionHistoryItem[]
+  >([]);
+
+  const scene = missionScenes[sceneIndex];
+
+  const previousDecision =
+    decisionHistory.length > 0
+      ? decisionHistory[decisionHistory.length - 1]
+      : null;
 
   const visibleTelemetry = useMemo(() => {
     if (!previewOption) {
@@ -81,6 +101,15 @@ function WingMatchMission({ onExit }: WingMatchMissionProps) {
       previewOption.telemetryChanges,
     );
   }, [previewOption, scene.telemetry]);
+
+  const projectedLabels = useMemo(() => {
+    return new Set(
+      previewOption?.telemetryChanges.map((item) => item.label) ?? [],
+    );
+  }, [previewOption]);
+
+  const hasNextBuiltScene =
+    sceneIndex < missionScenes.length - 1;
 
   function handleChoose(option: MissionOption) {
     if (committedOption) {
@@ -105,19 +134,82 @@ function WingMatchMission({ onExit }: WingMatchMissionProps) {
       previewOption.scores.reasoning,
     );
 
+    const nextHistoryItem: DecisionHistoryItem = {
+      sceneId: scene.id,
+      phase: scene.phase,
+      option: previewOption,
+    };
+
+    const nextHistory = [
+      ...decisionHistory,
+      nextHistoryItem,
+    ];
+
     setWingScores(nextWingScores);
     setReasoningScores(nextReasoningScores);
+    setDecisionHistory(nextHistory);
     setCommittedOption(previewOption);
+    setShowCommitFlash(true);
 
-    console.group("AltWing WingMatch — Mission 01");
+    console.group(
+      `AltWing WingMatch — Mission ${String(
+        scene.missionNumber,
+      ).padStart(2, "0")}`,
+    );
+
     console.log("Decision:", previewOption.title);
-    console.log("Wing scores:", nextWingScores);
-    console.log("Reasoning scores:", nextReasoningScores);
+    console.log("Cumulative Wing scores:", nextWingScores);
+    console.log(
+      "Cumulative Reasoning scores:",
+      nextReasoningScores,
+    );
+    console.log("Decision history:", nextHistory);
+
     console.groupEnd();
+
+    window.setTimeout(() => {
+      setShowCommitFlash(false);
+
+      if (hasNextBuiltScene) {
+        setSceneIndex((current) => current + 1);
+        setPreviewOption(null);
+        setCommittedOption(null);
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
+    }, 1200);
   }
 
   return (
     <main className="wingmatch-shell">
+      {showCommitFlash && committedOption && (
+        <div className="commit-flash" role="status">
+          <div className="commit-flash-inner">
+            <span>DECISION COMMITTED</span>
+
+            <strong>{committedOption.title}</strong>
+
+            <div className="commit-flash-effects">
+              {committedOption.telemetryChanges.map((change) => (
+                <div key={change.label}>
+                  <small>{change.label}</small>
+                  <b>{change.value}</b>
+                </div>
+              ))}
+            </div>
+
+            <p>
+              {hasNextBuiltScene
+                ? "MISSION CONTINUES"
+                : "MISSION DATA RECORDED"}
+            </p>
+          </div>
+        </div>
+      )}
+
       <header className="wingmatch-header">
         <button
           className="wingmatch-brand"
@@ -167,6 +259,31 @@ function WingMatchMission({ onExit }: WingMatchMissionProps) {
             <span>{scene.timeRemaining}</span>
           </div>
 
+          {sceneIndex > 0 && previousDecision && (
+            <div className="mission-continuity">
+              <div className="mission-continuity-label">
+                PREVIOUS DECISION
+              </div>
+
+              <div className="mission-continuity-main">
+                <strong>{previousDecision.option.title}</strong>
+
+                <span>{previousDecision.phase}</span>
+              </div>
+
+              <div className="mission-continuity-effects">
+                {previousDecision.option.telemetryChanges.map(
+                  (change) => (
+                    <div key={change.label}>
+                      <small>{change.label}</small>
+                      <b>{change.value}</b>
+                    </div>
+                  ),
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="entry-visual" aria-hidden="true">
             <div className="entry-stars" />
 
@@ -175,13 +292,17 @@ function WingMatchMission({ onExit }: WingMatchMissionProps) {
               viewBox="0 0 600 330"
             >
               <path
-                d="M 70 55 C 185 55, 335 85, 455 220"
+                d={
+                  sceneIndex === 0
+                    ? "M 70 55 C 185 55, 335 85, 455 220"
+                    : "M 80 78 C 210 94, 340 120, 470 230"
+                }
                 className="entry-path"
               />
 
               <circle
-                cx="70"
-                cy="55"
+                cx={sceneIndex === 0 ? "70" : "80"}
+                cy={sceneIndex === 0 ? "55" : "78"}
                 r="5"
                 className="entry-start"
               />
@@ -214,18 +335,57 @@ function WingMatchMission({ onExit }: WingMatchMissionProps) {
             <h1>{scene.situation}</h1>
           </div>
 
-          <div className="wingmatch-telemetry">
-            {visibleTelemetry.map((item) => (
-              <div
-                className={`wingmatch-metric wingmatch-metric--${
-                  item.status ?? "nominal"
-                }`}
-                key={item.label}
-              >
-                <span>{item.label}</span>
-                <strong>{item.value}</strong>
+          {previewOption && !committedOption && (
+            <div className="projected-effect">
+              <div className="projected-effect-heading">
+                PROJECTED EFFECT
               </div>
-            ))}
+
+              <div className="projected-effect-items">
+                {previewOption.telemetryChanges.map((change) => (
+                  <div
+                    className={`projected-effect-item projected-effect-item--${
+                      change.status ?? "nominal"
+                    }`}
+                    key={change.label}
+                  >
+                    <span>{change.label}</span>
+                    <strong>{change.value}</strong>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="wingmatch-telemetry">
+            {visibleTelemetry.map((item) => {
+              const isProjected = projectedLabels.has(item.label);
+
+              return (
+                <div
+                  className={[
+                    "wingmatch-metric",
+                    `wingmatch-metric--${item.status ?? "nominal"}`,
+                    isProjected
+                      ? "wingmatch-metric--projected"
+                      : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  key={item.label}
+                >
+                  <div className="wingmatch-metric-heading">
+                    <span>{item.label}</span>
+
+                    {isProjected && !committedOption && (
+                      <em>PROJECTED</em>
+                    )}
+                  </div>
+
+                  <strong>{item.value}</strong>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -237,17 +397,13 @@ function WingMatchMission({ onExit }: WingMatchMissionProps) {
           <h2>{scene.question}</h2>
 
           <p className="decision-hint">
-            There is no single perfect answer. Choose what you would
-            prioritize with the information you have.
+            No perfect answer. Choose the tradeoff you would accept.
           </p>
 
           <div className="decision-options">
             {scene.options.map((option, index) => {
-              const isSelected =
-                previewOption?.id === option.id;
-
-              const isCommitted =
-                committedOption?.id === option.id;
+              const isSelected = previewOption?.id === option.id;
+              const isCommitted = committedOption?.id === option.id;
 
               return (
                 <button
@@ -271,7 +427,7 @@ function WingMatchMission({ onExit }: WingMatchMissionProps) {
                     {String(index + 1).padStart(2, "0")}
                   </div>
 
-                  <div>
+                  <div className="decision-option-copy">
                     <strong>{option.title}</strong>
                     <p>{option.description}</p>
                   </div>
@@ -289,31 +445,22 @@ function WingMatchMission({ onExit }: WingMatchMissionProps) {
             >
               {previewOption
                 ? "Commit decision"
-                : "Choose an approach"}
+                : "Select a tradeoff"}
             </button>
           )}
 
-          {committedOption && (
-            <div className="decision-result">
-              <div className="decision-result-label">
-                DECISION LOGGED
+          {committedOption && !hasNextBuiltScene && (
+            <div className="committed-status">
+              <div>
+                <span>DECISION COMMITTED</span>
+                <strong>{committedOption.title}</strong>
               </div>
-
-              <h3>{committedOption.title}</h3>
 
               <p>{committedOption.consequence}</p>
 
-              <div className="decision-result-status">
-                Mission response recorded.
+              <div className="committed-next">
+                Mission 03 — next build
               </div>
-
-              <button
-                type="button"
-                className="next-mission-placeholder"
-                disabled
-              >
-                Mission 02 — next build
-              </button>
             </div>
           )}
         </aside>
