@@ -126,90 +126,226 @@ function ProjectPortfolio({
       ],
     );
 
+  function pickEvidence(
+    record: EvidenceRecord | undefined,
+    keys: string[],
+  ) {
+    if (!record) {
+      return "";
+    }
+
+    for (const key of keys) {
+      const value = cleanText(record[key]);
+
+      if (value) {
+        return value;
+      }
+    }
+
+    return "";
+  }
+
+  const buildRecord =
+    evidence[steps[2]?.id];
+
+  const testRecord =
+    evidence[steps[3]?.id];
+
+  const iterationRecord =
+    evidence[steps[4]?.id];
+
+  const publishRecord =
+    evidence[steps[5]?.id];
+
+  const isPreviewData =
+    Object.values(evidence).some(
+      (record) =>
+        Object.values(record).some(
+          (value) =>
+            value.startsWith(
+              "Preview evidence for",
+            ),
+        ),
+    );
+
+  const activityNames:
+    Record<string, string> = {
+      "Systems Engineering":
+        "Spacecraft Systems Design Project",
+      "Guidance, Navigation & Control":
+        "Lander Guidance & Control Project",
+      Structures:
+        "Lunar Lander Structures Project",
+      Avionics:
+        "Spacecraft Avionics & Fault Detection Project",
+      "Thermal Engineering":
+        "Spacecraft Thermal Design Project",
+      Propulsion:
+        "Spacecraft Propulsion Trade Study",
+      "Mission Design":
+        "Lunar Mission Architecture Project",
+    };
+
+  const activityRoles:
+    Record<string, string> = {
+      "Systems Engineering":
+        "Systems Designer & Developer",
+      "Guidance, Navigation & Control":
+        "Simulation Designer & Developer",
+      Structures:
+        "CAD Designer & Structural Analyst",
+      Avionics:
+        "Avionics Developer & Systems Tester",
+      "Thermal Engineering":
+        "Thermal Modeler & Analyst",
+      Propulsion:
+        "Propulsion Analyst & Model Developer",
+      "Mission Design":
+        "Mission Architect & Systems Analyst",
+    };
+
   const activityName =
-    `${wingName} Independent Engineering Project`;
+    activityNames[wingName] ??
+    `${project} Independent Project`;
 
   const activityRole =
-    "Designer & Developer";
+    activityRoles[wingName] ??
+    "Independent Designer & Developer";
 
-  /*
-    This description deliberately
-    stays grounded in the student's
-    saved evidence instead of
-    inventing achievements.
-  */
-  const activityDescription =
-    shorten(
+  const buildDetail =
+    pickEvidence(
+      buildRecord,
       [
-        `Developed ${project}.`,
-        buildEvidence
-          ? `Built and tested ${shorten(
-              buildEvidence,
-              95,
-            )}.`
-          : "",
-        iterationEvidence
-          ? `Iterated using evidence: ${shorten(
-              iterationEvidence,
-              80,
-            )}.`
-          : "",
-      ]
-        .filter(Boolean)
-        .join(" "),
-      300,
-    );
+        "build",
+        "controller",
+        "logic",
+        "model",
+        "loadPath",
+        "inputs",
+        "outputs",
+        "tool",
+      ],
+    ) || buildEvidence;
+
+  const testDetail =
+    pickEvidence(
+      testRecord,
+      [
+        "finding",
+        "decision",
+        "choice",
+        "falseAlarm",
+        "result",
+        "scenario3",
+        "testC",
+        "healthy",
+      ],
+    ) || testEvidence;
+
+  const iterationDetail =
+    pickEvidence(
+      iterationRecord,
+      [
+        "revision",
+        "change",
+        "result",
+        "impact",
+        "decision",
+      ],
+    ) || iterationEvidence;
+
+  const finalResult =
+    pickEvidence(
+      publishRecord,
+      [
+        "result",
+        "decision",
+        "summary",
+        "architecture",
+        "method",
+      ],
+    ) || publishEvidence;
+
+  const activityDescription =
+    isPreviewData
+      ? `Preview only — ${project} portfolio output. Complete the real evidence checkpoints to generate an application-ready project description.`
+      : shorten(
+          [
+            buildDetail
+              ? `Designed and built ${project}: ${shorten(
+                  buildDetail,
+                  85,
+                )}.`
+              : `Designed and built ${project}.`,
+            testDetail
+              ? `Tested the system and identified ${shorten(
+                  testDetail,
+                  85,
+                )}.`
+              : "Tested the system across multiple conditions.",
+            iterationDetail
+              ? `Iterated V1 → V2 based on evidence by ${shorten(
+                  iterationDetail,
+                  80,
+                )}.`
+              : "Iterated V1 → V2 using recorded engineering evidence.",
+          ].join(" "),
+          300,
+        );
 
   const commonAppDescription =
-    shorten(
-      [
-        `Built ${project};`,
-        testEvidence
-          ? `tested ${shorten(
-              testEvidence,
-              62,
-            )};`
-          : "",
-        iterationEvidence
-          ? `iterated ${shorten(
-              iterationEvidence,
-              55,
-            )}.`
-          : "",
-      ]
-        .filter(Boolean)
-        .join(" "),
-      150,
-    );
+    isPreviewData
+      ? shorten(
+          `DEV PREVIEW — ${project}. Complete real evidence to generate the final activity draft.`,
+          150,
+        )
+      : shorten(
+          [
+            `Built ${project};`,
+            testDetail
+              ? `tested ${shorten(
+                  testDetail,
+                  48,
+                )};`
+              : "tested multiple conditions;",
+            "iterated V1→V2 using engineering evidence.",
+          ]
+            .filter(Boolean)
+            .join(" "),
+          150,
+        );
 
   const resumeBullet =
-    shorten(
-      [
-        `Built ${project}`,
-        `to investigate ${question}`,
-        testEvidence
-          ? `tested the design using ${shorten(
-              testEvidence,
-              120,
-            )}`
-          : "",
-        iterationEvidence
-          ? `and iterated V1 → V2 based on ${shorten(
-              iterationEvidence,
-              110,
-            )}`
-          : "",
-      ]
-        .filter(Boolean)
-        .join("; "),
-      420,
-    );
+    isPreviewData
+      ? `DEV PREVIEW — Resume language will be generated from the student's real build, test, and iteration evidence.`
+      : shorten(
+          [
+            `Designed and built ${project} to investigate ${question}`,
+            testDetail
+              ? `tested the system and identified ${shorten(
+                  testDetail,
+                  105,
+                )}`
+              : "tested performance across multiple conditions",
+            iterationDetail
+              ? `iterated V1 → V2 based on ${shorten(
+                  iterationDetail,
+                  100,
+                )}`
+              : "iterated V1 → V2 using recorded engineering evidence",
+          ]
+            .filter(Boolean)
+            .join("; "),
+          420,
+        );
 
   const reflection =
-    publishEvidence ||
-    iterationEvidence ||
-    exploreEvidence ||
-    "Complete the evidence checkpoints to generate a stronger project reflection.";
+    isPreviewData
+      ? "This is preview data. Complete the real engineering checkpoints to generate a technical reflection grounded in your work."
+      : finalResult ||
+        iterationDetail ||
+        exploreEvidence ||
+        "Complete the evidence checkpoints to generate a stronger project reflection.";
 
   async function copyText(
     id: string,
@@ -250,6 +386,12 @@ function ProjectPortfolio({
         <span className="portfolio-kicker">
           PROJECT PORTFOLIO
         </span>
+
+        {isPreviewData && (
+          <div className="portfolio-preview-badge">
+            DEV PREVIEW DATA — NOT FOR APPLICATION USE
+          </div>
+        )}
 
         <h1>
           You didn't just explore

@@ -1791,3 +1791,27 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* DEV PORTFOLIO PREVIEW WARNING */
+
+.portfolio-preview-badge {
+  width: fit-content;
+  margin-top: 14px;
+  padding: 7px 10px;
+
+  border:
+    1px solid
+    rgba(255, 200, 87, 0.35);
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 200, 87, 0.06);
+
+  color: #ffc857;
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
