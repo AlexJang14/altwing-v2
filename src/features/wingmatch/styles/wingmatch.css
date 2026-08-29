@@ -1090,3 +1090,174 @@
 
   font-size: 9px;
 }
+/* =========================================================
+   WINGMATCH V3 — LIVE MISSION STATE
+   ========================================================= */
+
+.mission-state {
+  margin: 16px 0 18px;
+  padding: 17px;
+
+  border:
+    1px solid
+    rgba(91,141,239,.18);
+
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      125deg,
+      rgba(91,141,239,.055),
+      rgba(255,255,255,.018)
+    );
+}
+
+.mission-state-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 14px;
+}
+
+.mission-state-heading > div {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color:
+    rgba(255,255,255,.5);
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.mission-state-heading > span {
+  color: #5b8def;
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .11em;
+}
+
+.mission-state-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0,1fr));
+
+  gap: 9px;
+}
+
+.mission-state-item {
+  position: relative;
+
+  padding: 11px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.06);
+
+  border-radius: 10px;
+
+  background:
+    rgba(255,255,255,.018);
+
+  transition:
+    border-color .18s ease,
+    background .18s ease,
+    transform .18s ease;
+}
+
+.mission-state-item--projected {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    rgba(255,200,87,.3);
+
+  background:
+    rgba(255,200,87,.04);
+}
+
+.mission-state-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+
+  gap: 8px;
+}
+
+.mission-state-item-top span {
+  color:
+    rgba(255,255,255,.32);
+
+  font-size: 5px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.mission-state-item-top strong {
+  color: white;
+
+  font-size: 17px;
+  line-height: 1;
+}
+
+.mission-state-track {
+  height: 4px;
+
+  margin-top: 9px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255,255,255,.08);
+}
+
+.mission-state-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: #5b8def;
+
+  transition:
+    width .28s ease;
+}
+
+.mission-state-item--projected
+.mission-state-fill {
+  background: #ffc857;
+}
+
+.mission-state-delta {
+  display: block;
+
+  margin-top: 7px;
+
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.mission-state-delta--up {
+  color: #69d7b1;
+}
+
+.mission-state-delta--down {
+  color: #ff7b7b;
+}
+
+@media (max-width: 760px) {
+  .mission-state-grid {
+    grid-template-columns:
+      repeat(2, minmax(0,1fr));
+  }
+}
+

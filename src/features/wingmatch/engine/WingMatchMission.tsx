@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import ControlTuningPanel from "../interactions/ControlTuningPanel";
 import type { ControllerTuningResult } from "../interactions/ControlTuningPanel";
@@ -66,6 +66,368 @@ interface CommitFlashData {
   title: string;
   effects: TelemetryItem[];
   continues: boolean;
+}
+
+interface LiveMissionState {
+  safety: number;
+  science: number;
+  resources: number;
+  confidence: number;
+}
+
+interface LiveMissionDelta {
+  safety?: number;
+  science?: number;
+  resources?: number;
+  confidence?: number;
+}
+
+interface PersistedMissionSnapshot {
+  sceneIndex: number;
+  wingScores: WingScores;
+  reasoningScores: ReasoningScores;
+  missionHistory: MissionHistoryItem[];
+  missionState: LiveMissionState;
+}
+
+const MISSION_STATE_STORAGE_KEY =
+  "altwing-wingmatch-v3-state";
+
+const INITIAL_MISSION_STATE: LiveMissionState = {
+  safety: 72,
+  science: 58,
+  resources: 70,
+  confidence: 62,
+};
+
+function clampMissionValue(
+  value: number,
+) {
+  return Math.max(
+    0,
+    Math.min(
+      100,
+      Math.round(value),
+    ),
+  );
+}
+
+function applyMissionDelta(
+  current: LiveMissionState,
+  delta: LiveMissionDelta,
+): LiveMissionState {
+  return {
+    safety: clampMissionValue(
+      current.safety +
+        (delta.safety ?? 0),
+    ),
+
+    science: clampMissionValue(
+      current.science +
+        (delta.science ?? 0),
+    ),
+
+    resources: clampMissionValue(
+      current.resources +
+        (delta.resources ?? 0),
+    ),
+
+    confidence: clampMissionValue(
+      current.confidence +
+        (delta.confidence ?? 0),
+    ),
+  };
+}
+
+function readMissionSnapshot():
+  | PersistedMissionSnapshot
+  | null {
+  try {
+    const raw =
+      localStorage.getItem(
+        MISSION_STATE_STORAGE_KEY,
+      );
+
+    if (!raw) {
+      return null;
+    }
+
+    const parsed =
+      JSON.parse(raw) as
+        PersistedMissionSnapshot;
+
+    if (
+      typeof parsed.sceneIndex !==
+        "number" ||
+      !parsed.missionState
+    ) {
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function getOptionMissionDelta(
+  option: MissionOption,
+): LiveMissionDelta {
+  const reasoning =
+    option.scores.reasoning ?? {};
+
+  const wings =
+    option.scores.wings ?? {};
+
+  const risk =
+    reasoning[
+      "risk-tolerance"
+    ] ?? 0;
+
+  const systems =
+    reasoning[
+      "systems-integration"
+    ] ?? 0;
+
+  const tradeoff =
+    reasoning[
+      "mission-tradeoffs"
+    ] ?? 0;
+
+  const optimization =
+    reasoning.optimization ?? 0;
+
+  const quantitative =
+    reasoning[
+      "quantitative-reasoning"
+    ] ?? 0;
+
+  const iteration =
+    reasoning.iteration ?? 0;
+
+  const missionDesign =
+    wings[
+      "mission-design"
+    ] ?? 0;
+
+  return {
+    safety:
+      systems * 2 +
+      tradeoff -
+      risk * 2,
+
+    science:
+      missionDesign * 2 +
+      risk * 2,
+
+    resources:
+      optimization * 2 -
+      risk,
+
+    confidence:
+      quantitative * 2 +
+      iteration,
+  };
+}
+
+function getControllerMissionDelta(
+  result: ControllerTuningResult,
+): LiveMissionDelta {
+  if (
+    result.responseState ===
+    "balanced"
+  ) {
+    return {
+      safety: 9,
+      resources: -2,
+      confidence: 10,
+    };
+  }
+
+  if (
+    result.responseState ===
+    "slow"
+  ) {
+    return {
+      safety: 4,
+      resources: -4,
+      confidence: 2,
+    };
+  }
+
+  return {
+    safety: -9,
+    resources: -3,
+    confidence: -7,
+  };
+}
+
+function getThermalMissionDelta(
+  result: ThermalAllocationResult,
+): LiveMissionDelta {
+  switch (result.state) {
+    case "balanced":
+      return {
+        safety: 10,
+        resources: 4,
+        confidence: 7,
+      };
+
+    case "engine-risk":
+      return {
+        safety: -8,
+        resources: 4,
+        confidence: -3,
+      };
+
+    case "battery-risk":
+      return {
+        safety: -5,
+        resources: 2,
+        confidence: -2,
+      };
+
+    case "avionics-risk":
+      return {
+        safety: -7,
+        confidence: -5,
+      };
+
+    case "low-reserve":
+      return {
+        safety: 4,
+        resources: -12,
+        confidence: -2,
+      };
+
+    default:
+      return {};
+  }
+}
+
+function getLandingMissionDelta(
+  result: LandingSiteResult,
+): LiveMissionDelta {
+  if (result.siteId === "site-a") {
+    return {
+      safety: 10,
+      science: -6,
+      resources: -7,
+      confidence: 6,
+    };
+  }
+
+  if (result.siteId === "site-b") {
+    return {
+      safety: 4,
+      science: 7,
+      resources: 3,
+      confidence: 5,
+    };
+  }
+
+  return {
+    safety: -8,
+    science: 13,
+    resources: -4,
+    confidence: -3,
+  };
+}
+
+function getStructureMissionDelta(
+  result: StructureScanResult,
+): LiveMissionDelta {
+  switch (result.zoneId) {
+    case "main-strut":
+      return {
+        safety: 10,
+        resources: -9,
+        confidence: 7,
+      };
+
+    case "lower-joint":
+      return {
+        safety: 7,
+        resources: -4,
+        confidence: 6,
+      };
+
+    case "upper-joint":
+      return {
+        safety: 2,
+        resources: -3,
+        confidence: 1,
+      };
+
+    case "footpad":
+      return {
+        safety: 3,
+        resources: -5,
+        confidence: 1,
+      };
+
+    default:
+      return {};
+  }
+}
+
+function getFaultMissionDelta(
+  result: FaultIsolationResult,
+): LiveMissionDelta {
+  if (
+    result.faultId === "rf-path" &&
+    result.foundRfEvidence
+  ) {
+    return {
+      safety: 5,
+      resources: -2,
+      confidence: 13,
+    };
+  }
+
+  if (
+    result.faultId === "rf-path"
+  ) {
+    return {
+      safety: 1,
+      resources: -1,
+      confidence: -4,
+    };
+  }
+
+  return {
+    safety: -5,
+    resources: -3,
+    confidence: -10,
+  };
+}
+
+function getFinalMissionDelta(
+  result: FinalMissionResult,
+): LiveMissionDelta {
+  return {
+    safety:
+      (result.allocations.safety -
+        25) /
+      2,
+
+    science:
+      (result.allocations.science -
+        25) /
+      2,
+
+    resources:
+      (result.allocations
+        .communications -
+        25) /
+      4,
+
+    confidence:
+      (result.allocations
+        .verification -
+        25) /
+      2,
+  };
 }
 
 const activeMissionScenes: MissionScene[] = [
@@ -428,7 +790,13 @@ function getFinalConsequence(
 function WingMatchMission({
   onExit,
 }: WingMatchMissionProps) {
-   const [showBuild, setShowBuild] = useState(false);
+  const [showBuild, setShowBuild] =
+    useState(false);
+
+  const [persistedSnapshot] =
+    useState(() =>
+      readMissionSnapshot(),
+    );
 const [sceneIndex, setSceneIndex] =
   useState(() => {
     const params =
@@ -449,7 +817,10 @@ const [sceneIndex, setSceneIndex] =
       return requestedMission - 1;
     }
 
-    return 0;
+    return (
+      persistedSnapshot?.sceneIndex ??
+      0
+    );
   });
 
   const [
@@ -554,21 +925,59 @@ const [sceneIndex, setSceneIndex] =
   const [
     wingScores,
     setWingScores,
-  ] = useState<WingScores>({});
+  ] = useState<WingScores>(
+    persistedSnapshot?.wingScores ??
+      {},
+  );
 
   const [
     reasoningScores,
     setReasoningScores,
   ] =
-    useState<ReasoningScores>({});
+    useState<ReasoningScores>(
+      persistedSnapshot
+        ?.reasoningScores ?? {},
+    );
 
   const [
     missionHistory,
     setMissionHistory,
   ] =
     useState<MissionHistoryItem[]>(
-      [],
+      persistedSnapshot
+        ?.missionHistory ?? [],
     );
+
+  const [
+    missionState,
+    setMissionState,
+  ] = useState<LiveMissionState>(
+    persistedSnapshot
+      ?.missionState ??
+      INITIAL_MISSION_STATE,
+  );
+
+  useEffect(() => {
+    const snapshot:
+      PersistedMissionSnapshot = {
+        sceneIndex,
+        wingScores,
+        reasoningScores,
+        missionHistory,
+        missionState,
+      };
+
+    localStorage.setItem(
+      MISSION_STATE_STORAGE_KEY,
+      JSON.stringify(snapshot),
+    );
+  }, [
+    sceneIndex,
+    wingScores,
+    reasoningScores,
+    missionHistory,
+    missionState,
+  ]);
 
   const scene =
     activeMissionScenes[sceneIndex];
@@ -698,6 +1107,66 @@ const [sceneIndex, setSceneIndex] =
       );
     }, [previewOption]);
 
+  const previewMissionState =
+    useMemo(() => {
+      if (
+        !previewOption ||
+        committedOption ||
+        controllerScene ||
+        thermalScene ||
+        landingScene ||
+        structureScene ||
+        faultScene ||
+        finalScene
+      ) {
+        return missionState;
+      }
+
+      return applyMissionDelta(
+        missionState,
+        getOptionMissionDelta(
+          previewOption,
+        ),
+      );
+    }, [
+      missionState,
+      previewOption,
+      committedOption,
+      controllerScene,
+      thermalScene,
+      landingScene,
+      structureScene,
+      faultScene,
+      finalScene,
+    ]);
+
+  const missionStateItems = [
+    {
+      label: "SAFETY",
+      value:
+        previewMissionState.safety,
+      base: missionState.safety,
+    },
+    {
+      label: "SCIENCE",
+      value:
+        previewMissionState.science,
+      base: missionState.science,
+    },
+    {
+      label: "RESOURCES",
+      value:
+        previewMissionState.resources,
+      base: missionState.resources,
+    },
+    {
+      label: "CONFIDENCE",
+      value:
+        previewMissionState.confidence,
+      base: missionState.confidence,
+    },
+  ];
+
   const hasNextBuiltScene =
     sceneIndex <
     activeMissionScenes.length - 1;
@@ -730,6 +1199,14 @@ const [sceneIndex, setSceneIndex] =
     setWingScores({});
     setReasoningScores({});
     setMissionHistory([]);
+
+    setMissionState(
+      INITIAL_MISSION_STATE,
+    );
+
+    localStorage.removeItem(
+      MISSION_STATE_STORAGE_KEY,
+    );
 
     setShowResult(false);
 
@@ -874,6 +1351,16 @@ const [sceneIndex, setSceneIndex] =
       historyItem,
     ]);
 
+    setMissionState(
+      (current) =>
+        applyMissionDelta(
+          current,
+          getOptionMissionDelta(
+            previewOption,
+          ),
+        ),
+    );
+
     setCommittedOption(
       previewOption,
     );
@@ -1006,6 +1493,16 @@ const [sceneIndex, setSceneIndex] =
       },
     ]);
 
+    setMissionState(
+      (current) =>
+        applyMissionDelta(
+          current,
+          getControllerMissionDelta(
+            result,
+          ),
+        ),
+    );
+
     setControllerLocked(true);
 
     showDecisionFlash(
@@ -1112,6 +1609,16 @@ const [sceneIndex, setSceneIndex] =
       },
     ]);
 
+    setMissionState(
+      (current) =>
+        applyMissionDelta(
+          current,
+          getThermalMissionDelta(
+            result,
+          ),
+        ),
+    );
+
     setThermalResult(result);
     setThermalLocked(true);
 
@@ -1209,6 +1716,16 @@ const [sceneIndex, setSceneIndex] =
         effects,
       },
     ]);
+
+    setMissionState(
+      (current) =>
+        applyMissionDelta(
+          current,
+          getLandingMissionDelta(
+            result,
+          ),
+        ),
+    );
 
     setLandingResult(result);
     setLandingLocked(true);
@@ -1310,6 +1827,16 @@ const [sceneIndex, setSceneIndex] =
         effects,
       },
     ]);
+
+    setMissionState(
+      (current) =>
+        applyMissionDelta(
+          current,
+          getStructureMissionDelta(
+            result,
+          ),
+        ),
+    );
 
     setStructureResult(result);
     setStructureLocked(true);
@@ -1414,6 +1941,16 @@ const [sceneIndex, setSceneIndex] =
         effects,
       },
     ]);
+
+    setMissionState(
+      (current) =>
+        applyMissionDelta(
+          current,
+          getFaultMissionDelta(
+            result,
+          ),
+        ),
+    );
 
     setFaultResult(result);
     setFaultLocked(true);
@@ -1530,6 +2067,16 @@ const [sceneIndex, setSceneIndex] =
 
     setMissionHistory(
       finalHistory,
+    );
+
+    setMissionState(
+      (current) =>
+        applyMissionDelta(
+          current,
+          getFinalMissionDelta(
+            result,
+          ),
+        ),
     );
 
     setFinalResult(result);
@@ -1766,6 +2313,89 @@ const [sceneIndex, setSceneIndex] =
                 </div>
               </div>
             )}
+
+          <div className="mission-state">
+            <div className="mission-state-heading">
+              <div>
+                <span className="wingmatch-live-dot" />
+                MISSION STATE
+              </div>
+
+              <span>
+                {previewOption &&
+                !committedOption &&
+                !controllerScene &&
+                !thermalScene &&
+                !landingScene &&
+                !structureScene &&
+                !faultScene &&
+                !finalScene
+                  ? "PREVIEWING CONSEQUENCES"
+                  : "LIVE"}
+              </span>
+            </div>
+
+            <div className="mission-state-grid">
+              {missionStateItems.map(
+                (item) => {
+                  const delta =
+                    item.value -
+                    item.base;
+
+                  const projected =
+                    delta !== 0;
+
+                  return (
+                    <div
+                      key={item.label}
+                      className={[
+                        "mission-state-item",
+                        projected
+                          ? "mission-state-item--projected"
+                          : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                    >
+                      <div className="mission-state-item-top">
+                        <span>
+                          {item.label}
+                        </span>
+
+                        <strong>
+                          {item.value}
+                        </strong>
+                      </div>
+
+                      <div className="mission-state-track">
+                        <div
+                          className="mission-state-fill"
+                          style={{
+                            width: `${item.value}%`,
+                          }}
+                        />
+                      </div>
+
+                      {projected && (
+                        <small
+                          className={
+                            delta > 0
+                              ? "mission-state-delta mission-state-delta--up"
+                              : "mission-state-delta mission-state-delta--down"
+                          }
+                        >
+                          {delta > 0
+                            ? "+"
+                            : ""}
+                          {delta}
+                        </small>
+                      )}
+                    </div>
+                  );
+                },
+              )}
+            </div>
+          </div>
 
           {!controllerScene &&
             !thermalScene &&
