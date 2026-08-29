@@ -355,6 +355,269 @@ function nextMoves(
   return moves.slice(0, 3);
 }
 
+
+interface NinetyDayAction {
+  phase: string;
+  category: string;
+  title: string;
+  detail: string;
+  schools: string[];
+}
+
+function buildNinetyDayPlan(
+  profile: StudentProfile,
+  planningColleges: CollegeProfile[],
+): NinetyDayAction[] {
+  const actions: NinetyDayAction[] = [];
+
+  const sat =
+    Number(profile.sat) || 0;
+
+  const satMath =
+    Number(profile.satMath) || 0;
+
+  const requiredTestingSchools =
+    planningColleges.filter(
+      (college) =>
+        college.testingPolicy ===
+          "REQUIRED" ||
+        college.testingPolicy ===
+          "SPECIAL",
+    );
+
+  const belowMedianSchools =
+    planningColleges.filter(
+      (college) =>
+        sat > 0 &&
+        college.sat50 !== null &&
+        sat < college.sat50,
+    );
+
+  const caltech =
+    planningColleges.find(
+      (college) =>
+        college.id === "caltech",
+    );
+
+  const utAustin =
+    planningColleges.find(
+      (college) =>
+        college.id === "utaustin",
+    );
+
+  const calPoly =
+    planningColleges.find(
+      (college) =>
+        college.id === "calpoly",
+    );
+
+  if (
+    !sat &&
+    requiredTestingSchools.length > 0
+  ) {
+    actions.push({
+      phase: "DAYS 1–30",
+      category: "TESTING",
+      title:
+        "Establish your testing baseline.",
+      detail:
+        "Take or review a full SAT/ACT diagnostic, then decide whether testing deserves meaningful time in your next 90 days.",
+      schools:
+        requiredTestingSchools.map(
+          (college) =>
+            college.shortName,
+        ),
+    });
+  } else if (
+    belowMedianSchools.length > 0
+  ) {
+    actions.push({
+      phase: "DAYS 1–30",
+      category: "TESTING",
+      title:
+        "Raise testing only where it changes your position.",
+      detail:
+        `Your current SAT is below the reported median at ${belowMedianSchools.length} saved ${belowMedianSchools.length === 1 ? "school" : "schools"}. Build a focused improvement plan instead of chasing points indefinitely.`,
+      schools:
+        belowMedianSchools.map(
+          (college) =>
+            college.shortName,
+        ),
+    });
+  }
+
+  if (
+    caltech &&
+    (!satMath || satMath < 780)
+  ) {
+    actions.push({
+      phase: "DAYS 1–30",
+      category: "STEM READINESS",
+      title:
+        "Strengthen quantitative readiness.",
+      detail:
+        "Caltech evaluates SAT sections through score buckets. More importantly, make sure your transcript and work show strong calculus, physics, and chemistry preparation.",
+      schools: [
+        caltech.shortName,
+      ],
+    });
+  }
+
+  if (
+    utAustin &&
+    (!satMath || satMath < 620)
+  ) {
+    actions.push({
+      phase: "DAYS 1–30",
+      category: "CALCULUS",
+      title:
+        "Verify Cockrell calculus readiness.",
+      detail:
+        "Confirm that you satisfy one of UT Austin Cockrell Engineering's approved calculus-readiness routes before application planning gets further along.",
+      schools: [
+        utAustin.shortName,
+      ],
+    });
+  }
+
+  if (
+    profile.rigor === "Exploring" ||
+    profile.rigor === "Developing"
+  ) {
+    actions.push({
+      phase: "DAYS 1–30",
+      category: "ACADEMICS",
+      title:
+        "Protect the math + physics runway.",
+      detail:
+        "Prioritize the strongest relevant math, physics, computing, and engineering coursework realistically available to you. Depth and performance matter more than collecting course labels.",
+      schools:
+        planningColleges.map(
+          (college) =>
+            college.shortName,
+        ),
+    });
+  }
+
+  if (
+    profile.engineering ===
+      "Exploring" ||
+    profile.engineering ===
+      "Developing"
+  ) {
+    actions.push({
+      phase: "DAYS 31–60",
+      category:
+        "ENGINEERING EVIDENCE",
+      title:
+        "Turn one technical interest into proof.",
+      detail:
+        "Choose one engineering question, build or model something, test it, document what failed, and show how V1 became V2. One deep project is more valuable than several unfinished ideas.",
+      schools:
+        planningColleges.map(
+          (college) =>
+            college.shortName,
+        ),
+    });
+  } else {
+    actions.push({
+      phase: "DAYS 31–60",
+      category:
+        "ENGINEERING EVIDENCE",
+      title:
+        "Deepen the project you already have.",
+      detail:
+        "Move beyond a first prototype. Add testing, data, iteration, technical documentation, and an external audience so the work becomes stronger evidence.",
+      schools:
+        planningColleges.map(
+          (college) =>
+            college.shortName,
+        ),
+    });
+  }
+
+  if (
+    profile.leadership ===
+      "Exploring" ||
+    profile.leadership ===
+      "Developing"
+  ) {
+    actions.push({
+      phase: "DAYS 31–60",
+      category: "LEADERSHIP",
+      title:
+        "Own an outcome, not a title.",
+      detail:
+        "Use an existing project or activity to lead something measurable: recruit collaborators, teach others, organize a build, publish a resource, create a program, or solve a real community problem.",
+      schools:
+        planningColleges.map(
+          (college) =>
+            college.shortName,
+        ),
+    });
+  }
+
+  if (calPoly) {
+    const alreadyHasAcademic =
+      actions.some(
+        (action) =>
+          action.category ===
+          "ACADEMICS",
+      );
+
+    if (!alreadyHasAcademic) {
+      actions.push({
+        phase: "DAYS 31–60",
+        category: "MAJOR PREP",
+        title:
+          "Protect major-specific preparation.",
+        detail:
+          "Cal Poly admits by intended major and does not use SAT/ACT in admission selection, so academic preparation and evidence of fit with engineering matter more than test-score optimization here.",
+        schools: [
+          calPoly.shortName,
+        ],
+      });
+    }
+  }
+
+  actions.push({
+    phase: "DAYS 61–90",
+    category: "DOCUMENT",
+    title:
+      "Package the evidence you created.",
+    detail:
+      "Turn your strongest work into something another person can verify: project page, GitHub repository, technical brief, competition entry, research extension, presentation, or portfolio artifact.",
+    schools:
+      planningColleges.map(
+        (college) =>
+          college.shortName,
+      ),
+  });
+
+  const priorityOrder = [
+    "TESTING",
+    "STEM READINESS",
+    "CALCULUS",
+    "ACADEMICS",
+    "ENGINEERING EVIDENCE",
+    "LEADERSHIP",
+    "MAJOR PREP",
+    "DOCUMENT",
+  ];
+
+  return actions
+    .sort(
+      (a, b) =>
+        priorityOrder.indexOf(
+          a.category,
+        ) -
+        priorityOrder.indexOf(
+          b.category,
+        ),
+    )
+    .slice(0, 5);
+}
+
 function ReadinessPlan({
   major,
   onBack,
@@ -454,6 +717,25 @@ function ReadinessPlan({
       ),
     [profile, college],
   );
+
+  const planningColleges =
+    shortlistColleges.length > 0
+      ? shortlistColleges
+      : [college];
+
+  const ninetyDayPlan =
+    useMemo(
+      () =>
+        buildNinetyDayPlan(
+          profile,
+          planningColleges,
+        ),
+      [
+        profile,
+        shortlistColleges,
+        college,
+      ],
+    );
 
   const updateField = (
     key: keyof StudentProfile,
@@ -1068,6 +1350,103 @@ function ReadinessPlan({
                 </span>
 
                 <p>{move}</p>
+              </article>
+            ),
+          )}
+        </div>
+      </section>
+
+      <section className="readiness-ninety-day">
+        <div className="readiness-ninety-heading">
+          <div>
+            <span>
+              YOUR 90-DAY PLAN
+            </span>
+
+            <h2>
+              Do fewer things
+              that move more schools.
+            </h2>
+
+            <p>
+              AltWing combines overlapping
+              needs across your saved colleges
+              into one prioritized execution plan.
+            </p>
+          </div>
+
+          <strong>
+            {ninetyDayPlan.length}
+            {" "}
+            priorities
+          </strong>
+        </div>
+
+        <div className="readiness-ninety-list">
+          {ninetyDayPlan.map(
+            (action, index) => (
+              <article
+                key={
+                  action.category +
+                  index
+                }
+              >
+                <div className="readiness-ninety-number">
+                  0{index + 1}
+                </div>
+
+                <div className="readiness-ninety-content">
+                  <div className="readiness-ninety-meta">
+                    <span>
+                      {action.phase}
+                    </span>
+
+                    <b>
+                      {action.category}
+                    </b>
+                  </div>
+
+                  <h3>
+                    {action.title}
+                  </h3>
+
+                  <p>
+                    {action.detail}
+                  </p>
+
+                  <div className="readiness-ninety-schools">
+                    <span>
+                      HELPS WITH
+                    </span>
+
+                    <div>
+                      {action.schools
+                        .slice(0, 5)
+                        .map(
+                          (school) => (
+                            <small
+                              key={
+                                school
+                              }
+                            >
+                              {school}
+                            </small>
+                          ),
+                        )}
+
+                      {action.schools
+                        .length > 5 && (
+                        <small>
+                          +
+                          {action.schools
+                            .length -
+                            5}{" "}
+                          more
+                        </small>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </article>
             ),
           )}
