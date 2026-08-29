@@ -248,3 +248,267 @@
   opacity: 0.4;
   cursor: default;
 }
+/* =========================================================
+   WINGMATCH V3 — FLIGHT ANOMALY
+   ========================================================= */
+
+.fault-anomaly {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 18px;
+
+  margin-bottom: 10px;
+  padding: 16px 18px;
+
+  border:
+    1px solid
+    rgba(255,107,107,.34);
+
+  border-radius: 14px;
+
+  background:
+    rgba(255,107,107,.06);
+}
+
+.fault-anomaly > div:first-child {
+  display: grid;
+  gap: 6px;
+}
+
+.fault-anomaly span {
+  color: #ff7b7b;
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.fault-anomaly strong {
+  color: #fff;
+
+  font-size: 18px;
+  letter-spacing: -.025em;
+}
+
+.fault-anomaly__status {
+  display: grid;
+  gap: 3px;
+
+  text-align: right;
+}
+
+.fault-anomaly__status span {
+  color:
+    rgba(255,255,255,.28);
+}
+
+.fault-anomaly__status b {
+  color: #69d7b1;
+
+  font-size: 9px;
+}
+
+.fault-anomaly__telemetry {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 8px;
+
+  margin-bottom: 22px;
+}
+
+.fault-anomaly__telemetry > div {
+  padding: 11px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.06);
+
+  border-radius: 10px;
+
+  background:
+    rgba(255,255,255,.018);
+}
+
+.fault-anomaly__telemetry span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color:
+    rgba(255,255,255,.28);
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .09em;
+}
+
+.fault-anomaly__telemetry strong {
+  color:
+    rgba(255,255,255,.76);
+
+  font-size: 9px;
+}
+
+.fault-section-label {
+  margin:
+    25px 0 10px;
+
+  color: #5b8def;
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.fault-recovery {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 9px;
+}
+
+.fault-recovery-card {
+  min-height: 160px;
+
+  padding: 15px;
+
+  text-align: left;
+
+  border:
+    1px solid
+    rgba(255,255,255,.07);
+
+  border-radius: 12px;
+
+  background:
+    rgba(255,255,255,.018);
+
+  cursor: pointer;
+
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    background .16s ease;
+}
+
+.fault-recovery-card:not(:disabled):hover {
+  transform:
+    translateY(-2px);
+}
+
+.fault-recovery-card--selected {
+  border-color:
+    rgba(255,200,87,.42);
+
+  background:
+    rgba(255,200,87,.05);
+}
+
+.fault-recovery-card > div {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+.fault-recovery-card strong {
+  color: #fff;
+
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.fault-recovery-card > div > span {
+  color: #ffc857;
+
+  font-size: 5px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.fault-recovery-card p {
+  margin: 13px 0;
+
+  color:
+    rgba(255,255,255,.4);
+
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+.fault-recovery-card small {
+  color:
+    rgba(255,200,87,.62);
+
+  font-size: 6px;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.fault-decision-preview {
+  margin-top: 14px;
+  padding: 17px;
+
+  border:
+    1px solid
+    rgba(91,141,239,.2);
+
+  border-radius: 12px;
+
+  background:
+    rgba(91,141,239,.045);
+}
+
+.fault-decision-preview > span {
+  color: #5b8def;
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .11em;
+}
+
+.fault-decision-preview > strong {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #fff;
+
+  font-size: 15px;
+}
+
+.fault-decision-preview p {
+  margin:
+    8px 0 10px;
+
+  color:
+    rgba(255,255,255,.55);
+
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.fault-decision-preview small {
+  color:
+    rgba(255,255,255,.3);
+
+  font-size: 7px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .fault-recovery {
+    grid-template-columns: 1fr;
+  }
+
+  .fault-anomaly__telemetry {
+    grid-template-columns: 1fr;
+  }
+}

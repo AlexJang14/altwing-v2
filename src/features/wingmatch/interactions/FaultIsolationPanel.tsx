@@ -7,9 +7,19 @@ export type FaultId =
   | "rf-path"
   | "data-bus";
 
+export type RecoveryActionId =
+  | "backup-rf"
+  | "reboot-computer"
+  | "autonomous-hold";
+
 export interface FaultIsolationResult {
   faultId: FaultId;
   faultName: string;
+
+  recoveryActionId:
+    RecoveryActionId;
+
+  recoveryActionName: string;
 
   testsRun: string[];
   testCount: number;
@@ -22,6 +32,10 @@ export interface FaultIsolationResult {
 interface FaultIsolationPanelProps {
   locked?: boolean;
 
+  onPreview?: (
+    result: FaultIsolationResult,
+  ) => void;
+
   onLock?: (
     result: FaultIsolationResult,
   ) => void;
@@ -31,35 +45,50 @@ interface DiagnosticTest {
   id: string;
   name: string;
   result: string;
-  status: "PASS" | "FAIL" | "WARNING";
+  status:
+    | "PASS"
+    | "FAIL"
+    | "WARNING";
 }
 
-const diagnosticTests: DiagnosticTest[] = [
+interface RecoveryAction {
+  id: RecoveryActionId;
+  name: string;
+  description: string;
+  tradeoff: string;
+}
+
+const diagnosticTests:
+  DiagnosticTest[] = [
   {
     id: "power",
     name: "POWER BUS TEST",
-    result: "28.1 V — stable under load",
+    result:
+      "28.1 V — stable under load",
     status: "PASS",
   },
 
   {
     id: "antenna",
     name: "ANTENNA LOOPBACK",
-    result: "63% packet loss detected",
+    result:
+      "63% packet loss detected",
     status: "FAIL",
   },
 
   {
     id: "bus",
     name: "DATA BUS CHECK",
-    result: "Command and telemetry bus operating normally",
+    result:
+      "Command and telemetry bus operating normally",
     status: "PASS",
   },
 
   {
     id: "rf",
     name: "RF PATH TEST",
-    result: "Signal attenuation +8.2 dB above expected",
+    result:
+      "Signal attenuation +8.2 dB above expected",
     status: "WARNING",
   },
 ];
@@ -86,21 +115,162 @@ const hypotheses = [
   },
 ];
 
+const recoveryActions:
+  RecoveryAction[] = [
+  {
+    id: "backup-rf",
+    name: "REROUTE TO BACKUP RF",
+    description:
+      "Switch communication through the backup radio path and attempt immediate reacquisition.",
+    tradeoff:
+      "GAIN: link recovery attempt  /  ACCEPT: power + redundancy cost",
+  },
+
+  {
+    id: "reboot-computer",
+    name: "REBOOT FLIGHT COMPUTER",
+    description:
+      "Restart communication and command software while the lander remains autonomous.",
+    tradeoff:
+      "GAIN: software reset  /  ACCEPT: temporary control interruption",
+  },
+
+  {
+    id: "autonomous-hold",
+    name: "HOLD AUTONOMOUS MODE",
+    description:
+      "Preserve vehicle stability and wait for the next communication opportunity.",
+    tradeoff:
+      "GAIN: vehicle safety + reserve  /  ACCEPT: delayed science + contact",
+  },
+];
+
+function getFaultName(
+  faultId: FaultId,
+) {
+  return (
+    hypotheses.find(
+      (item) =>
+        item.id === faultId,
+    )?.name ?? faultId
+  );
+}
+
+function getRecoveryName(
+  recoveryActionId:
+    RecoveryActionId,
+) {
+  return (
+    recoveryActions.find(
+      (item) =>
+        item.id ===
+        recoveryActionId,
+    )?.name ??
+    recoveryActionId
+  );
+}
+
+function buildResult(
+  faultId: FaultId,
+  recoveryActionId:
+    RecoveryActionId,
+  testsRun: string[],
+): FaultIsolationResult {
+  return {
+    faultId,
+
+    faultName:
+      getFaultName(
+        faultId,
+      ),
+
+    recoveryActionId,
+
+    recoveryActionName:
+      getRecoveryName(
+        recoveryActionId,
+      ),
+
+    testsRun,
+
+    testCount:
+      testsRun.length,
+
+    foundRfEvidence:
+      testsRun.includes(
+        "antenna",
+      ) ||
+      testsRun.includes(
+        "rf",
+      ),
+
+    inspectedPower:
+      testsRun.includes(
+        "power",
+      ),
+
+    inspectedBus:
+      testsRun.includes(
+        "bus",
+      ),
+  };
+}
+
 function FaultIsolationPanel({
   locked = false,
+  onPreview,
   onLock,
 }: FaultIsolationPanelProps) {
-  const [testsRun, setTestsRun] =
+  const [
+    testsRun,
+    setTestsRun,
+  ] =
     useState<string[]>([]);
 
   const [
     selectedFault,
     setSelectedFault,
   ] =
-    useState<FaultId | null>(null);
+    useState<FaultId | null>(
+      null,
+    );
+
+  const [
+    selectedRecovery,
+    setSelectedRecovery,
+  ] =
+    useState<
+      RecoveryActionId | null
+    >(null);
 
   const remainingTests =
     3 - testsRun.length;
+
+  function emitPreview(
+    faultId:
+      | FaultId
+      | null,
+    recoveryId:
+      | RecoveryActionId
+      | null,
+    testIds:
+      string[] = testsRun,
+  ) {
+    if (
+      !faultId ||
+      !recoveryId
+    ) {
+      return;
+    }
+
+    onPreview?.(
+      buildResult(
+        faultId,
+        recoveryId,
+        testIds,
+      ),
+    );
+  }
 
   function runTest(
     test: DiagnosticTest,
@@ -113,61 +283,164 @@ function FaultIsolationPanel({
       return;
     }
 
-    setTestsRun((current) => [
-      ...current,
+    const nextTests = [
+      ...testsRun,
       test.id,
-    ]);
+    ];
+
+    setTestsRun(
+      nextTests,
+    );
+
+    emitPreview(
+      selectedFault,
+      selectedRecovery,
+      nextTests,
+    );
+  }
+
+  function selectFault(
+    faultId: FaultId,
+  ) {
+    if (locked) {
+      return;
+    }
+
+    setSelectedFault(
+      faultId,
+    );
+
+    emitPreview(
+      faultId,
+      selectedRecovery,
+    );
+  }
+
+  function selectRecovery(
+    recoveryId:
+      RecoveryActionId,
+  ) {
+    if (locked) {
+      return;
+    }
+
+    setSelectedRecovery(
+      recoveryId,
+    );
+
+    emitPreview(
+      selectedFault,
+      recoveryId,
+    );
   }
 
   function handleLock() {
-    if (!selectedFault) {
+    if (
+      !selectedFault ||
+      !selectedRecovery
+    ) {
       return;
     }
 
-    const fault =
-      hypotheses.find(
-        (item) =>
-          item.id === selectedFault,
+    const result =
+      buildResult(
+        selectedFault,
+        selectedRecovery,
+        testsRun,
       );
 
-    if (!fault) {
-      return;
-    }
+    console.group(
+      "AltWing Flight Anomaly",
+    );
 
-    onLock?.({
-      faultId:
-        selectedFault,
+    console.log(
+      "Diagnosis:",
+      result.faultName,
+    );
 
-      faultName:
-        fault.name,
+    console.log(
+      "Recovery:",
+      result.recoveryActionName,
+    );
 
-      testsRun,
+    console.log(
+      "Evidence:",
+      result.testsRun,
+    );
 
-      testCount:
-        testsRun.length,
+    console.groupEnd();
 
-      foundRfEvidence:
-        testsRun.includes("antenna") ||
-        testsRun.includes("rf"),
-
-      inspectedPower:
-        testsRun.includes("power"),
-
-      inspectedBus:
-        testsRun.includes("bus"),
-    });
+    onLock?.(
+      result,
+    );
   }
 
   return (
     <div className="fault-panel">
+      <div className="fault-anomaly">
+        <div>
+          <span>
+            ⚠ FLIGHT ANOMALY
+          </span>
+
+          <strong>
+            COMMUNICATIONS BLACKOUT
+          </strong>
+        </div>
+
+        <div className="fault-anomaly__status">
+          <span>
+            AUTONOMY
+          </span>
+
+          <b>
+            ACTIVE
+          </b>
+        </div>
+      </div>
+
+      <div className="fault-anomaly__telemetry">
+        <div>
+          <span>
+            TOUCHDOWN
+          </span>
+
+          <strong>
+            CONFIRMED
+          </strong>
+        </div>
+
+        <div>
+          <span>
+            CLEAN PACKET
+          </span>
+
+          <strong>
+            34 s AGO
+          </strong>
+        </div>
+
+        <div>
+          <span>
+            TEST BUDGET
+          </span>
+
+          <strong>
+            3 MAX
+          </strong>
+        </div>
+      </div>
+
       <div className="fault-header">
         <div>
           <span>
-            AVIONICS DIAGNOSTICS
+            DIAGNOSE UNDER
+            UNCERTAINTY
           </span>
 
           <h2>
-            Isolate the fault.
+            Find the fault before
+            you choose how to recover.
           </h2>
         </div>
 
@@ -186,15 +459,20 @@ function FaultIsolationPanel({
         </span>
 
         <strong>
-          COMMUNICATION LINK LOST
+          GROUND LINK LOST
         </strong>
 
         <p>
-          The lander is healthy after
-          touchdown, but communication
-          packets are dropping before
-          reaching the ground station.
+          The lander is stable after
+          touchdown, but clean
+          communication packets are
+          no longer reaching the
+          ground station.
         </p>
+      </div>
+
+      <div className="fault-section-label">
+        01 / COLLECT EVIDENCE
       </div>
 
       <div className="fault-tests">
@@ -257,6 +535,7 @@ function FaultIsolationPanel({
 
         <strong>
           {testsRun.length}
+
           <small>
             {" "}
             / 3 tests
@@ -264,11 +543,11 @@ function FaultIsolationPanel({
         </strong>
       </div>
 
-      <div className="fault-hypotheses">
-        <span>
-          FAULT HYPOTHESIS
-        </span>
+      <div className="fault-section-label">
+        02 / FORM A HYPOTHESIS
+      </div>
 
+      <div className="fault-hypotheses">
         {hypotheses.map(
           (hypothesis) => {
             const selected =
@@ -283,7 +562,7 @@ function FaultIsolationPanel({
                 }
                 disabled={locked}
                 onClick={() =>
-                  setSelectedFault(
+                  selectFault(
                     hypothesis.id,
                   )
                 }
@@ -310,20 +589,127 @@ function FaultIsolationPanel({
         )}
       </div>
 
+      <div className="fault-section-label">
+        03 / CHOOSE RECOVERY
+      </div>
+
+      <div className="fault-recovery">
+        {recoveryActions.map(
+          (action) => {
+            const selected =
+              selectedRecovery ===
+              action.id;
+
+            return (
+              <button
+                type="button"
+                key={action.id}
+                disabled={locked}
+                onClick={() =>
+                  selectRecovery(
+                    action.id,
+                  )
+                }
+                className={[
+                  "fault-recovery-card",
+
+                  selected
+                    ? "fault-recovery-card--selected"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <div>
+                  <strong>
+                    {action.name}
+                  </strong>
+
+                  {selected && (
+                    <span>
+                      PREVIEWING
+                    </span>
+                  )}
+                </div>
+
+                <p>
+                  {
+                    action.description
+                  }
+                </p>
+
+                <small>
+                  {
+                    action.tradeoff
+                  }
+                </small>
+              </button>
+            );
+          },
+        )}
+      </div>
+
+      {selectedFault &&
+        selectedRecovery && (
+          <div className="fault-decision-preview">
+            <span>
+              PROPOSED RESPONSE
+            </span>
+
+            <strong>
+              {
+                getFaultName(
+                  selectedFault,
+                )
+              }
+            </strong>
+
+            <p>
+              Diagnose the failure as{" "}
+              <b>
+                {
+                  getFaultName(
+                    selectedFault,
+                  )
+                }
+              </b>{" "}
+              and{" "}
+              <b>
+                {
+                  getRecoveryName(
+                    selectedRecovery,
+                  )
+                }
+              </b>
+              .
+            </p>
+
+            <small>
+              The mission consequence
+              preview above shows the
+              operational tradeoff —
+              not whether your diagnosis
+              is correct.
+            </small>
+          </div>
+        )}
+
       <button
         type="button"
         className="fault-lock"
         disabled={
           locked ||
-          !selectedFault
+          !selectedFault ||
+          !selectedRecovery
         }
         onClick={handleLock}
       >
         {locked
-          ? "Diagnosis locked"
-          : selectedFault
-            ? "Commit diagnosis"
-            : "Select a fault hypothesis"}
+          ? "Response committed ✓"
+          : selectedFault &&
+              selectedRecovery
+            ? "Commit diagnosis + recovery →"
+            : "Diagnose and choose a recovery"}
       </button>
     </div>
   );
