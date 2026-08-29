@@ -417,3 +417,164 @@
     height: 190px;
   }
 }
+/* =========================================================
+   WINGMATCH V3 — LANDING DECISION
+   ========================================================= */
+
+.landing-brief {
+  max-width: 650px;
+
+  margin:
+    0 0 18px;
+
+  color:
+    rgba(255,255,255,.42);
+
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.landing-site-card__profile {
+  display: grid;
+
+  gap: 10px;
+
+  margin:
+    18px 0 16px;
+
+  padding-top: 15px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.065);
+}
+
+.landing-site-card__profile > div > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 6px;
+}
+
+.landing-site-card__profile span {
+  color:
+    rgba(255,255,255,.3);
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .09em;
+}
+
+.landing-site-card__profile b {
+  color:
+    rgba(255,255,255,.72);
+
+  font-size: 8px;
+}
+
+.landing-profile-rail {
+  height: 4px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255,255,255,.075);
+}
+
+.landing-profile-rail > div {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: #5b8def;
+
+  transition:
+    width .2s ease;
+}
+
+.landing-site-card--selected
+.landing-profile-rail > div {
+  background: #ffc857;
+}
+
+.landing-site-card__tradeoff {
+  display: block;
+
+  margin-top: 13px;
+
+  color:
+    rgba(255,200,87,.66);
+
+  font-size: 6px;
+  font-weight: 800;
+  line-height: 1.55;
+  letter-spacing: .035em;
+}
+
+.landing-selection__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 18px;
+}
+
+.landing-selection__top > div {
+  display: grid;
+  gap: 5px;
+}
+
+.landing-selection__top small {
+  color: #ffc857;
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.landing-selection__tradeoff {
+  margin-top: 14px;
+  padding-top: 12px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.065);
+
+  color: #ffc857;
+
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.landing-site-card {
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    background .16s ease;
+}
+
+.landing-site-card:not(:disabled):hover {
+  transform:
+    translateY(-2px);
+}
+
+.landing-lock {
+  transition:
+    transform .15s ease,
+    filter .15s ease;
+}
+
+.landing-lock:not(:disabled):hover {
+  transform:
+    translateY(-1px);
+
+  filter:
+    brightness(1.08);
+}
+

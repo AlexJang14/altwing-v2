@@ -44,6 +44,10 @@ interface LandingSite {
 interface LandingSitePanelProps {
   locked?: boolean;
 
+  onPreview?: (
+    result: LandingSiteResult,
+  ) => void;
+
   onLock?: (
     result: LandingSiteResult,
   ) => void;
@@ -102,8 +106,85 @@ const sites: LandingSite[] = [
   },
 ];
 
+interface LandingSiteProfile {
+  safety: number;
+  science: number;
+  fuelMargin: number;
+}
+
+function getSiteProfile(
+  siteId: LandingSiteId,
+): LandingSiteProfile {
+  if (siteId === "site-a") {
+    return {
+      safety: 92,
+      science: 45,
+      fuelMargin: 35,
+    };
+  }
+
+  if (siteId === "site-b") {
+    return {
+      safety: 63,
+      science: 78,
+      fuelMargin: 88,
+    };
+  }
+
+  return {
+    safety: 42,
+    science: 97,
+    fuelMargin: 60,
+  };
+}
+
+function getSiteOutcome(
+  siteId: LandingSiteId,
+) {
+  if (siteId === "site-a") {
+    return "Stable terrain gives the vehicle strong touchdown margin, but the large divert consumes fuel and limits science return.";
+  }
+
+  if (siteId === "site-b") {
+    return "The vehicle stays near its current trajectory and reaches strong science terrain, but accepts a steeper landing surface.";
+  }
+
+  return "The mission reaches the highest-value science terrain, but high rock exposure leaves much less margin for landing error.";
+}
+
+function getSiteTradeoff(
+  siteId: LandingSiteId,
+) {
+  if (siteId === "site-a") {
+    return "GAIN: landing margin  /  ACCEPT: fuel cost + lower science";
+  }
+
+  if (siteId === "site-b") {
+    return "GAIN: fuel efficiency + science  /  ACCEPT: terrain slope";
+  }
+
+  return "GAIN: maximum science  /  ACCEPT: surface hazard + landing risk";
+}
+
+function buildLandingResult(
+  site: LandingSite,
+  comparisons: number,
+): LandingSiteResult {
+  return {
+    siteId: site.id,
+    siteName: site.name,
+    slope: site.slope,
+    rockRisk: site.rockRisk,
+    scienceValue:
+      site.scienceValue,
+    fuelCost: site.fuelCost,
+    comparisons,
+  };
+}
+
 function LandingSitePanel({
   locked = false,
+  onPreview,
   onLock,
 }: LandingSitePanelProps) {
   const [selectedSiteId, setSelectedSiteId] =
@@ -127,18 +208,28 @@ function LandingSitePanel({
       return;
     }
 
-    setSelectedSiteId(site.id);
+    const nextVisited =
+      visitedSites.includes(site.id)
+        ? visitedSites
+        : [
+            ...visitedSites,
+            site.id,
+          ];
 
-    setVisitedSites((current) => {
-      if (current.includes(site.id)) {
-        return current;
-      }
+    setSelectedSiteId(
+      site.id,
+    );
 
-      return [
-        ...current,
-        site.id,
-      ];
-    });
+    setVisitedSites(
+      nextVisited,
+    );
+
+    onPreview?.(
+      buildLandingResult(
+        site,
+        nextVisited.length,
+      ),
+    );
   }
 
   function handleLock() {
@@ -146,28 +237,11 @@ function LandingSitePanel({
       return;
     }
 
-    const result: LandingSiteResult = {
-      siteId:
-        selectedSite.id,
-
-      siteName:
-        selectedSite.name,
-
-      slope:
-        selectedSite.slope,
-
-      rockRisk:
-        selectedSite.rockRisk,
-
-      scienceValue:
-        selectedSite.scienceValue,
-
-      fuelCost:
-        selectedSite.fuelCost,
-
-      comparisons:
+    const result =
+      buildLandingResult(
+        selectedSite,
         visitedSites.length,
-    };
+      );
 
     console.group(
       "AltWing Landing Site Selection",
@@ -193,11 +267,12 @@ function LandingSitePanel({
       <div className="landing-panel__header">
         <div>
           <span>
-            TERRAIN SELECTION
+            LANDING WINDOW
           </span>
 
           <h2>
-            Choose where to land.
+            Choose what you are
+            willing to risk.
           </h2>
         </div>
 
@@ -208,6 +283,13 @@ function LandingSitePanel({
           </small>
         </div>
       </div>
+
+      <p className="landing-brief">
+        Three sites. Three different
+        mission outcomes. There is no
+        safest choice that also gives
+        you everything else.
+      </p>
 
       <div className="landing-map">
         <div className="landing-map__grid" />
@@ -282,6 +364,11 @@ function LandingSitePanel({
 
           const visited =
             visitedSites.includes(
+              site.id,
+            );
+
+          const profile =
+            getSiteProfile(
               site.id,
             );
 
@@ -362,11 +449,84 @@ function LandingSitePanel({
                 </div>
               </div>
 
+              <div className="landing-site-card__profile">
+                <div>
+                  <div>
+                    <span>
+                      LANDING SAFETY
+                    </span>
+
+                    <b>
+                      {profile.safety}
+                    </b>
+                  </div>
+
+                  <div className="landing-profile-rail">
+                    <div
+                      style={{
+                        width:
+                          `${profile.safety}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div>
+                    <span>
+                      SCIENCE RETURN
+                    </span>
+
+                    <b>
+                      {profile.science}
+                    </b>
+                  </div>
+
+                  <div className="landing-profile-rail">
+                    <div
+                      style={{
+                        width:
+                          `${profile.science}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div>
+                    <span>
+                      FUEL MARGIN
+                    </span>
+
+                    <b>
+                      {profile.fuelMargin}
+                    </b>
+                  </div>
+
+                  <div className="landing-profile-rail">
+                    <div
+                      style={{
+                        width:
+                          `${profile.fuelMargin}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
               <p>
                 {
                   site.description
                 }
               </p>
+
+              <small className="landing-site-card__tradeoff">
+                {
+                  getSiteTradeoff(
+                    site.id,
+                  )
+                }
+              </small>
             </button>
           );
         })}
@@ -374,24 +534,43 @@ function LandingSitePanel({
 
       {selectedSite ? (
         <div className="landing-selection">
-          <span>
-            CURRENT SELECTION
-          </span>
+          <div className="landing-selection__top">
+            <div>
+              <span>
+                OUTCOME PREVIEW
+              </span>
 
-          <strong>
-            {selectedSite.name}
-          </strong>
+              <strong>
+                {selectedSite.name}
+              </strong>
+            </div>
+
+            <small>
+              NOT COMMITTED
+            </small>
+          </div>
 
           <p>
             {
-              selectedSite.description
+              getSiteOutcome(
+                selectedSite.id,
+              )
             }
           </p>
+
+          <div className="landing-selection__tradeoff">
+            {
+              getSiteTradeoff(
+                selectedSite.id,
+              )
+            }
+          </div>
         </div>
       ) : (
         <div className="landing-selection landing-selection--empty">
-          Select a site to inspect
-          the tradeoff.
+          Select a landing site.
+          Mission consequences will
+          preview before you commit.
         </div>
       )}
 
@@ -405,9 +584,9 @@ function LandingSitePanel({
         onClick={handleLock}
       >
         {locked
-          ? "Landing site locked"
+          ? "Landing decision committed ✓"
           : selectedSite
-            ? `Commit ${selectedSite.name}`
+            ? `Commit ${selectedSite.name} →`
             : "Select a landing site"}
       </button>
     </div>
