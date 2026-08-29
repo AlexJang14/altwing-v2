@@ -3146,3 +3146,269 @@
     flex-direction: column;
   }
 }
+
+/* =========================================================
+   SHORTLIST READINESS DASHBOARD
+   ========================================================= */
+
+.readiness-shortlist {
+  margin-bottom: 16px;
+  padding: 27px;
+
+  border:
+    1px solid
+    rgba(91,141,239,.18);
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      125deg,
+      rgba(91,141,239,.045),
+      rgba(255,200,87,.025)
+    );
+}
+
+.readiness-shortlist-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 30px;
+}
+
+.readiness-shortlist-heading span {
+  color: #5b8def;
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.readiness-shortlist-heading h2 {
+  max-width: 700px;
+
+  margin: 8px 0 10px;
+
+  font-size:
+    clamp(28px,4vw,44px);
+
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.readiness-shortlist-heading p {
+  max-width: 650px;
+
+  margin: 0;
+
+  color:
+    rgba(255,255,255,.36);
+
+  font-size: 9px;
+  line-height: 1.65;
+}
+
+.readiness-shortlist-heading > strong {
+  flex-shrink: 0;
+
+  color: #ffc857;
+
+  font-size: 11px;
+}
+
+.readiness-shortlist-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(250px,1fr)
+    );
+
+  gap: 10px;
+
+  margin-top: 24px;
+}
+
+.readiness-shortlist-card {
+  padding: 20px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius: 14px;
+
+  background:
+    rgba(255,255,255,.018);
+
+  color: white;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    transform .15s ease,
+    border-color .15s ease,
+    background .15s ease;
+}
+
+.readiness-shortlist-card:hover {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    rgba(91,141,239,.35);
+}
+
+.readiness-shortlist-card-active {
+  border-color:
+    rgba(255,200,87,.35);
+
+  background:
+    rgba(255,200,87,.035);
+}
+
+.readiness-shortlist-card-top {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 15px;
+}
+
+.readiness-shortlist-card-top span {
+  color: #5b8def;
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .1em;
+}
+
+.readiness-shortlist-card-top h3 {
+  margin: 7px 0 0;
+
+  font-size: 22px;
+  letter-spacing: -.035em;
+}
+
+.readiness-shortlist-card-top > strong {
+  color: #ffc857;
+
+  font-size: 6px;
+  letter-spacing: .08em;
+}
+
+.readiness-shortlist-signal,
+.readiness-shortlist-next {
+  margin-top: 19px;
+  padding-top: 16px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.065);
+}
+
+.readiness-shortlist-signal span,
+.readiness-shortlist-next span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color:
+    rgba(255,255,255,.27);
+
+  font-size: 5px;
+  font-weight: 900;
+  letter-spacing: .11em;
+}
+
+.readiness-shortlist-signal strong {
+  color: #ffc857;
+
+  font-size: 10px;
+}
+
+.readiness-shortlist-next p {
+  margin: 0;
+
+  color:
+    rgba(255,255,255,.4);
+
+  font-size: 8px;
+  line-height: 1.6;
+}
+
+.readiness-shortlist-card > small {
+  display: block;
+
+  margin-top: 18px;
+
+  color: #5b8def;
+
+  font-size: 6px;
+  font-weight: 900;
+}
+
+.readiness-shortlist-empty {
+  margin-top: 23px;
+  padding: 30px;
+
+  border:
+    1px dashed
+    rgba(255,255,255,.1);
+
+  border-radius: 13px;
+
+  text-align: center;
+}
+
+.readiness-shortlist-empty > span {
+  color: #ff6b6b;
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.readiness-shortlist-empty h3 {
+  margin: 8px 0;
+
+  font-size: 22px;
+}
+
+.readiness-shortlist-empty p {
+  max-width: 520px;
+
+  margin: 0 auto;
+
+  color:
+    rgba(255,255,255,.34);
+
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.readiness-shortlist-source {
+  display: block;
+
+  margin-top: 15px;
+  margin-bottom: 7px;
+
+  color: #ffc857;
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .09em;
+}
+
+@media (max-width: 650px) {
+  .readiness-shortlist-heading {
+    flex-direction: column;
+  }
+
+  .readiness-shortlist-grid {
+    grid-template-columns: 1fr;
+  }
+}

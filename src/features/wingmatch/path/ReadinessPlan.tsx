@@ -32,6 +32,9 @@ interface StudentProfile {
 const STORAGE_KEY =
   "altwing-readiness-profile";
 
+const COLLEGE_LIST_STORAGE_KEY =
+  "altwing-my-college-list";
+
 const defaultProfile:
   StudentProfile = {
   gpa: "",
@@ -376,10 +379,46 @@ function ReadinessPlan({
     });
 
   const [
+    savedCollegeIds,
+  ] = useState<string[]>(() => {
+    try {
+      const saved =
+        localStorage.getItem(
+          COLLEGE_LIST_STORAGE_KEY,
+        );
+
+      return saved
+        ? JSON.parse(saved)
+        : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const shortlistColleges =
+    useMemo(
+      () =>
+        colleges.filter(
+          (college) =>
+            savedCollegeIds.includes(
+              college.id,
+            ),
+        ),
+      [savedCollegeIds],
+    );
+
+  const targetColleges =
+    shortlistColleges.length > 0
+      ? shortlistColleges
+      : colleges;
+
+  const [
     selectedCollegeId,
     setSelectedCollegeId,
   ] = useState(
-    colleges[0].id,
+    () =>
+      targetColleges[0]?.id ??
+      colleges[0].id,
   );
 
   useEffect(() => {
@@ -390,11 +429,13 @@ function ReadinessPlan({
   }, [profile]);
 
   const college =
-    colleges.find(
+    targetColleges.find(
       (item) =>
         item.id ===
         selectedCollegeId,
-    ) ?? colleges[0];
+    ) ??
+    targetColleges[0] ??
+    colleges[0];
 
   const satSignal = useMemo(
     () =>
@@ -465,6 +506,144 @@ function ReadinessPlan({
           when the school's rules
           change.
         </p>
+      </section>
+
+      <section className="readiness-shortlist">
+        <div className="readiness-shortlist-heading">
+          <div>
+            <span>
+              MY COLLEGE LIST
+            </span>
+
+            <h2>
+              What should I work on
+              for each school?
+            </h2>
+
+            <p>
+              Readiness is not an
+              admission probability.
+              It turns your shortlist
+              into school-specific
+              next actions.
+            </p>
+          </div>
+
+          <strong>
+            {shortlistColleges.length}
+            {" "}
+            {shortlistColleges.length === 1
+              ? "school saved"
+              : "schools saved"}
+          </strong>
+        </div>
+
+        {shortlistColleges.length === 0 ? (
+          <div className="readiness-shortlist-empty">
+            <span>
+              NO SHORTLIST YET
+            </span>
+
+            <h3>
+              Save colleges first.
+            </h3>
+
+            <p>
+              Go to College Match and
+              add schools to My College
+              List. Until then, you can
+              still explore readiness
+              using all colleges.
+            </p>
+          </div>
+        ) : (
+          <div className="readiness-shortlist-grid">
+            {shortlistColleges.map(
+              (item) => {
+                const signal =
+                  getSatSignal(
+                    profile,
+                    item,
+                  );
+
+                const firstMove =
+                  nextMoves(
+                    profile,
+                    item,
+                  )[0];
+
+                const active =
+                  item.id ===
+                  college.id;
+
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={
+                      active
+                        ? "readiness-shortlist-card readiness-shortlist-card-active"
+                        : "readiness-shortlist-card"
+                    }
+                    onClick={() =>
+                      setSelectedCollegeId(
+                        item.id,
+                      )
+                    }
+                  >
+                    <div className="readiness-shortlist-card-top">
+                      <div>
+                        <span>
+                          {
+                            item.aerospaceFit
+                          }
+                        </span>
+
+                        <h3>
+                          {
+                            item.shortName
+                          }
+                        </h3>
+                      </div>
+
+                      {active && (
+                        <strong>
+                          ANALYZING ✓
+                        </strong>
+                      )}
+                    </div>
+
+                    <div className="readiness-shortlist-signal">
+                      <span>
+                        TESTING CONTEXT
+                      </span>
+
+                      <strong>
+                        {
+                          signal.label
+                        }
+                      </strong>
+                    </div>
+
+                    <div className="readiness-shortlist-next">
+                      <span>
+                        NEXT MOVE
+                      </span>
+
+                      <p>
+                        {firstMove}
+                      </p>
+                    </div>
+
+                    <small>
+                      Open full readiness →
+                    </small>
+                  </button>
+                );
+              },
+            )}
+          </div>
+        )}
       </section>
 
       <section className="readiness-layout">
@@ -637,6 +816,13 @@ function ReadinessPlan({
             TARGET SCHOOL
           </span>
 
+          {shortlistColleges.length > 0 && (
+            <small className="readiness-shortlist-source">
+              Showing schools from
+              My College List
+            </small>
+          )}
+
           <select
             value={
               selectedCollegeId
@@ -647,7 +833,7 @@ function ReadinessPlan({
               )
             }
           >
-            {colleges.map(
+            {targetColleges.map(
               (item) => (
                 <option
                   key={item.id}
