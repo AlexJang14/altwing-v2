@@ -1895,3 +1895,394 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* =========================================================
+   LAUNCH YOUR WING
+   ========================================================= */
+
+.launch-shell {
+  min-height: 100vh;
+
+  padding:
+    0 clamp(20px, 5vw, 76px)
+    90px;
+
+  background:
+    radial-gradient(
+      circle at 82% 6%,
+      rgba(255, 107, 107, 0.13),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 14% 65%,
+      rgba(91, 141, 239, 0.11),
+      transparent 32%
+    ),
+    #0d132b;
+
+  color: white;
+}
+
+.launch-nav {
+  height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+}
+
+.launch-nav button {
+  padding: 8px 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color:
+    rgba(255, 255, 255, 0.48);
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 750;
+
+  cursor: pointer;
+}
+
+.launch-nav button:hover {
+  color: white;
+}
+
+.launch-nav strong {
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: -0.045em;
+}
+
+.launch-nav strong span {
+  color: #ff6b6b;
+}
+
+/* HERO */
+
+.launch-hero {
+  max-width: 980px;
+
+  padding: 76px 0 66px;
+}
+
+.launch-hero > span {
+  color: #ffc857;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.launch-hero h1 {
+  margin: 13px 0 22px;
+
+  font-size:
+    clamp(48px, 7vw, 86px);
+
+  line-height: 0.96;
+  letter-spacing: -0.065em;
+}
+
+.launch-hero p {
+  max-width: 720px;
+
+  margin: 0;
+
+  color:
+    rgba(255, 255, 255, 0.47);
+
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.launch-hero p strong {
+  color: white;
+}
+
+/* SECTIONS */
+
+.launch-section {
+  padding: 58px 0;
+
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.075);
+}
+
+.launch-heading {
+  max-width: 770px;
+
+  margin-bottom: 28px;
+}
+
+.launch-heading > span {
+  color: #5b8def;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+.launch-heading h2 {
+  margin: 8px 0 0;
+
+  font-size:
+    clamp(30px, 4vw, 48px);
+
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+/* FLIGHT PATHS */
+
+.launch-route-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 13px;
+}
+
+.launch-route-card {
+  min-height: 275px;
+
+  padding: 23px;
+
+  display: flex;
+  flex-direction: column;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.085);
+
+  border-radius: 16px;
+
+  background:
+    rgba(255, 255, 255, 0.023);
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease;
+}
+
+.launch-route-card:hover {
+  transform: translateY(-3px);
+
+  border-color:
+    rgba(91, 141, 239, 0.4);
+}
+
+.launch-route-card > span {
+  color:
+    rgba(255, 255, 255, 0.22);
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.launch-route-card h3 {
+  margin: auto 0 10px;
+
+  font-size: 21px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.launch-route-card p {
+  margin: 0 0 20px;
+
+  color:
+    rgba(255, 255, 255, 0.38);
+
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.launch-route-card strong {
+  color: #ffc857;
+
+  font-size: 8px;
+  letter-spacing: 0.04em;
+}
+
+/* 30 DAY PLAN */
+
+.launch-month-plan {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+.launch-month-plan article {
+  min-height: 220px;
+
+  padding: 21px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.075);
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(91, 141, 239, 0.045),
+      rgba(255, 255, 255, 0.015)
+    );
+}
+
+.launch-month-plan span {
+  color: #5b8def;
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+}
+
+.launch-month-plan h3 {
+  margin: 48px 0 9px;
+
+  font-size: 17px;
+  line-height: 1.15;
+}
+
+.launch-month-plan p {
+  margin: 0;
+
+  color:
+    rgba(255, 255, 255, 0.36);
+
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+/* FINAL */
+
+.launch-final {
+  margin-top: 36px;
+  padding: 55px;
+
+  border:
+    1px solid
+    rgba(255, 200, 87, 0.24);
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255, 200, 87, 0.06),
+      rgba(255, 107, 107, 0.045),
+      rgba(91, 141, 239, 0.055)
+    );
+}
+
+.launch-final > span {
+  color: #ffc857;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.launch-final h2 {
+  max-width: 800px;
+
+  margin: 10px 0 16px;
+
+  font-size:
+    clamp(33px, 5vw, 58px);
+
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.launch-final p {
+  max-width: 680px;
+
+  margin: 0;
+
+  color:
+    rgba(255, 255, 255, 0.43);
+
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* PORTFOLIO → LAUNCH CTA */
+
+.portfolio-launch-next {
+  width: 100%;
+
+  margin-top: 30px;
+
+  min-height: 58px;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: #ff6b6b;
+
+  color: white;
+
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.portfolio-launch-next:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 14px 35px
+    rgba(255, 107, 107, 0.16);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 950px) {
+  .launch-route-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .launch-month-plan {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .launch-shell {
+    padding:
+      0 18px 60px;
+  }
+
+  .launch-month-plan {
+    grid-template-columns: 1fr;
+  }
+
+  .launch-final {
+    padding: 28px;
+  }
+}

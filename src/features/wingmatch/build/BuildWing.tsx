@@ -2269,6 +2269,7 @@ function BuildWing({
   if (showPortfolio) {
     return (
       <ProjectPortfolio
+        wingId={effectiveWingId}
         wingName={displayWingName}
         project={plan.project}
         question={plan.question}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import LaunchPlan from "./LaunchPlan";
 
 interface PortfolioStep {
   id: string;
@@ -13,6 +14,7 @@ type EvidenceStore =
   Record<string, EvidenceRecord>;
 
 interface ProjectPortfolioProps {
+  wingId: string;
   wingName: string;
   project: string;
   question: string;
@@ -69,6 +71,7 @@ function shorten(
 }
 
 function ProjectPortfolio({
+  wingId,
   wingName,
   project,
   question,
@@ -81,6 +84,9 @@ function ProjectPortfolio({
     useState<string | null>(
       null,
     );
+
+  const [showLaunch, setShowLaunch] =
+    useState(false);
 
   const completedSteps =
     steps.filter(
@@ -433,6 +439,19 @@ function ProjectPortfolio({
     } catch {
       setCopied(null);
     }
+  }
+
+  if (showLaunch) {
+    return (
+      <LaunchPlan
+        wingId={wingId}
+        wingName={wingName}
+        project={project}
+        onBack={() =>
+          setShowLaunch(false)
+        }
+      />
+    );
   }
 
   return (
@@ -897,6 +916,16 @@ function ProjectPortfolio({
           collaboration with another
           student.
         </p>
+
+        <button
+          type="button"
+          className="portfolio-launch-next"
+          onClick={() =>
+            setShowLaunch(true)
+          }
+        >
+          Launch this project →
+        </button>
 
         <div className="portfolio-flow">
           DISCOVER
