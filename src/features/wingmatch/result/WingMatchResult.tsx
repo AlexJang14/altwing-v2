@@ -446,8 +446,7 @@ function WingMatchResult({
     );
 
   const maxWingScore =
-    rankedWings[0]?.[1] ??
-    1;
+    rankedWings[0]?.[1] ?? 1;
 
   const topWings =
     rankedWings
@@ -472,171 +471,264 @@ function WingMatchResult({
     topWings[0]?.profile ??
     getProfile("systems");
 
+  const primaryScore =
+    topWings[0]?.score ?? 0;
+
+  const alternateWings =
+    topWings.slice(1);
+
   const topReasoning =
     rankedReasoning.slice(
       0,
       4,
     );
 
-  const relevantEvidence =
-    missionHistory
-      .filter((item) => {
-        if (
-          primaryWing
-            .evidenceKeywords
-            .length === 0
-        ) {
-          return true;
-        }
+  const maxReasoningScore =
+    topReasoning[0]?.[1] ??
+    1;
 
-        const searchable =
-          `${item.phase} ${item.title}`
-            .toUpperCase();
+  function reasoningSignal(
+    score: number,
+  ) {
+    const ratio =
+      score /
+      maxReasoningScore;
 
-        return primaryWing.evidenceKeywords.some(
-          (keyword) =>
-            searchable.includes(
-              keyword,
-            ),
-        );
-      })
-      .slice(-3);
+    if (ratio >= 0.8) {
+      return "STRONG SIGNAL";
+    }
 
-  const evidenceToShow =
-    relevantEvidence.length >
-    0
-      ? relevantEvidence
-      : missionHistory.slice(-3);
+    if (ratio >= 0.55) {
+      return "SUPPORTING SIGNAL";
+    }
+
+    return "EMERGING SIGNAL";
+  }
+
+  /*
+   * Prioritize the interactive
+   * decisions students actually
+   * remember making.
+   */
+  const preferredSceneIds = [
+    "thermal-management",
+    "landing-site-selection",
+    "avionics-fault-isolation",
+    "mission-command",
+  ];
+
+  const priorityEvidence =
+    preferredSceneIds
+      .map((sceneId) =>
+        [...missionHistory]
+          .reverse()
+          .find(
+            (item) =>
+              item.sceneId ===
+              sceneId,
+          ),
+      )
+      .filter(
+        (
+          item,
+        ): item is
+          ResultMissionHistoryItem =>
+          Boolean(item),
+      );
+
+  const prioritySceneIds =
+    new Set(
+      priorityEvidence.map(
+        (item) =>
+          item.sceneId,
+      ),
+    );
+
+  const fallbackEvidence =
+    [...missionHistory]
+      .reverse()
+      .filter(
+        (item) =>
+          !prioritySceneIds.has(
+            item.sceneId,
+          ),
+      );
+
+  const evidenceToShow = [
+    ...priorityEvidence,
+    ...fallbackEvidence,
+  ].slice(0, 4);
 
   return (
     <main className="result-shell">
-      <section className="result-hero">
-        <div className="result-eyebrow">
-          WINGMATCH COMPLETE
+      <section className="result-reveal">
+        <div className="result-reveal__kicker">
+          MISSION COMPLETE
+        </div>
+
+        <div className="result-reveal__label">
+          YOUR WING
         </div>
 
         <h1>
-          You didn't choose a
-          career.
-          <span>
-            {" "}
-            You revealed how you
-            engineer.
-          </span>
+          {primaryWing.name}
         </h1>
 
-        <p>
-          Your result comes from
-          the decisions, tests,
-          tradeoffs, and
-          investigations you made
-          across the mission — not
-          from a personality quiz.
+        <p className="result-reveal__description">
+          {
+            primaryWing.description
+          }
         </p>
+
+        <div className="result-reveal__rule" />
+
+        <p className="result-reveal__method">
+          This is not a personality
+          label. It is the strongest
+          pattern produced by the
+          decisions you made during
+          this mission.
+        </p>
+
+        <div className="result-reveal__signal">
+          <span>
+            PRIMARY EVIDENCE SIGNAL
+          </span>
+
+          <strong>
+            {primaryScore} pts
+          </strong>
+        </div>
       </section>
 
       <section className="result-section">
         <div className="result-section-heading">
           <span>
-            01 / YOUR WING PROFILE
+            01 / WHY THIS WING
           </span>
 
           <h2>
-            Your strongest
-            aerospace signals
+            Your decisions left
+            evidence.
           </h2>
+
+          <p>
+            These are choices you
+            actually made during the
+            mission — not answers to
+            personality questions.
+          </p>
         </div>
 
-        <div className="wing-ranking">
-          {topWings.map(
+        <div className="result-debrief-list">
+          {evidenceToShow.map(
             (
-              {
-                profile,
-                score,
-                relativeStrength,
-              },
+              item,
               index,
             ) => (
               <article
-                className={[
-                  "wing-result-card",
-
-                  index === 0
-                    ? "wing-result-card--primary"
-                    : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
+                className="result-debrief-card"
                 key={
-                  profile.id
+                  `${item.sceneId}-${index}`
                 }
               >
-                <div className="wing-result-card__rank">
-                  0{index + 1}
-                </div>
-
-                <div className="wing-result-card__copy">
-                  <span>
-                    {
-                      profile.shortName
-                    }
-                  </span>
-
-                  <h3>
-                    {profile.name}
-                  </h3>
-
-                  <p>
-                    {
-                      profile.description
-                    }
-                  </p>
-                </div>
-
-                <div className="wing-result-card__signal">
+                <div className="result-debrief-card__top">
                   <div>
                     <span>
-                      EVIDENCE SIGNAL
+                      {String(
+                        index + 1,
+                      ).padStart(
+                        2,
+                        "0",
+                      )}
+                      {" / "}
+                      {item.phase}
                     </span>
 
-                    <strong>
-                      {score} pts
-                    </strong>
+                    <h3>
+                      {item.title}
+                    </h3>
                   </div>
 
-                  <div className="signal-track">
-                    <div
-                      style={{
-                        width:
-                          `${relativeStrength}%`,
-                      }}
-                    />
+                  <div className="result-debrief-card__status">
+                    DECISION EVIDENCE
                   </div>
                 </div>
+
+                <p>
+                  {
+                    item.consequence
+                  }
+                </p>
+
+                {item.effects.length >
+                  0 && (
+                  <div className="result-evidence-metrics">
+                    {item.effects
+                      .slice(0, 5)
+                      .map(
+                        (
+                          effect,
+                          effectIndex,
+                        ) => (
+                          <div
+                            className={[
+                              "result-evidence-metric",
+
+                              effect.status ===
+                              "warning"
+                                ? "result-evidence-metric--warning"
+                                : "",
+                            ]
+                              .filter(
+                                Boolean,
+                              )
+                              .join(
+                                " ",
+                              )}
+                            key={
+                              `${effect.label}-${effectIndex}`
+                            }
+                          >
+                            <span>
+                              {
+                                effect.label
+                              }
+                            </span>
+
+                            <strong>
+                              {
+                                effect.value
+                              }
+                            </strong>
+                          </div>
+                        ),
+                      )}
+                  </div>
+                )}
               </article>
             ),
           )}
         </div>
-
-        <p className="result-method-note">
-          These are relative
-          evidence signals from
-          your mission behavior,
-          not probabilities or
-          admissions predictions.
-        </p>
       </section>
 
-      <section className="result-section">
+      <section className="result-section result-pattern-section">
         <div className="result-section-heading">
           <span>
-            02 / HOW YOU ENGINEER
+            02 / YOUR ENGINEERING PATTERN
           </span>
 
           <h2>
-            Patterns in your
-            reasoning
+            How you tended to
+            reason.
           </h2>
+
+          <p>
+            These signals compare
+            patterns inside your own
+            mission run. They are not
+            aptitude scores.
+          </p>
         </div>
 
         <div className="reasoning-grid">
@@ -646,7 +738,7 @@ function WingMatchResult({
               index,
             ) => (
               <article
-                className="reasoning-card"
+                className="reasoning-card result-reasoning-card"
                 key={id}
               >
                 <span>
@@ -654,10 +746,20 @@ function WingMatchResult({
                 </span>
 
                 <strong>
-                  {humanizeKey(
-                    id,
-                  )}
+                  {
+                    humanizeKey(
+                      id,
+                    )
+                  }
                 </strong>
+
+                <div className="result-reasoning-signal">
+                  {
+                    reasoningSignal(
+                      score,
+                    )
+                  }
+                </div>
 
                 <small>
                   {score} evidence
@@ -669,67 +771,77 @@ function WingMatchResult({
         </div>
       </section>
 
-      <section className="result-section">
-        <div className="result-section-heading">
-          <span>
-            03 / WHY THIS WING
-          </span>
+      {alternateWings.length >
+        0 && (
+        <section className="result-section">
+          <div className="result-section-heading">
+            <span>
+              03 / OTHER SIGNALS
+            </span>
 
-          <h2>
-            Evidence from your
-            mission
-          </h2>
-        </div>
+            <h2>
+              You are not one
+              fixed Wing.
+            </h2>
 
-        <div className="evidence-list">
-          {evidenceToShow.map(
-            (
-              item,
-              index,
-            ) => (
-              <article
-                className="evidence-card"
-                key={`${item.sceneId}-${index}`}
-              >
-                <div className="evidence-card__number">
-                  {String(
-                    index + 1,
-                  ).padStart(
-                    2,
-                    "0",
-                  )}
-                </div>
+            <p>
+              Different decisions
+              could strengthen
+              different engineering
+              pathways on another
+              mission run.
+            </p>
+          </div>
 
-                <div>
+          <div className="result-alternate-grid">
+            {alternateWings.map(
+              ({
+                profile,
+                score,
+              }) => (
+                <article
+                  className="result-alternate-card"
+                  key={
+                    profile.id
+                  }
+                >
                   <span>
-                    {item.phase}
+                    SUPPORTING WING
                   </span>
 
                   <h3>
-                    {item.title}
+                    {
+                      profile.name
+                    }
                   </h3>
 
                   <p>
                     {
-                      item.consequence
+                      profile.description
                     }
                   </p>
-                </div>
-              </article>
-            ),
-          )}
-        </div>
-      </section>
+
+                  <small>
+                    {score} evidence
+                    points
+                  </small>
+                </article>
+              ),
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="result-section result-pathway">
         <div className="result-section-heading">
           <span>
-            04 / PUT ON THIS WING
+            04 / TEST THIS WING
           </span>
 
           <h2>
-            Turn the signal into
-            real evidence
+            Don't believe the
+            result. Build something
+            and test it.
           </h2>
         </div>
 
@@ -744,9 +856,11 @@ function WingMatchResult({
             </h3>
 
             <p>
-              {
-                primaryWing.description
-              }
+              The next step is not
+              another quiz. Build a
+              small project that lets
+              you experience this kind
+              of engineering for real.
             </p>
           </div>
 
@@ -774,37 +888,38 @@ function WingMatchResult({
           </div>
         </div>
 
+        <div className="result-project-focus">
+          <span>
+            YOUR 3-WEEK BUILD
+          </span>
+
+          <h3>
+            {
+              primaryWing.projectTitle
+            }
+          </h3>
+
+          <p>
+            {
+              primaryWing.projectDescription
+            }
+          </p>
+
+          <div>
+            BUILD → TEST → ITERATE →
+            DOCUMENT → SHARE
+          </div>
+        </div>
+
         <div className="action-grid">
           <article className="action-card">
             <span>
-              BUILD
+              MAKE IT REAL
             </span>
 
             <h3>
-              {
-                primaryWing.projectTitle
-              }
-            </h3>
-
-            <p>
-              {
-                primaryWing.projectDescription
-              }
-            </p>
-
-            <div className="action-time">
-              3-WEEK STARTER
-              PROJECT
-            </div>
-          </article>
-
-          <article className="action-card">
-            <span>
-              EXTRACURRICULAR
-            </span>
-
-            <h3>
-              Make the work count.
+              Turn the project into
+              evidence.
             </h3>
 
             <p>
@@ -812,11 +927,26 @@ function WingMatchResult({
                 primaryWing.extracurricular
               }
             </p>
+          </article>
 
-            <div className="action-time">
-              BUILD → TEST →
-              DOCUMENT → SHARE
-            </div>
+          <article className="action-card">
+            <span>
+              WHY THIS PROJECT
+            </span>
+
+            <h3>
+              Test the pattern you
+              just revealed.
+            </h3>
+
+            <p>
+              Your mission behavior
+              suggests this Wing is
+              worth exploring. The
+              build is how you find
+              out whether you actually
+              enjoy doing the work.
+            </p>
           </article>
         </div>
       </section>
@@ -824,12 +954,12 @@ function WingMatchResult({
       <section className="result-section">
         <div className="result-section-heading">
           <span>
-            05 / COLLEGE LAUNCH
+            05 / ACADEMIC RUNWAY
           </span>
 
           <h2>
-            Start preparing for
-            the wing
+            Prepare for the work,
+            not just the major name.
           </h2>
         </div>
 
@@ -859,22 +989,21 @@ function WingMatchResult({
             </span>
 
             <h3>
-              Don't just say
-              you're interested.
+              Leave proof behind.
             </h3>
 
             <p>
               Build something,
-              test it, document the
-              tradeoffs, and show
-              what changed because
-              of your decisions.
+              test it, document what
+              failed, and show what
+              changed because of your
+              decisions.
             </p>
           </article>
         </div>
       </section>
 
-      <section className="result-footer">
+      <section className="result-footer result-footer--v3">
         <div>
           <span>
             EXPLORE. BUILD.
@@ -882,10 +1011,17 @@ function WingMatchResult({
           </span>
 
           <h2>
-            Your Wing is a
-            starting point, not a
-            label.
+            Your Wing can change
+            when your decisions
+            change.
           </h2>
+
+          <p>
+            Replay the mission with
+            different tradeoffs, or
+            take this Wing into a real
+            build.
+          </p>
         </div>
 
         <div className="result-actions">
@@ -897,7 +1033,7 @@ function WingMatchResult({
                 onRestart
               }
             >
-              Fly the mission again
+              Replay with different choices
             </button>
           )}
 
@@ -909,7 +1045,7 @@ function WingMatchResult({
                 onContinue
               }
             >
-              Build my Wing
+              Build this Wing →
             </button>
           )}
         </div>

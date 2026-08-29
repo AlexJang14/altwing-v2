@@ -504,6 +504,12 @@ function getThermalEffects(
 ): TelemetryItem[] {
   return [
     {
+      label: "COOLING SPLIT",
+      value:
+        `E${result.engine} / B${result.battery} / A${result.avionics}`,
+      status: "nominal",
+    },
+    {
       label: "ENGINE TEMP",
       value: `${result.engineTemp}%`,
       status:
@@ -592,6 +598,14 @@ function getLandingEffects(
       value: result.scienceValue,
       status: "nominal",
     },
+    {
+      label: "FUEL COST",
+      value: result.fuelCost,
+      status:
+        result.fuelCost === "HIGH"
+          ? "warning"
+          : "nominal",
+    },
   ];
 }
 
@@ -677,6 +691,12 @@ function getFaultEffects(
         result.faultId === "rf-path"
           ? "nominal"
           : "warning",
+    },
+    {
+      label: "RECOVERY",
+      value:
+        result.recoveryActionName,
+      status: "nominal",
     },
     {
       label: "TESTS RUN",
