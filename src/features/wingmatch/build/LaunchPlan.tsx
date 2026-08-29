@@ -1,3 +1,5 @@
+import { useState } from "react";
+import PathDashboard from "../path/PathDashboard";
 interface LaunchPlanProps {
   wingId: string;
   wingName: string;
@@ -381,9 +383,24 @@ function LaunchPlan({
   project,
   onBack,
 }: LaunchPlanProps) {
+  const [showFlightPlan, setShowFlightPlan] =
+    useState(false);
   const plan =
     launchPlans[wingId] ??
     launchPlans.systems;
+
+  if (showFlightPlan) {
+    return (
+      <PathDashboard
+        wingName={wingName}
+        major="Aerospace Engineering"
+        grade={11}
+        onBack={() =>
+          setShowFlightPlan(false)
+        }
+      />
+    );
+  }
 
   return (
     <main className="launch-shell">
@@ -509,6 +526,16 @@ function LaunchPlan({
           how you think, build, test,
           improve, and contribute.
         </p>
+
+        <button
+          type="button"
+          className="launch-flight-plan-button"
+          onClick={() =>
+            setShowFlightPlan(true)
+          }
+        >
+          Build My Flight Plan →
+        </button>
       </section>
     </main>
   );
