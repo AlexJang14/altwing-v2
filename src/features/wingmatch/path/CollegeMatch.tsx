@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import {
   colleges,
   type CollegeProfile,
@@ -14,15 +15,47 @@ interface CollegeMatchProps {
   onBack: () => void;
 }
 
+const COLLEGE_LIST_STORAGE_KEY =
+  "altwing-my-college-list";
+
+function formatScore(
+  score: number | null,
+) {
+  return score === null
+    ? "—"
+    : String(score);
+}
+
+const policyLabels:
+  Record<
+    CollegeProfile["testingPolicy"],
+    string
+  > = {
+  REQUIRED: "TEST REQUIRED",
+  OPTIONAL: "TEST OPTIONAL",
+  NOT_USED: "TEST NOT USED",
+  SPECIAL: "SPECIAL TESTING",
+  CHECK_CURRENT: "VERIFY CURRENT POLICY",
+};
+
 function CollegeCard({
   college,
   selected,
+  saved,
   onSelect,
+  onToggleSaved,
 }: {
   college: CollegeProfile;
   selected: boolean;
+  saved: boolean;
   onSelect: () => void;
+  onToggleSaved: () => void;
 }) {
+  const hasSatData =
+    college.sat25 !== null ||
+    college.sat50 !== null ||
+    college.sat75 !== null;
+
   return (
     <article
       className={
@@ -46,43 +79,99 @@ function CollegeCard({
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={onSelect}
-        >
-          {selected
-            ? "Selected ✓"
-            : "View profile →"}
-        </button>
+        <div className="college-card-actions">
+          <button
+            type="button"
+            onClick={onSelect}
+          >
+            {selected
+              ? "Viewing ✓"
+              : "View profile →"}
+          </button>
+
+          <button
+            type="button"
+            className={
+              saved
+                ? "college-save college-save-active"
+                : "college-save"
+            }
+            onClick={onToggleSaved}
+          >
+            {saved
+              ? "Saved ✓"
+              : "+ My List"}
+          </button>
+        </div>
+      </div>
+
+      <div
+        className={
+          "college-testing-badge " +
+          `college-testing-${college.testingPolicy.toLowerCase()}`
+        }
+      >
+        {policyLabels[
+          college.testingPolicy
+        ]}
       </div>
 
       <div className="college-major">
         <span>PROGRAM</span>
-        <strong>{college.major}</strong>
+
+        <strong>
+          {college.major}
+        </strong>
       </div>
 
-      <div className="college-quick-stats">
-        <div>
-          <span>SAT 25TH</span>
-          <strong>
-            {college.sat25}
-          </strong>
+      {college.testingPolicy ===
+      "NOT_USED" ? (
+        <div className="college-score-unavailable">
+          SAT / ACT are not used
+          in admission selection.
         </div>
+      ) : college.testingPolicy ===
+        "SPECIAL" ? (
+        <div className="college-score-unavailable">
+          Section-level testing
+          policy — open the profile
+          for details.
+        </div>
+      ) : hasSatData ? (
+        <div className="college-quick-stats">
+          <div>
+            <span>SAT 25TH</span>
+            <strong>
+              {formatScore(
+                college.sat25,
+              )}
+            </strong>
+          </div>
 
-        <div>
-          <span>SAT MEDIAN</span>
-          <strong>
-            {college.sat50}
-          </strong>
-        </div>
+          <div>
+            <span>SAT MEDIAN</span>
+            <strong>
+              {formatScore(
+                college.sat50,
+              )}
+            </strong>
+          </div>
 
-        <div>
-          <span>SAT 75TH</span>
-          <strong>
-            {college.sat75}
-          </strong>
+          <div>
+            <span>SAT 75TH</span>
+            <strong>
+              {formatScore(
+                college.sat75,
+              )}
+            </strong>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="college-score-unavailable">
+          No verified percentile
+          profile loaded yet.
+        </div>
+      )}
     </article>
   );
 }
@@ -97,6 +186,60 @@ function CollegeMatch({
   ] = useState<CollegeProfile>(
     colleges[0],
   );
+
+  const [
+    savedCollegeIds,
+    setSavedCollegeIds,
+  ] = useState<string[]>(() => {
+    try {
+      const saved =
+        localStorage.getItem(
+          COLLEGE_LIST_STORAGE_KEY,
+        );
+
+      return saved
+        ? JSON.parse(saved)
+        : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(
+      COLLEGE_LIST_STORAGE_KEY,
+      JSON.stringify(
+        savedCollegeIds,
+      ),
+    );
+  }, [savedCollegeIds]);
+
+  const toggleSavedCollege = (
+    collegeId: string,
+  ) => {
+    setSavedCollegeIds(
+      (current) =>
+        current.includes(
+          collegeId,
+        )
+          ? current.filter(
+              (id) =>
+                id !== collegeId,
+            )
+          : [
+              ...current,
+              collegeId,
+            ],
+    );
+  };
+
+  const savedColleges =
+    colleges.filter(
+      (college) =>
+        savedCollegeIds.includes(
+          college.id,
+        ),
+    );
 
   const [
     searchQuery,
@@ -138,6 +281,7 @@ function CollegeMatch({
           college.shortName,
           college.location,
           college.major,
+          college.aerospaceFit,
         ]
           .join(" ")
           .toLowerCase();
@@ -154,23 +298,29 @@ function CollegeMatch({
           meta?.region ===
             regionFilter;
 
+        const median =
+          college.sat50;
+
         const matchesSat =
           satBand === "ALL" ||
           (
+            median !== null &&
             satBand ===
               "1500_PLUS" &&
-            college.sat50 >= 1500
+            median >= 1500
           ) ||
           (
+            median !== null &&
             satBand ===
               "1400_1499" &&
-            college.sat50 >= 1400 &&
-            college.sat50 < 1500
+            median >= 1400 &&
+            median < 1500
           ) ||
           (
+            median !== null &&
             satBand ===
               "UNDER_1400" &&
-            college.sat50 < 1400
+            median < 1400
           );
 
         return (
@@ -185,6 +335,22 @@ function CollegeMatch({
     collegeExplorerMeta[
       selectedCollege.id
     ];
+
+  const hasSatProfile =
+    selectedCollege.sat25 !==
+      null ||
+    selectedCollege.sat50 !==
+      null ||
+    selectedCollege.sat75 !==
+      null;
+
+  const hasActProfile =
+    selectedCollege.act25 !==
+      null ||
+    selectedCollege.act50 !==
+      null ||
+    selectedCollege.act75 !==
+      null;
 
   return (
     <main className="college-shell">
@@ -213,13 +379,13 @@ function CollegeMatch({
         </h1>
 
         <p>
-          Start with colleges that can
+          Start with colleges that
           genuinely support your{" "}
-          <strong>{major}</strong> direction.
-          Compare official admissions data,
-          program fit, and opportunities
-          before deciding what belongs on
-          your college list.
+          <strong>{major}</strong>{" "}
+          direction. Compare program
+          structure, official data,
+          and each school's actual
+          admissions rules.
         </p>
       </section>
 
@@ -230,16 +396,18 @@ function CollegeMatch({
           </span>
 
           <h2>
-            Official data first.
+            Different schools.
+            Different rules.
           </h2>
         </div>
 
         <p>
-          AltWing uses institution-reported
-          data when available. If a university
-          does not officially report an average
-          GPA, we show "Not reported" instead
-          of inventing one.
+          AltWing does not force every
+          college into the same SAT/GPA
+          template. If a school is
+          test-blind, test-optional, or
+          uses a special testing system,
+          the interface changes with it.
         </p>
       </section>
 
@@ -348,13 +516,98 @@ function CollegeMatch({
         </span>
 
         <p>
-          These filters organize
-          schools by published
-          information. A higher or
-          lower SAT range does not
-          make a college a personal
-          reach, target, or likely.
+          SAT filters only apply to
+          schools with a verified
+          published median. Schools
+          using special or test-blind
+          policies are intentionally
+          excluded from SAT-band filters.
         </p>
+      </section>
+
+      <section className="college-my-list">
+        <div className="college-my-list-heading">
+          <div>
+            <span>
+              MY COLLEGE LIST
+            </span>
+
+            <h2>
+              Build a shortlist
+              worth comparing.
+            </h2>
+          </div>
+
+          <strong>
+            {savedColleges.length}
+            {" "}
+            {savedColleges.length === 1
+              ? "school"
+              : "schools"}
+          </strong>
+        </div>
+
+        {savedColleges.length === 0 ? (
+          <div className="college-my-list-empty">
+            <p>
+              Save colleges as you explore.
+              Your list stays on this device
+              even after you refresh the page.
+            </p>
+          </div>
+        ) : (
+          <div className="college-my-list-items">
+            {savedColleges.map(
+              (college) => (
+                <button
+                  key={college.id}
+                  type="button"
+                  onClick={() =>
+                    setSelectedCollege(
+                      college,
+                    )
+                  }
+                >
+                  <span>
+                    {college.shortName}
+                  </span>
+
+                  <small>
+                    {college.aerospaceFit}
+                  </small>
+
+                  <b
+                    role="button"
+                    tabIndex={0}
+                    onClick={(event) => {
+                      event.stopPropagation();
+
+                      toggleSavedCollege(
+                        college.id,
+                      );
+                    }}
+                    onKeyDown={(event) => {
+                      if (
+                        event.key ===
+                          "Enter" ||
+                        event.key === " "
+                      ) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        toggleSavedCollege(
+                          college.id,
+                        );
+                      }
+                    }}
+                  >
+                    ×
+                  </b>
+                </button>
+              ),
+            )}
+          </div>
+        )}
       </section>
 
       <section className="college-layout">
@@ -373,26 +626,38 @@ function CollegeMatch({
               <p>
                 Clear a region or SAT
                 filter to see more
-                aerospace programs.
+                aerospace pathways.
               </p>
             </div>
           )}
 
-          {filteredColleges.map((college) => (
-            <CollegeCard
-              key={college.id}
-              college={college}
-              selected={
-                selectedCollege.id ===
-                college.id
-              }
-              onSelect={() =>
-                setSelectedCollege(
-                  college,
-                )
-              }
-            />
-          ))}
+          {filteredColleges.map(
+            (college) => (
+              <CollegeCard
+                key={college.id}
+                college={college}
+                selected={
+                  selectedCollege.id ===
+                  college.id
+                }
+                saved={
+                  savedCollegeIds.includes(
+                    college.id,
+                  )
+                }
+                onSelect={() =>
+                  setSelectedCollege(
+                    college,
+                  )
+                }
+                onToggleSaved={() =>
+                  toggleSavedCollege(
+                    college.id,
+                  )
+                }
+              />
+            ),
+          )}
         </div>
 
         <aside className="college-profile-panel">
@@ -408,6 +673,28 @@ function CollegeMatch({
             {selectedCollege.location}
           </p>
 
+          <button
+            type="button"
+            className={
+              savedCollegeIds.includes(
+                selectedCollege.id,
+              )
+                ? "college-profile-save college-profile-save-active"
+                : "college-profile-save"
+            }
+            onClick={() =>
+              toggleSavedCollege(
+                selectedCollege.id,
+              )
+            }
+          >
+            {savedCollegeIds.includes(
+              selectedCollege.id,
+            )
+              ? "Saved to My College List ✓"
+              : "+ Save to My College List"}
+          </button>
+
           <div className="college-profile-program">
             <span>
               AEROSPACE PATH
@@ -418,98 +705,179 @@ function CollegeMatch({
             </strong>
           </div>
 
-          <section className="college-profile-section">
+          <section className="college-testing-policy">
             <span>
-              ADMISSIONS PROFILE
+              TESTING POLICY
             </span>
 
-            <div className="college-stat-row">
-              <div>
-                <small>
-                  SAT 25TH
-                </small>
-                <strong>
-                  {selectedCollege.sat25}
-                </strong>
-              </div>
+            <strong>
+              {
+                policyLabels[
+                  selectedCollege
+                    .testingPolicy
+                ]
+              }
+            </strong>
 
-              <div>
-                <small>
-                  MEDIAN
-                </small>
-                <strong>
-                  {selectedCollege.sat50}
-                </strong>
-              </div>
-
-              <div>
-                <small>
-                  SAT 75TH
-                </small>
-                <strong>
-                  {selectedCollege.sat75}
-                </strong>
-              </div>
-            </div>
-
-            <div className="college-stat-row">
-              <div>
-                <small>
-                  ACT 25TH
-                </small>
-                <strong>
-                  {selectedCollege.act25}
-                </strong>
-              </div>
-
-              <div>
-                <small>
-                  MEDIAN
-                </small>
-                <strong>
-                  {selectedCollege.act50}
-                </strong>
-              </div>
-
-              <div>
-                <small>
-                  ACT 75TH
-                </small>
-                <strong>
-                  {selectedCollege.act75}
-                </strong>
-              </div>
-            </div>
+            <p>
+              {
+                selectedCollege
+                  .testingPolicyNote
+              }
+            </p>
           </section>
+
+          {hasSatProfile && (
+            <section className="college-profile-section">
+              <span>
+                SAT CONTEXT
+              </span>
+
+              <div className="college-stat-row">
+                <div>
+                  <small>
+                    25TH
+                  </small>
+
+                  <strong>
+                    {formatScore(
+                      selectedCollege
+                        .sat25,
+                    )}
+                  </strong>
+                </div>
+
+                <div>
+                  <small>
+                    MEDIAN
+                  </small>
+
+                  <strong>
+                    {formatScore(
+                      selectedCollege
+                        .sat50,
+                    )}
+                  </strong>
+                </div>
+
+                <div>
+                  <small>
+                    75TH
+                  </small>
+
+                  <strong>
+                    {formatScore(
+                      selectedCollege
+                        .sat75,
+                    )}
+                  </strong>
+                </div>
+              </div>
+
+              <p>
+                {
+                  selectedCollege
+                    .scoreContext
+                }
+              </p>
+            </section>
+          )}
+
+          {hasActProfile && (
+            <section className="college-profile-section">
+              <span>
+                ACT CONTEXT
+              </span>
+
+              <div className="college-stat-row">
+                <div>
+                  <small>
+                    25TH
+                  </small>
+
+                  <strong>
+                    {formatScore(
+                      selectedCollege
+                        .act25,
+                    )}
+                  </strong>
+                </div>
+
+                <div>
+                  <small>
+                    MEDIAN
+                  </small>
+
+                  <strong>
+                    {formatScore(
+                      selectedCollege
+                        .act50,
+                    )}
+                  </strong>
+                </div>
+
+                <div>
+                  <small>
+                    75TH
+                  </small>
+
+                  <strong>
+                    {formatScore(
+                      selectedCollege
+                        .act75,
+                    )}
+                  </strong>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {!hasSatProfile &&
+            !hasActProfile && (
+            <section className="college-score-unavailable college-profile-no-score">
+              <strong>
+                NO COMPOSITE SCORE
+                COMPARISON
+              </strong>
+
+              <p>
+                {
+                  selectedCollege
+                    .scoreContext
+                }
+              </p>
+            </section>
+          )}
 
           <section className="college-profile-section">
             <span>GPA CONTEXT</span>
 
             <strong className="college-gpa">
-              {selectedCollege.averageGpa}
+              {
+                selectedCollege
+                  .averageGpa
+              }
             </strong>
 
             <p>
-              {selectedCollege.gpaNote}
+              {
+                selectedCollege
+                  .gpaNote
+              }
             </p>
           </section>
 
           <section className="college-profile-section">
             <span>
-              OVERALL ADMISSION CONTEXT
+              ADMISSION CONTEXT
             </span>
 
             <strong className="college-admit">
-              {selectedCollege.admissionRate}
+              {
+                selectedCollege
+                  .admissionRate
+              }
             </strong>
-
-            <p>
-              This is context, not your
-              personal probability of admission.
-              Major, residency, academic record,
-              essays, activities, institutional
-              priorities, and other factors matter.
-            </p>
           </section>
 
           <section className="college-profile-section">
@@ -518,13 +886,16 @@ function CollegeMatch({
             </span>
 
             <ul>
-              {selectedCollege.strengths.map(
-                (strength) => (
-                  <li key={strength}>
-                    {strength}
-                  </li>
-                ),
-              )}
+              {selectedCollege
+                .strengths.map(
+                  (strength) => (
+                    <li
+                      key={strength}
+                    >
+                      {strength}
+                    </li>
+                  ),
+                )}
             </ul>
           </section>
 
@@ -536,7 +907,8 @@ function CollegeMatch({
 
               <p>
                 {
-                  selectedMeta.specialContext
+                  selectedMeta
+                    .specialContext
                 }
               </p>
             </section>
@@ -550,7 +922,8 @@ function CollegeMatch({
 
               <p>
                 {
-                  selectedMeta.dataCaution
+                  selectedMeta
+                    .dataCaution
                 }
               </p>
             </section>
@@ -564,7 +937,10 @@ function CollegeMatch({
             </strong>
 
             <small>
-              {selectedCollege.sourceYear}
+              {
+                selectedCollege
+                  .sourceYear
+              }
             </small>
           </footer>
         </aside>
@@ -576,17 +952,17 @@ function CollegeMatch({
         </span>
 
         <h2>
-          A score range is not an
-          admissions formula.
+          Context is useful.
+          Fake precision isn't.
         </h2>
 
         <p>
-          SAT, ACT, GPA, and admission
-          rates help describe the enrolled
-          or admitted population. They
-          should guide planning, not be used
-          to manufacture a fake acceptance
-          probability.
+          AltWing will not manufacture
+          an average GPA, SAT median,
+          major acceptance rate, or
+          personal admission probability
+          when the institution does not
+          publish one.
         </p>
       </section>
     </main>

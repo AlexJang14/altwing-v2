@@ -12,6 +12,9 @@ interface FinalDecisionProps {
   onBack: () => void;
 }
 
+const COLLEGE_LIST_STORAGE_KEY =
+  "altwing-my-college-list";
+
 type CriterionKey =
   | "program"
   | "affordability"
@@ -99,6 +102,31 @@ function FinalDecision({
   major,
   onBack,
 }: FinalDecisionProps) {
+  const [
+    savedCollegeIds,
+  ] = useState<string[]>(() => {
+    try {
+      const saved =
+        localStorage.getItem(
+          COLLEGE_LIST_STORAGE_KEY,
+        );
+
+      return saved
+        ? JSON.parse(saved)
+        : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const comparisonColleges =
+    colleges.filter(
+      (college) =>
+        savedCollegeIds.includes(
+          college.id,
+        ),
+    );
+
   const [weights, setWeights] =
     useState(defaultWeights);
 
@@ -142,7 +170,7 @@ function FinalDecision({
     );
 
   const ranked = useMemo(() => {
-    return colleges
+    return comparisonColleges
       .filter(
         (college) =>
           collegeDecisions[
@@ -183,6 +211,7 @@ function FinalDecision({
           b.score - a.score,
       );
   }, [
+    comparisonColleges,
     collegeDecisions,
     weights,
     totalWeight,
@@ -337,6 +366,27 @@ function FinalDecision({
         </div>
       </section>
 
+      <section className="decision-list-source">
+        <div>
+          <span>
+            MY COLLEGE LIST
+          </span>
+
+          <h2>
+            Compare only the schools
+            that survived your exploration.
+          </h2>
+        </div>
+
+        <strong>
+          {comparisonColleges.length}
+          {" "}
+          {comparisonColleges.length === 1
+            ? "school"
+            : "schools"}
+        </strong>
+      </section>
+
       <section className="decision-offers">
         <div className="decision-section-heading">
           <span>
@@ -355,7 +405,26 @@ function FinalDecision({
         </div>
 
         <div className="decision-college-grid">
-          {colleges.map(
+          {comparisonColleges.length === 0 && (
+            <div className="decision-empty">
+              <span>
+                NO COLLEGES SAVED YET
+              </span>
+
+              <h3>
+                Build your shortlist first.
+              </h3>
+
+              <p>
+                Go to College Match and save
+                the schools you genuinely want
+                to compare. Final Decision will
+                automatically use that list.
+              </p>
+            </div>
+          )}
+
+          {comparisonColleges.map(
             (college) => {
               const decision =
                 collegeDecisions[
@@ -533,6 +602,24 @@ function FinalDecision({
         </div>
 
         <div className="decision-ranking-list">
+          {ranked.length === 0 && (
+            <div className="decision-empty">
+              <span>
+                NOTHING TO RANK YET
+              </span>
+
+              <h3>
+                Your shortlist comes first.
+              </h3>
+
+              <p>
+                Save colleges in College Match,
+                then return here to compare
+                your real options.
+              </p>
+            </div>
+          )}
+
           {ranked.map(
             (
               result,

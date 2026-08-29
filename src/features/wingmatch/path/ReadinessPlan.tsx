@@ -32,7 +32,8 @@ interface StudentProfile {
 const STORAGE_KEY =
   "altwing-readiness-profile";
 
-const defaultProfile: StudentProfile = {
+const defaultProfile:
+  StudentProfile = {
   gpa: "",
   sat: "",
   satMath: "",
@@ -41,46 +42,194 @@ const defaultProfile: StudentProfile = {
   leadership: "Developing",
 };
 
-function getSatSignal(
+function formatScore(
+  score: number | null,
+) {
+  return score === null
+    ? "—"
+    : String(score);
+}
+
+function caltechBucket(
   score: number,
+) {
+  if (score >= 780) {
+    return "BUCKET A";
+  }
+
+  if (score >= 750) {
+    return "BUCKET B";
+  }
+
+  return "BUCKET C";
+}
+
+function getSatSignal(
+  profile: StudentProfile,
   college: CollegeProfile,
 ) {
+  const score =
+    Number(profile.sat) || 0;
+
+  const math =
+    Number(profile.satMath) || 0;
+
+  if (
+    college.testingPolicy ===
+    "NOT_USED"
+  ) {
+    return {
+      label:
+        "SAT / ACT NOT USED",
+
+      detail:
+        `${college.shortName} does not use SAT or ACT scores in admission selection. Focus this comparison on GPA, coursework, major preparation, projects, and fit.`,
+    };
+  }
+
+  if (
+    college.testingPolicy ===
+      "SPECIAL" &&
+    college.id === "caltech"
+  ) {
+    if (!math) {
+      return {
+        label:
+          "ADD SAT MATH OR ACT SECTION DATA",
+
+        detail:
+          "Caltech evaluates individual test sections using buckets. Enter SAT Math to preview the Math bucket; Reading & Writing must also be considered separately.",
+      };
+    }
+
+    return {
+      label:
+        `SAT MATH: ${caltechBucket(
+          math,
+        )}`,
+
+      detail:
+        math >= 780
+          ? "Your SAT Math falls in Caltech Bucket A (780–800). The exact score is hidden from the admissions committee within this bucket."
+          : math >= 750
+            ? "Your SAT Math falls in Caltech Bucket B (750–770). The exact score is hidden from the admissions committee within this bucket."
+            : "Your SAT Math falls in Bucket C. Caltech shows the individual score to the admissions committee and recommends clear additional evidence of STEM readiness.",
+    };
+  }
+
   if (!score) {
+    if (
+      college.testingPolicy ===
+      "OPTIONAL"
+    ) {
+      return {
+        label:
+          "TEST OPTIONAL",
+
+        detail:
+          `${college.shortName} does not require an SAT or ACT for this cycle. Add a score only if you want to compare submitted-score context.`,
+      };
+    }
+
+    if (
+      college.testingPolicy ===
+      "REQUIRED"
+    ) {
+      return {
+        label:
+          "TEST REQUIRED",
+
+        detail:
+          `${college.shortName} currently requires standardized testing. Add your score to the profile.`,
+      };
+    }
+
     return {
-      label: "ADD YOUR SCORE",
+      label:
+        "ADD A SCORE IF RELEVANT",
+
       detail:
-        "Enter an SAT score to compare it with the school's official range.",
+        "Enter an SAT score to compare it with available institutional context. Verify the school's testing policy for your exact application cycle.",
     };
   }
 
-  if (score >= college.sat75) {
+  const low =
+    college.sat25;
+
+  const middle =
+    college.sat50;
+
+  const high =
+    college.sat75;
+
+  if (
+    low === null ||
+    high === null
+  ) {
     return {
-      label: "AT / ABOVE 75TH",
+      label:
+        "SCORE RECORDED",
+
       detail:
-        `Your ${score} is at or above the school's reported 75th percentile (${college.sat75}).`,
+        `${college.shortName} does not currently have a verified percentile band loaded in AltWing. Your score is saved, but no fake comparison is generated.`,
     };
   }
 
-  if (score >= college.sat50) {
+  if (score < low) {
     return {
-      label: "ABOVE MEDIAN",
+      label:
+        "BELOW REPORTED RANGE",
+
       detail:
-        `Your ${score} is between the reported median (${college.sat50}) and 75th percentile (${college.sat75}).`,
+        `Your ${score} is below the lower bound currently shown for ${college.shortName} (${low}).`,
     };
   }
 
-  if (score >= college.sat25) {
+  if (
+    middle !== null &&
+    score < middle
+  ) {
     return {
-      label: "WITHIN REPORTED RANGE",
+      label:
+        "WITHIN REPORTED RANGE",
+
       detail:
-        `Your ${score} falls between the school's reported 25th percentile (${college.sat25}) and median (${college.sat50}).`,
+        `Your ${score} falls between the reported 25th percentile (${low}) and median (${middle}).`,
+    };
+  }
+
+  if (
+    middle !== null &&
+    score <= high
+  ) {
+    return {
+      label:
+        "AT / ABOVE MEDIAN",
+
+      detail:
+        `Your ${score} is between the reported median (${middle}) and 75th percentile (${high}).`,
+    };
+  }
+
+  if (
+    middle === null &&
+    score <= high
+  ) {
+    return {
+      label:
+        "WITHIN REPORTED MIDDLE 50%",
+
+      detail:
+        `Your ${score} is within the published middle-50% range of ${low}–${high}.`,
     };
   }
 
   return {
-    label: "BELOW 25TH",
+    label:
+      "ABOVE REPORTED UPPER RANGE",
+
     detail:
-      `Your ${score} is below the school's reported 25th percentile (${college.sat25}). Testing may be one area to strengthen.`,
+      `Your ${score} is above the upper bound currently shown (${high}). Do not assume this creates a high admission probability.`,
   };
 }
 
@@ -90,43 +239,104 @@ function nextMoves(
 ) {
   const moves: string[] = [];
 
-  const sat = Number(profile.sat);
+  const sat =
+    Number(profile.sat) || 0;
 
-  if (!sat) {
-    moves.push(
-      "Establish a current SAT or ACT baseline so testing strategy is based on evidence.",
-    );
-  } else if (sat < college.sat50) {
-    moves.push(
-      `Work toward ${college.shortName}'s reported SAT median of ${college.sat50}, while remembering that scores are only one part of admission.`,
-    );
-  } else {
-    moves.push(
-      "Testing is currently within a competitive reported range; protect time for coursework, projects, and impact instead of chasing points indefinitely.",
-    );
-  }
+  const satMath =
+    Number(profile.satMath) || 0;
 
-  if (
-    profile.rigor === "Exploring" ||
-    profile.rigor === "Developing"
+  if (college.id === "caltech") {
+    if (
+      !satMath ||
+      satMath < 750
+    ) {
+      moves.push(
+        "Review Caltech's section-level testing buckets and strengthen clear evidence of quantitative readiness rather than chasing a composite score.",
+      );
+    }
+
+    moves.push(
+      "Make sure your high-school preparation demonstrates mastery in calculus, chemistry, and physics, because Caltech explicitly expects those foundations.",
+    );
+  } else if (
+    college.id === "utaustin"
+  ) {
+    if (
+      !satMath ||
+      satMath < 620
+    ) {
+      moves.push(
+        "Confirm Cockrell calculus readiness. SAT Math 620+ is one official route, but AP/IB calculus or qualifying calculus coursework can also satisfy the requirement.",
+      );
+    }
+
+    if (!sat) {
+      moves.push(
+        "Plan for an official SAT or ACT because UT Austin currently requires one for first-year admission.",
+      );
+    }
+  } else if (
+    college.testingPolicy ===
+    "NOT_USED"
   ) {
     moves.push(
-      "Strengthen relevant academic rigor in math, physics, computing, or engineering where your school makes those courses available.",
+      "Do not spend application strategy time optimizing SAT for this school; strengthen grades, course rigor, major preparation, and meaningful engineering work instead.",
     );
+  } else if (
+    college.testingPolicy ===
+      "REQUIRED" ||
+    college.testingPolicy ===
+      "CHECK_CURRENT"
+  ) {
+    if (!sat) {
+      moves.push(
+        "Establish a current testing baseline and verify whether this school requires scores for your exact application cycle.",
+      );
+    } else if (
+      college.sat50 !== null &&
+      sat < college.sat50
+    ) {
+      moves.push(
+        `If testing remains important for your cycle, work toward the institution's reported median context of ${college.sat50} without letting test prep crowd out stronger academic or engineering work.`,
+      );
+    }
   }
 
   if (
-    profile.engineering === "Exploring" ||
-    profile.engineering === "Developing"
+    college.id === "calpoly"
   ) {
     moves.push(
-      `Turn your ${profile.engineering.toLowerCase()} technical interest into one tested, documented ${college.major} or engineering project with visible evidence.`,
+      "Protect your 9th–11th grade academic record and relevant math/science preparation because Cal Poly evaluates applicants by intended major and does not use SAT/ACT in selection.",
     );
   }
 
   if (
-    profile.leadership === "Exploring" ||
-    profile.leadership === "Developing"
+    profile.rigor ===
+      "Exploring" ||
+    profile.rigor ===
+      "Developing"
+  ) {
+    moves.push(
+      "Strengthen relevant course rigor in math, physics, computing, or engineering where your school makes those courses available.",
+    );
+  }
+
+  if (
+    profile.engineering ===
+      "Exploring" ||
+    profile.engineering ===
+      "Developing"
+  ) {
+    moves.push(
+      `Turn technical interest into one tested, documented engineering project with visible evidence instead of adding another shallow activity.`,
+    );
+  }
+
+  if (
+    profile.leadership ===
+      "Exploring" ||
+    profile.leadership ===
+      "Developing"
   ) {
     moves.push(
       "Deepen one existing activity into measurable leadership: own an outcome, lead a team, create an opportunity, or mentor others.",
@@ -168,7 +378,9 @@ function ReadinessPlan({
   const [
     selectedCollegeId,
     setSelectedCollegeId,
-  ] = useState(colleges[0].id);
+  ] = useState(
+    colleges[0].id,
+  );
 
   useEffect(() => {
     localStorage.setItem(
@@ -180,19 +392,17 @@ function ReadinessPlan({
   const college =
     colleges.find(
       (item) =>
-        item.id === selectedCollegeId,
+        item.id ===
+        selectedCollegeId,
     ) ?? colleges[0];
-
-  const satScore =
-    Number(profile.sat) || 0;
 
   const satSignal = useMemo(
     () =>
       getSatSignal(
-        satScore,
+        profile,
         college,
       ),
-    [satScore, college],
+    [profile, college],
   );
 
   const moves = useMemo(
@@ -213,6 +423,12 @@ function ReadinessPlan({
       [key]: value,
     }));
   };
+
+  const showStandardScores =
+    college.testingPolicy !==
+      "NOT_USED" &&
+    college.testingPolicy !==
+      "SPECIAL";
 
   return (
     <main className="readiness-shell">
@@ -241,19 +457,21 @@ function ReadinessPlan({
         </h1>
 
         <p>
-          Compare your current preparation
-          with official college data for{" "}
-          <strong>{major}</strong>.
-          AltWing does not calculate a fake
-          probability of admission. It shows
-          context, gaps, strengths, and useful
-          next moves.
+          Compare your preparation for{" "}
+          <strong>{major}</strong>{" "}
+          with the actual admissions
+          context of each school.
+          AltWing changes its logic
+          when the school's rules
+          change.
         </p>
       </section>
 
       <section className="readiness-layout">
         <div className="readiness-input-panel">
-          <span>MY PROFILE</span>
+          <span>
+            MY PROFILE
+          </span>
 
           <h2>
             Where are you now?
@@ -280,7 +498,9 @@ function ReadinessPlan({
             </label>
 
             <label>
-              <span>SAT TOTAL</span>
+              <span>
+                SAT TOTAL
+              </span>
 
               <input
                 type="number"
@@ -298,14 +518,18 @@ function ReadinessPlan({
             </label>
 
             <label>
-              <span>SAT MATH</span>
+              <span>
+                SAT MATH
+              </span>
 
               <input
                 type="number"
                 min="200"
                 max="800"
                 placeholder="Example: 760"
-                value={profile.satMath}
+                value={
+                  profile.satMath
+                }
                 onChange={(event) =>
                   updateField(
                     "satMath",
@@ -316,7 +540,9 @@ function ReadinessPlan({
             </label>
 
             <label>
-              <span>COURSE RIGOR</span>
+              <span>
+                COURSE RIGOR
+              </span>
 
               <select
                 value={profile.rigor}
@@ -374,7 +600,9 @@ function ReadinessPlan({
             </label>
 
             <label>
-              <span>LEADERSHIP</span>
+              <span>
+                LEADERSHIP
+              </span>
 
               <select
                 value={
@@ -405,10 +633,14 @@ function ReadinessPlan({
         </div>
 
         <div className="readiness-target-panel">
-          <span>TARGET SCHOOL</span>
+          <span>
+            TARGET SCHOOL
+          </span>
 
           <select
-            value={selectedCollegeId}
+            value={
+              selectedCollegeId
+            }
             onChange={(event) =>
               setSelectedCollegeId(
                 event.target.value,
@@ -434,6 +666,25 @@ function ReadinessPlan({
           <p>
             {college.major}
           </p>
+
+          <div className="readiness-target-policy">
+            <span>
+              TESTING
+            </span>
+
+            <strong>
+              {
+                college.testingPolicy
+              }
+            </strong>
+
+            <p>
+              {
+                college
+                  .testingPolicyNote
+              }
+            </p>
+          </div>
         </div>
       </section>
 
@@ -449,70 +700,113 @@ function ReadinessPlan({
           </h2>
         </div>
 
-        <article className="readiness-score-card">
-          <div>
-            <span>SAT</span>
+        {showStandardScores ? (
+          <>
+            <article className="readiness-score-card">
+              <div>
+                <span>
+                  SAT
+                </span>
 
-            <strong>
-              {profile.sat || "—"}
-            </strong>
+                <strong>
+                  {
+                    profile.sat ||
+                    "—"
+                  }
+                </strong>
 
-            <small>YOU</small>
-          </div>
+                <small>
+                  YOU
+                </small>
+              </div>
 
-          <div>
-            <span>25TH</span>
+              <div>
+                <span>
+                  25TH
+                </span>
 
-            <strong>
-              {college.sat25}
-            </strong>
+                <strong>
+                  {formatScore(
+                    college.sat25,
+                  )}
+                </strong>
 
-            <small>
-              OFFICIAL DATA
-            </small>
-          </div>
+                <small>
+                  PUBLISHED
+                </small>
+              </div>
 
-          <div>
-            <span>MEDIAN</span>
+              <div>
+                <span>
+                  MEDIAN
+                </span>
 
-            <strong>
-              {college.sat50}
-            </strong>
+                <strong>
+                  {formatScore(
+                    college.sat50,
+                  )}
+                </strong>
 
-            <small>
-              OFFICIAL DATA
-            </small>
-          </div>
+                <small>
+                  PUBLISHED
+                </small>
+              </div>
 
-          <div>
-            <span>75TH</span>
+              <div>
+                <span>
+                  75TH
+                </span>
 
-            <strong>
-              {college.sat75}
-            </strong>
+                <strong>
+                  {formatScore(
+                    college.sat75,
+                  )}
+                </strong>
 
-            <small>
-              OFFICIAL DATA
-            </small>
-          </div>
-        </article>
+                <small>
+                  PUBLISHED
+                </small>
+              </div>
+            </article>
 
-        <div className="readiness-signal">
-          <span>
-            {satSignal.label}
-          </span>
+            <div className="readiness-signal">
+              <span>
+                {satSignal.label}
+              </span>
 
-          <p>
-            {satSignal.detail}
-          </p>
-        </div>
+              <p>
+                {satSignal.detail}
+              </p>
+            </div>
+          </>
+        ) : (
+          <article className="readiness-policy-card">
+            <span>
+              SCHOOL-SPECIFIC
+              TESTING LOGIC
+            </span>
+
+            <h3>
+              {satSignal.label}
+            </h3>
+
+            <p>
+              {satSignal.detail}
+            </p>
+          </article>
+        )}
 
         <article className="readiness-gpa-card">
           <div>
-            <span>YOUR GPA</span>
+            <span>
+              YOUR GPA
+            </span>
 
             <strong>
-              {profile.gpa || "—"}
+              {
+                profile.gpa ||
+                "—"
+              }
             </strong>
           </div>
 
@@ -522,7 +816,9 @@ function ReadinessPlan({
             </span>
 
             <strong>
-              {college.averageGpa}
+              {
+                college.averageGpa
+              }
             </strong>
 
             <p>
@@ -548,7 +844,9 @@ function ReadinessPlan({
             </span>
 
             <strong>
-              {profile.engineering}
+              {
+                profile.engineering
+              }
             </strong>
           </article>
 
@@ -558,7 +856,9 @@ function ReadinessPlan({
             </span>
 
             <strong>
-              {profile.leadership}
+              {
+                profile.leadership
+              }
             </strong>
           </article>
         </div>
@@ -594,20 +894,22 @@ function ReadinessPlan({
         </span>
 
         <h2>
-          This is a planning tool,
-          not an admissions prediction.
+          One admissions formula
+          cannot fit every college.
         </h2>
 
         <p>
-          College admissions are holistic
-          and institution-specific. A score
-          range, GPA, or activity rating
-          cannot tell an individual student
-          whether they will be admitted.
+          A test-blind university,
+          a test-optional university,
+          a school using score
+          percentiles, and a school
+          using testing buckets should
+          not receive the same
+          readiness calculation.
         </p>
 
         <small>
-          College data source:{" "}
+          Source context:{" "}
           {college.source},{" "}
           {college.sourceYear}
         </small>
