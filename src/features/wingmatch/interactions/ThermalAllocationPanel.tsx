@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./thermal-allocation.css";
 
 export interface ThermalAllocationResult {
@@ -22,16 +22,27 @@ interface ThermalAllocationPanelProps {
   onLock?: (
     result: ThermalAllocationResult,
   ) => void;
+
+  onPreview?: (
+    result: ThermalAllocationResult,
+  ) => void;
+
   locked?: boolean;
 }
 
 function ThermalAllocationPanel({
   onLock,
+  onPreview,
   locked = false,
 }: ThermalAllocationPanelProps) {
-const [engine, setEngine] = useState(25);
-const [battery, setBattery] = useState(20);
-const [avionics, setAvionics] = useState(15);
+  const [engine, setEngine] =
+    useState(25);
+
+  const [battery, setBattery] =
+    useState(20);
+
+  const [avionics, setAvionics] =
+    useState(15);
   const [adjustments, setAdjustments] = useState(0);
 
   const reserve =
@@ -74,6 +85,50 @@ const [avionics, setAvionics] = useState(15);
     };
   }, [engine, battery, avionics, reserve]);
 
+  const currentResult =
+    useMemo<ThermalAllocationResult>(
+      () => ({
+        engine,
+        battery,
+        avionics,
+        reserve,
+
+        engineTemp:
+          metrics.engineTemp,
+
+        batteryRisk:
+          metrics.batteryRisk,
+
+        avionicsMargin:
+          metrics.avionicsMargin,
+
+        adjustments,
+
+        state:
+          metrics.state,
+      }),
+      [
+        engine,
+        battery,
+        avionics,
+        reserve,
+        metrics,
+        adjustments,
+      ],
+    );
+
+  useEffect(() => {
+    if (!locked) {
+      onPreview?.(
+        currentResult,
+      );
+    }
+  }, [
+    currentResult,
+    locked,
+    onPreview,
+  ]);
+
   function updateAllocation(
     system: "engine" | "battery" | "avionics",
     value: number,
@@ -106,41 +161,88 @@ const [avionics, setAvionics] = useState(15);
   }
 
   function handleLock() {
-    onLock?.({
-      engine,
-      battery,
-      avionics,
-      reserve,
-      engineTemp: metrics.engineTemp,
-      batteryRisk: metrics.batteryRisk,
-      avionicsMargin:
-        metrics.avionicsMargin,
-      adjustments,
-      state: metrics.state,
-    });
+    onLock?.(
+      currentResult,
+    );
   }
 
   return (
     <div className="thermal-allocation">
       <div className="thermal-header">
         <div>
-          <span>THERMAL CONTROL</span>
-          <h2>Allocate cooling power.</h2>
+          <span>
+            RESOURCE CRISIS
+          </span>
+
+          <h2>
+            You have 100 cooling points.
+          </h2>
         </div>
 
         <div
           className={`thermal-state thermal-state--${metrics.state}`}
         >
           {metrics.state === "balanced"
-            ? "BALANCED"
+            ? "MARGINS DISTRIBUTED"
             : "TRADEOFF ACTIVE"}
         </div>
       </div>
 
+      <p className="thermal-brief">
+        Every point you move protects
+        one system by giving up margin
+        somewhere else. There is no
+        perfect allocation.
+      </p>
+
       <div className="thermal-budget">
-        <span>AVAILABLE POWER</span>
-        <strong>{reserve}</strong>
-        <small>remaining</small>
+        <span>
+          CONTINGENCY RESERVE
+        </span>
+
+        <strong>
+          {reserve}
+        </strong>
+
+        <small>
+          points uncommitted
+        </small>
+      </div>
+
+      <div className="thermal-budget-rail">
+        <div
+          className="thermal-budget-used"
+          style={{
+            width:
+              `${
+                engine +
+                battery +
+                avionics
+              }%`,
+          }}
+        />
+
+        <div
+          className="thermal-budget-reserve"
+          style={{
+            width:
+              `${reserve}%`,
+          }}
+        />
+      </div>
+
+      <div className="thermal-budget-legend">
+        <span>
+          {
+            engine +
+            battery +
+            avionics
+          } committed
+        </span>
+
+        <span>
+          {reserve} reserve
+        </span>
       </div>
 
       <div className="thermal-controls">
@@ -250,19 +352,19 @@ const [avionics, setAvionics] = useState(15);
 
       <div className="thermal-feedback">
         {metrics.state === "engine-risk" &&
-          "Engine cooling is underfunded."}
+          "You are accepting higher engine temperature to preserve power elsewhere."}
 
         {metrics.state === "battery-risk" &&
-          "Battery thermal risk is rising."}
+          "You are accepting more battery thermal exposure to preserve margin elsewhere."}
 
         {metrics.state === "avionics-risk" &&
-          "Avionics thermal margin is too small."}
+          "You are trading avionics thermal margin for other systems."}
 
         {metrics.state === "low-reserve" &&
-          "The vehicle has almost no cooling reserve left."}
+          "You protected current systems aggressively and left little contingency power."}
 
         {metrics.state === "balanced" &&
-          "The thermal plan protects critical systems while preserving contingency power."}
+          "No subsystem dominates the budget. You preserved contingency power, but every margin can still be traded."}
       </div>
 
       <button
@@ -272,8 +374,8 @@ const [avionics, setAvionics] = useState(15);
         onClick={handleLock}
       >
         {locked
-          ? "Thermal plan locked"
-          : "Lock thermal plan"}
+          ? "Allocation committed ✓"
+          : "Commit allocation →"}
       </button>
     </div>
   );

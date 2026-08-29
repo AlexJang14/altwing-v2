@@ -230,3 +230,93 @@
 
   cursor: default;
 }
+/* =========================================================
+   WINGMATCH V3 — RESOURCE ALLOCATION
+   ========================================================= */
+
+.thermal-brief {
+  max-width: 640px;
+
+  margin:
+    0 0 18px;
+
+  color:
+    rgba(255,255,255,.42);
+
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.thermal-budget-rail {
+  display: flex;
+
+  height: 9px;
+
+  margin-top: 13px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255,255,255,.07);
+}
+
+.thermal-budget-used {
+  height: 100%;
+
+  background:
+    #5b8def;
+
+  transition:
+    width .22s ease;
+}
+
+.thermal-budget-reserve {
+  height: 100%;
+
+  background:
+    rgba(255,200,87,.72);
+
+  transition:
+    width .22s ease;
+}
+
+.thermal-budget-legend {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin:
+    7px 0 20px;
+
+  color:
+    rgba(255,255,255,.3);
+
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+.thermal-controls input[type="range"] {
+  cursor: grab;
+}
+
+.thermal-controls input[type="range"]:active {
+  cursor: grabbing;
+}
+
+.thermal-lock {
+  transition:
+    transform .15s ease,
+    filter .15s ease;
+}
+
+.thermal-lock:not(:disabled):hover {
+  transform:
+    translateY(-1px);
+
+  filter:
+    brightness(1.08);
+}
