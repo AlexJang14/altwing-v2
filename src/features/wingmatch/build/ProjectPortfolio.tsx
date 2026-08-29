@@ -347,6 +347,74 @@ function ProjectPortfolio({
         exploreEvidence ||
         "Complete the evidence checkpoints to generate a stronger project reflection.";
 
+  const fullPortfolioText = [
+    `# ${project}`,
+    ``,
+    `**Wing:** ${wingName}`,
+    `**Role:** ${activityRole}`,
+    ``,
+    `## Engineering Question`,
+    question,
+    ``,
+    `## What I Built`,
+    finalArtifact,
+    buildDetail || "Build evidence not yet available.",
+    ``,
+    `## Testing`,
+    testDetail || "Testing evidence not yet available.",
+    ``,
+    `## V1 → V2 Iteration`,
+    iterationDetail || "Iteration evidence not yet available.",
+    ``,
+    `## Technical Reflection`,
+    reflection,
+    ``,
+    `## Activity Name`,
+    activityName,
+    ``,
+    `## Project Description`,
+    activityDescription,
+    ``,
+    `## 150-Character Activity Draft`,
+    commonAppDescription,
+    ``,
+    `## Resume Bullet`,
+    resumeBullet,
+    ``,
+    `---`,
+    `Generated from evidence recorded in AltWing.`,
+  ].join("\n");
+
+  function downloadPortfolio() {
+    const blob = new Blob(
+      [fullPortfolioText],
+      {
+        type: "text/markdown;charset=utf-8",
+      },
+    );
+
+    const url =
+      URL.createObjectURL(blob);
+
+    const anchor =
+      document.createElement("a");
+
+    const safeName = project
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+    anchor.href = url;
+    anchor.download =
+      `${safeName || "altwing-project"}-portfolio.md`;
+
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+
+    URL.revokeObjectURL(url);
+  }
+
   async function copyText(
     id: string,
     text: string,
@@ -763,6 +831,51 @@ function ProjectPortfolio({
             </p>
           </article>
         </div>
+      </section>
+
+      <section className="portfolio-section portfolio-export">
+        <div className="portfolio-section-heading">
+          <span>
+            06 / TAKE IT WITH YOU
+          </span>
+
+          <h2>
+            Your work should leave AltWing with you.
+          </h2>
+
+          <p>
+            Copy the complete portfolio or download a Markdown file
+            for GitHub, a project website, or your own records.
+          </p>
+        </div>
+
+        <div className="portfolio-export-actions">
+          <button
+            type="button"
+            onClick={() =>
+              copyText(
+                "full-portfolio",
+                fullPortfolioText,
+              )
+            }
+          >
+            {copied === "full-portfolio"
+              ? "Copied full portfolio ✓"
+              : "Copy full portfolio"}
+          </button>
+
+          <button
+            type="button"
+            onClick={downloadPortfolio}
+          >
+            Download portfolio .md ↓
+          </button>
+        </div>
+
+        <small className="portfolio-export-note">
+          Keep your final application language accurate to work
+          you actually completed and can explain.
+        </small>
       </section>
 
       <section className="portfolio-section portfolio-next">
