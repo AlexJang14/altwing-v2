@@ -78,4 +78,159 @@ export const collegeExplorerMeta:
     specialContext:
       "Cal Poly admits by intended major. SAT and ACT are not used in admission selection. Aerospace Engineering students choose an Aeronautics or Astronautics concentration.",
   },
+
+  "maryland": {
+    region: "SOUTH",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "vatech": {
+    region: "SOUTH",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "pennstate": {
+    region: "NORTHEAST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "ohio-state": {
+    region: "MIDWEST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "minnesota": {
+    region: "MIDWEST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "usc": {
+    region: "WEST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "ucla": {
+    region: "WEST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "ucsd": {
+    region: "WEST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "florida": {
+    region: "SOUTH",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "auburn": {
+    region: "SOUTH",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "alabama": {
+    region: "SOUTH",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "ncstate": {
+    region: "SOUTH",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "iowastate": {
+    region: "MIDWEST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "asu": {
+    region: "WEST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "arizona": {
+    region: "WEST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "berkeley": {
+    region: "WEST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "rpi": {
+    region: "NORTHEAST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "mst": {
+    region: "MIDWEST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "cornell": {
+    region: "NORTHEAST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "princeton": {
+    region: "NORTHEAST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "cmu": {
+    region: "NORTHEAST",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
+  "duke": {
+    region: "SOUTH",
+
+    dataCaution:
+      "This school is included in AltWing's expanded discovery catalog, but current admissions statistics have not yet been verified. Use official university sources for cycle-specific requirements and data.",
+  },
+
 };

@@ -157,6 +157,11 @@ function PathDashboard({
     return (
       <CollegeMatch
         major={major}
+        onAnalyzeReadiness={() =>
+          setActiveSection(
+            "readiness",
+          )
+        }
         onBack={() =>
           setActiveSection(null)
         }

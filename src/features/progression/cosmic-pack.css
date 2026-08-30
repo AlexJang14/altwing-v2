@@ -1,0 +1,1224 @@
+
+/* =========================================================
+   ALTWING — DEEP SPACE PACK SYSTEM
+   ========================================================= */
+
+
+/* ---------- PACK VAULT ---------- */
+
+.cosmic-pack-vault {
+  padding: 16px;
+
+  border: 1px solid
+    rgba(255, 200, 87, 0.16);
+
+  border-radius: 16px;
+
+  background:
+    radial-gradient(
+      circle at 95% 5%,
+      rgba(255, 200, 87, 0.1),
+      transparent 35%
+    ),
+    rgba(255, 255, 255, 0.02);
+}
+
+.pack-vault-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+.pack-vault-heading small {
+  display: block;
+
+  color: #ffc857;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  letter-spacing: 0.14em;
+}
+
+.pack-vault-heading strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: white;
+
+  font-size: 12px;
+}
+
+.pack-vault-heading > b {
+  padding: 6px 9px;
+
+  border-radius: 999px;
+
+  color: #0d132b;
+  background: #ffc857;
+
+  font-size: 7px;
+  font-weight: 950;
+}
+
+
+/* ---------- EMPTY PACK STATE ---------- */
+
+.pack-empty {
+  margin-top: 13px;
+
+  padding: 14px;
+
+  display: grid;
+  grid-template-columns: 56px 1fr;
+
+  gap: 13px;
+  align-items: center;
+
+  border: 1px dashed
+    rgba(91, 141, 239, 0.2);
+
+  border-radius: 13px;
+
+  background:
+    rgba(91, 141, 239, 0.035);
+}
+
+.pack-empty-capsule {
+  height: 52px;
+
+  display: grid;
+  place-items: center;
+}
+
+.pack-empty-capsule i {
+  width: 28px;
+  height: 38px;
+
+  display: block;
+
+  border: 1px solid
+    rgba(91, 141, 239, 0.35);
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(91, 141, 239, 0.25),
+      rgba(91, 141, 239, 0.05)
+    );
+}
+
+.pack-empty span {
+  color:
+    rgba(255, 255, 255, 0.35);
+
+  font-size: 6px;
+  font-weight: 900;
+}
+
+.pack-empty strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: white;
+
+  font-size: 9px;
+}
+
+.pack-empty p {
+  margin: 4px 0 0;
+
+  color:
+    rgba(255, 255, 255, 0.38);
+
+  font-size: 7px;
+  line-height: 1.5;
+}
+
+
+/* ---------- PACK LIST ---------- */
+
+.pack-vault-list {
+  margin-top: 13px;
+
+  display: grid;
+
+  gap: 8px;
+}
+
+.pack-vault-card {
+  padding: 11px;
+
+  display: grid;
+
+  grid-template-columns:
+    54px 1fr auto;
+
+  gap: 11px;
+
+  align-items: center;
+
+  border: 1px solid
+    rgba(91, 141, 239, 0.13);
+
+  border-radius: 13px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+}
+
+.pack-capsule {
+  position: relative;
+
+  height: 52px;
+
+  display: grid;
+  place-items: center;
+}
+
+.pack-capsule i {
+  width: 29px;
+  height: 39px;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.22);
+
+  border-radius:
+    14px 14px 11px 11px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #5b8def,
+      #263b78
+    );
+
+  box-shadow:
+    0 0 18px
+    rgba(91, 141, 239, 0.3);
+}
+
+.pack-capsule span {
+  position: absolute;
+
+  width: 38px;
+  height: 10px;
+
+  border: 1px solid
+    rgba(255, 200, 87, 0.65);
+
+  border-radius: 50%;
+
+  transform: rotate(-14deg);
+}
+
+.pack-vault-card--builder
+.pack-capsule i {
+  background:
+    linear-gradient(
+      145deg,
+      #ffc857,
+      #815a16
+    );
+}
+
+.pack-vault-card--evidence
+.pack-capsule i {
+  background:
+    linear-gradient(
+      145deg,
+      #7ce1da,
+      #276675
+    );
+}
+
+.pack-vault-card--mission_lead
+.pack-capsule i {
+  background:
+    linear-gradient(
+      145deg,
+      #c896ff,
+      #61398f
+    );
+}
+
+.pack-vault-card--legendary
+.pack-capsule i {
+  background:
+    radial-gradient(
+      circle,
+      #070810 0 33%,
+      #ffc857 42%,
+      #ff6b6b 54%,
+      #18102c 72%
+    );
+
+  box-shadow:
+    0 0 25px
+    rgba(255, 200, 87, 0.42);
+}
+
+.pack-vault-card small {
+  color: #5b8def;
+
+  font-size: 6px;
+  font-weight: 900;
+
+  letter-spacing: 0.1em;
+}
+
+.pack-vault-card strong {
+  display: block;
+
+  margin-top: 3px;
+
+  color: white;
+
+  font-size: 10px;
+}
+
+.pack-vault-card
+> div:nth-child(2)
+> span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #ffc857;
+
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.pack-vault-card p {
+  margin: 4px 0 0;
+
+  color:
+    rgba(255, 255, 255, 0.36);
+
+  font-size: 7px;
+}
+
+.pack-vault-card button {
+  padding: 8px 10px;
+
+  border: 0;
+  border-radius: 9px;
+
+  color: #0d132b;
+
+  background: #ffc857;
+
+  font-size: 7px;
+  font-weight: 950;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease;
+}
+
+.pack-vault-card button:hover {
+  transform:
+    translateY(-2px);
+}
+
+.pack-vault-footer {
+  margin-top: 10px;
+
+  display: flex;
+
+  gap: 12px;
+
+  color:
+    rgba(255, 255, 255, 0.3);
+
+  font-size: 6px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   FULLSCREEN PACK OPENING
+   ========================================================= */
+
+.pack-opening {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 30000;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  color: white;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(91, 141, 239, 0.19),
+      transparent 32%
+    ),
+    #050815;
+}
+
+.pack-opening-stars {
+  position: absolute;
+
+  inset: -20%;
+
+  opacity: 0.35;
+
+  background-image:
+    radial-gradient(
+      white 1px,
+      transparent 1px
+    );
+
+  background-size:
+    36px 36px;
+
+  animation:
+    altwing-pack-stars
+    7s linear infinite;
+}
+
+.pack-opening-content {
+  position: relative;
+
+  z-index: 2;
+
+  width:
+    min(
+      900px,
+      calc(100% - 32px)
+    );
+
+  text-align: center;
+}
+
+.pack-opening-content > span {
+  color: #5b8def;
+
+  font-size: 8px;
+  font-weight: 950;
+
+  letter-spacing: 0.2em;
+}
+
+.pack-opening-content h2 {
+  margin:
+    8px 0 3px;
+
+  font-size:
+    clamp(
+      30px,
+      5vw,
+      48px
+    );
+
+  letter-spacing: -0.05em;
+}
+
+.pack-opening-content > p {
+  margin: 0;
+
+  color:
+    rgba(255, 255, 255, 0.35);
+
+  font-size: 7px;
+
+  letter-spacing: 0.16em;
+}
+
+
+/* ---------- REVEAL CARDS ---------- */
+
+.pack-reveal-grid {
+  margin-top: 28px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 13px;
+}
+
+.pack-reveal-grid--single {
+  grid-template-columns:
+    minmax(
+      230px,
+      330px
+    );
+
+  justify-content: center;
+}
+
+.pack-reveal-card {
+  min-height: 310px;
+
+  padding: 20px;
+
+  display: grid;
+
+  align-content: center;
+  justify-items: center;
+
+  border: 1px solid
+    rgba(91, 141, 239, 0.2);
+
+  border-radius: 23px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #121b3a,
+      #080d20
+    );
+
+  box-shadow:
+    0 25px 70px
+    rgba(0, 0, 0, 0.34);
+
+  transition:
+    transform 0.55s
+      cubic-bezier(
+        0.2,
+        0.8,
+        0.2,
+        1
+      ),
+    border-color 0.4s,
+    box-shadow 0.4s;
+}
+
+.pack-reveal-card.revealed {
+  transform:
+    translateY(-5px)
+    scale(1.02);
+}
+
+.pack-card-back {
+  display: grid;
+
+  place-items: center;
+
+  gap: 12px;
+}
+
+.pack-card-back b {
+  width: 92px;
+  height: 92px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid
+    rgba(255, 200, 87, 0.28);
+
+  border-radius: 50%;
+
+  color: #ffc857;
+
+  background:
+    rgba(255, 200, 87, 0.045);
+
+  font-size: 36px;
+
+  box-shadow:
+    0 0 35px
+    rgba(255, 200, 87, 0.08);
+}
+
+.pack-card-back span {
+  color:
+    rgba(255, 255, 255, 0.28);
+
+  font-size: 7px;
+
+  letter-spacing: 0.16em;
+}
+
+.pack-reveal-card > small {
+  color: #ffc857;
+
+  font-size: 8px;
+  font-weight: 950;
+
+  letter-spacing: 0.14em;
+}
+
+.pack-reveal-card
+.cosmic-detail-orb {
+  margin:
+    15px auto;
+}
+
+.pack-reveal-card > strong {
+  color: white;
+
+  font-size: 20px;
+}
+
+.pack-reveal-card > span {
+  margin-top: 6px;
+
+  color:
+    rgba(255, 255, 255, 0.43);
+
+  font-size: 8px;
+}
+
+.pack-rarity-rare {
+  border-color:
+    rgba(91, 141, 239, 0.65);
+}
+
+.pack-rarity-epic {
+  border-color:
+    rgba(190, 120, 255, 0.7);
+
+  box-shadow:
+    0 25px 80px
+    rgba(157, 85, 255, 0.16);
+}
+
+.pack-rarity-legendary {
+  border-color:
+    rgba(255, 200, 87, 0.8);
+
+  box-shadow:
+    0 25px 90px
+    rgba(255, 200, 87, 0.22);
+}
+
+.pack-duplicate {
+  margin-top: 11px;
+
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  color: #ffc857;
+
+  background:
+    rgba(255, 200, 87, 0.07);
+
+  font-size: 7px;
+}
+
+
+/* ---------- PACK SUMMARY ---------- */
+
+.pack-summary {
+  width:
+    min(
+      460px,
+      100%
+    );
+
+  margin:
+    19px auto 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 7px;
+}
+
+.pack-summary div {
+  padding: 9px;
+
+  border-radius: 10px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+}
+
+.pack-summary b {
+  display: block;
+
+  color: #ffc857;
+
+  font-size: 12px;
+}
+
+.pack-summary span {
+  display: block;
+
+  margin-top: 3px;
+
+  color:
+    rgba(255, 255, 255, 0.33);
+
+  font-size: 6px;
+}
+
+.pack-finish {
+  margin-top: 15px;
+
+  padding:
+    12px 20px;
+
+  border: 0;
+
+  border-radius: 11px;
+
+  color: #0d132b;
+
+  background: #ffc857;
+
+  font-size: 8px;
+  font-weight: 950;
+
+  cursor: pointer;
+}
+
+
+/* ---------- PACK EARNED TOAST ---------- */
+
+.cosmic-pack-toast {
+  position: fixed;
+
+  top: 82px;
+  left: 50%;
+
+  z-index: 20000;
+
+  transform:
+    translateX(-50%);
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding:
+    10px 16px 10px 10px;
+
+  border: 1px solid
+    rgba(255, 200, 87, 0.35);
+
+  border-radius: 15px;
+
+  color: white;
+
+  background:
+    rgba(13, 19, 43, 0.98);
+
+  box-shadow:
+    0 20px 60px
+    rgba(0, 0, 0, 0.32);
+
+  animation:
+    altwing-pack-toast
+    2.6s ease both;
+}
+
+.pack-toast-capsule {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+  place-items: center;
+}
+
+.pack-toast-capsule i {
+  width: 28px;
+  height: 34px;
+
+  display: block;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.25);
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #5b8def,
+      #263b78
+    );
+
+  box-shadow:
+    0 0 18px
+    rgba(91, 141, 239, 0.35);
+}
+
+.cosmic-pack-toast span {
+  color: #5b8def;
+
+  font-size: 6px;
+  font-weight: 950;
+
+  letter-spacing: 0.14em;
+}
+
+.cosmic-pack-toast strong {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 10px;
+}
+
+.cosmic-pack-toast small {
+  display: block;
+
+  margin-top: 2px;
+
+  color:
+    rgba(255, 255, 255, 0.4);
+
+  font-size: 6px;
+}
+
+
+/* ---------- ANIMATION ---------- */
+
+@keyframes altwing-pack-stars {
+  to {
+    transform:
+      translateY(36px);
+  }
+}
+
+@keyframes altwing-pack-toast {
+  0% {
+    opacity: 0;
+
+    transform:
+      translate(-50%, -12px)
+      scale(0.94);
+  }
+
+  12%,
+  82% {
+    opacity: 1;
+
+    transform:
+      translate(-50%, 0)
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate(-50%, -6px)
+      scale(0.98);
+  }
+}
+
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 700px) {
+
+  .pack-vault-card {
+    grid-template-columns:
+      46px 1fr;
+  }
+
+  .pack-vault-card button {
+    grid-column:
+      1 / -1;
+
+    width: 100%;
+  }
+
+  .pack-reveal-grid {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(
+          220px,
+          250px
+        )
+      );
+
+    justify-content:
+      flex-start;
+
+    overflow-x: auto;
+
+    padding-bottom: 12px;
+  }
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
+  .pack-opening-stars,
+  .cosmic-pack-toast,
+  .pack-reveal-card {
+    animation: none;
+    transition: none;
+  }
+}
+
+
+
+/* =========================================================
+   FIX — PACK REVEAL RESPONSIVE FIT
+   Always show all 3 discoveries clearly.
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .pack-opening-content {
+    width: calc(100% - 20px);
+    max-height: 100vh;
+
+    padding: 16px 0;
+
+    overflow-y: auto;
+  }
+
+  .pack-opening-content h2 {
+    font-size: 28px;
+  }
+
+  .pack-reveal-grid {
+    width: 100%;
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+    gap: 7px;
+
+    overflow: visible;
+
+    padding-bottom: 0;
+  }
+
+  .pack-reveal-card {
+    min-width: 0;
+    min-height: 245px;
+
+    padding: 10px 6px;
+
+    border-radius: 15px;
+  }
+
+  .pack-reveal-card
+  .cosmic-detail-orb {
+    width: 58px;
+    height: 58px;
+
+    margin: 10px auto;
+  }
+
+  .pack-reveal-card
+  .cosmic-detail-orb i {
+    width: 52px;
+    height: 52px;
+  }
+
+  .pack-reveal-card > strong {
+    font-size: 14px;
+
+    line-height: 1.1;
+
+    text-align: center;
+  }
+
+  .pack-reveal-card > span {
+    font-size: 6px;
+
+    text-align: center;
+  }
+
+  .pack-reveal-card > small {
+    font-size: 6px;
+  }
+
+  .pack-card-back b {
+    width: 60px;
+    height: 60px;
+
+    font-size: 25px;
+  }
+
+  .pack-summary {
+    width: 100%;
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+    gap: 5px;
+  }
+
+  .pack-summary div {
+    min-width: 0;
+  }
+
+  .pack-finish {
+    width: 100%;
+  }
+}
+
+
+/* Extra-small phones:
+   stack cards vertically instead of clipping. */
+
+@media (max-width: 390px) {
+
+  .pack-reveal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pack-reveal-card {
+    min-height: 190px;
+  }
+}
+
+
+
+
+/* =========================================================
+   PACK CARD — COSMIC DESCRIPTION
+   ========================================================= */
+
+.pack-card-description {
+  margin:
+    9px 0 0;
+
+  max-width: 220px;
+
+  color:
+    rgba(255,255,255,.46);
+
+  font-size: 8px;
+
+  line-height: 1.5;
+
+  text-align: center;
+
+  display: -webkit-box;
+
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+}
+
+
+@media (max-width: 760px) {
+
+  .pack-card-description {
+    margin-top: 6px;
+
+    font-size: 6px;
+
+    line-height: 1.4;
+
+    -webkit-line-clamp: 3;
+  }
+}
+
+
+
+
+/* =========================================================
+   PACK HISTORY
+   ========================================================= */
+
+.pack-history {
+  margin-top: 10px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.05);
+
+  padding-top: 9px;
+}
+
+.pack-history summary {
+  display: flex;
+
+  justify-content: space-between;
+
+  color:
+    rgba(255,255,255,.38);
+
+  font-size: 6px;
+  font-weight: 900;
+
+  letter-spacing: .1em;
+
+  cursor: pointer;
+
+  list-style: none;
+}
+
+.pack-history summary::-webkit-details-marker {
+  display: none;
+}
+
+.pack-history summary span {
+  color:
+    rgba(255,255,255,.22);
+}
+
+.pack-history > div {
+  margin-top: 8px;
+
+  display: grid;
+
+  gap: 5px;
+}
+
+.pack-history article {
+  display: grid;
+
+  grid-template-columns:
+    1fr auto;
+
+  gap: 8px;
+
+  align-items: center;
+
+  padding: 7px 8px;
+
+  border-radius: 8px;
+
+  background:
+    rgba(255,255,255,.02);
+}
+
+.pack-history strong {
+  display: block;
+
+  color:
+    rgba(255,255,255,.6);
+
+  font-size: 7px;
+}
+
+.pack-history small {
+  display: block;
+
+  margin-top: 2px;
+
+  color:
+    rgba(255,255,255,.27);
+
+  font-size: 5px;
+}
+
+.pack-history time {
+  color:
+    rgba(255,255,255,.25);
+
+  font-size: 5px;
+}
+
+
+/* =========================================================
+   RARITY REVEAL POLISH
+   ========================================================= */
+
+.pack-reveal-card.revealed.pack-rarity-rare {
+  animation:
+    packRarePulse
+    .8s ease both;
+}
+
+.pack-reveal-card.revealed.pack-rarity-epic {
+  animation:
+    packEpicPulse
+    1s ease both;
+}
+
+.pack-reveal-card.revealed.pack-rarity-legendary {
+  animation:
+    packLegendaryPulse
+    1.2s ease both;
+}
+
+
+@keyframes packRarePulse {
+  0% {
+    box-shadow:
+      0 0 0
+      rgba(91,141,239,0);
+  }
+
+  45% {
+    box-shadow:
+      0 0 55px
+      rgba(91,141,239,.42);
+  }
+}
+
+
+@keyframes packEpicPulse {
+  0% {
+    box-shadow:
+      0 0 0
+      rgba(180,100,255,0);
+  }
+
+  45% {
+    box-shadow:
+      0 0 75px
+      rgba(180,100,255,.48);
+  }
+}
+
+
+@keyframes packLegendaryPulse {
+  0% {
+    box-shadow:
+      0 0 0
+      rgba(255,200,87,0);
+  }
+
+  35% {
+    box-shadow:
+      0 0 100px
+      rgba(255,200,87,.58);
+  }
+
+  65% {
+    box-shadow:
+      0 0 65px
+      rgba(255,107,107,.34);
+  }
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .pack-reveal-card.revealed.pack-rarity-rare,
+  .pack-reveal-card.revealed.pack-rarity-epic,
+  .pack-reveal-card.revealed.pack-rarity-legendary {
+    animation: none;
+  }
+}
+

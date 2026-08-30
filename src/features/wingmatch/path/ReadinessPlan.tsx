@@ -9,6 +9,11 @@ import {
   type CollegeProfile,
 } from "./collegeData";
 
+import {
+  PLAYER_PROGRESS_EVENT,
+  readPlayerProgress,
+} from "../../progression/progression";
+
 interface ReadinessPlanProps {
   major: string;
   onBack: () => void;
@@ -34,6 +39,11 @@ const STORAGE_KEY =
 
 const COLLEGE_LIST_STORAGE_KEY =
   "altwing-my-college-list";
+
+
+const READINESS_TARGET_STORAGE_KEY =
+  "altwing-readiness-target-college";
+
 
 const defaultProfile:
   StudentProfile = {
@@ -618,6 +628,253 @@ function buildNinetyDayPlan(
     .slice(0, 5);
 }
 
+
+interface ReadinessSyncPreferences {
+  engineeringManual: boolean;
+  leadershipManual: boolean;
+}
+
+const READINESS_SYNC_STORAGE_KEY =
+  "altwing-readiness-rpg-sync-v1";
+
+const defaultSyncPreferences:
+  ReadinessSyncPreferences = {
+    engineeringManual: false,
+    leadershipManual: false,
+  };
+
+const strengthOrder:
+  Record<StrengthLevel, number> = {
+    Exploring: 0,
+    Developing: 1,
+    Strong: 2,
+    Advanced: 3,
+  };
+
+function strongerLevel(
+  current: StrengthLevel,
+  suggested: StrengthLevel,
+): StrengthLevel {
+  return strengthOrder[suggested] >
+    strengthOrder[current]
+    ? suggested
+    : current;
+}
+
+function getRpgEngineeringLevel(
+  progress:
+    ReturnType<
+      typeof readPlayerProgress
+    >,
+): StrengthLevel {
+  const milestones =
+    progress.completedMilestones;
+
+  const completedBuild =
+    milestones.some(
+      (id) =>
+        id.startsWith("project:") &&
+        id.includes(
+          ":build-complete",
+        ),
+    );
+
+  const hasProjectWork =
+    milestones.some(
+      (id) =>
+        id.startsWith(
+          "project:",
+        ),
+    );
+
+  const technicalBuild =
+    progress.skills
+      .technicalBuild;
+
+  const evidence =
+    progress.skills
+      .evidenceReasoning;
+
+  if (
+    completedBuild &&
+    technicalBuild >= 3 &&
+    evidence >= 4
+  ) {
+    return "Advanced";
+  }
+
+  if (
+    completedBuild ||
+    technicalBuild >= 2
+  ) {
+    return "Strong";
+  }
+
+  if (
+    hasProjectWork ||
+    technicalBuild >= 1
+  ) {
+    return "Developing";
+  }
+
+  return "Exploring";
+}
+
+function getRpgLeadershipLevel(
+  progress:
+    ReturnType<
+      typeof readPlayerProgress
+    >,
+): StrengthLevel {
+  const milestones =
+    progress.completedMilestones;
+
+  const communityBuilder =
+    milestones.some(
+      (id) =>
+        id.startsWith(
+          "leadership:community",
+        ),
+    );
+
+  const crewLeadership =
+    milestones.some(
+      (id) =>
+        id.startsWith(
+          "leadership:crew",
+        ),
+    );
+
+  const hasLeadership =
+    milestones.some(
+      (id) =>
+        id.startsWith(
+          "leadership:",
+        ),
+    );
+
+  const leadership =
+    progress.skills
+      .leadership;
+
+  if (
+    communityBuilder ||
+    leadership >= 4
+  ) {
+    return "Advanced";
+  }
+
+  if (
+    crewLeadership ||
+    leadership >= 2
+  ) {
+    return "Strong";
+  }
+
+  if (
+    hasLeadership ||
+    leadership >= 1
+  ) {
+    return "Developing";
+  }
+
+  return "Exploring";
+}
+
+function getProjectDepth(
+  progress:
+    ReturnType<
+      typeof readPlayerProgress
+    >,
+) {
+  const milestones =
+    progress.completedMilestones;
+
+  const projectWeeks =
+    milestones.filter(
+      (id) =>
+        id.startsWith(
+          "project:",
+        ) &&
+        id.includes(
+          ":week:",
+        ),
+    ).length;
+
+  const completedBuild =
+    milestones.some(
+      (id) =>
+        id.startsWith(
+          "project:",
+        ) &&
+        id.includes(
+          ":build-complete",
+        ),
+    );
+
+  const publishedEvidence =
+    milestones.some(
+      (id) =>
+        id.startsWith(
+          "evidence:",
+        ),
+    );
+
+  if (
+    completedBuild &&
+    publishedEvidence
+  ) {
+    return {
+      label:
+        "PUBLISHED + VERIFIED",
+      detail:
+        "A completed build and separate evidence milestone are recorded.",
+    };
+  }
+
+  if (
+    completedBuild &&
+    progress.skills
+      .evidenceReasoning >= 3
+  ) {
+    return {
+      label:
+        "TESTED + DOCUMENTED",
+      detail:
+        "A completed Build Quest with substantial evidence reasoning is recorded.",
+    };
+  }
+
+  if (completedBuild) {
+    return {
+      label:
+        "COMPLETED BUILD",
+      detail:
+        "AltWing has recorded a completed real-world Build Quest.",
+    };
+  }
+
+  if (projectWeeks > 0) {
+    return {
+      label:
+        "BUILD IN PROGRESS",
+      detail:
+        `${projectWeeks} Build Quest checkpoint${
+          projectWeeks === 1
+            ? ""
+            : "s"
+        } recorded.`,
+    };
+  }
+
+  return {
+    label:
+      "NOT YET VERIFIED",
+    detail:
+      "Complete a Build Quest to create verified project evidence.",
+  };
+}
+
 function ReadinessPlan({
   major,
   onBack,
@@ -640,6 +897,199 @@ function ReadinessPlan({
         return defaultProfile;
       }
     });
+
+
+  const [
+    rpgProgress,
+    setRpgProgress,
+  ] = useState(
+    () =>
+      readPlayerProgress(),
+  );
+
+  const [
+    syncPreferences,
+    setSyncPreferences,
+  ] =
+    useState<ReadinessSyncPreferences>(
+      () => {
+        try {
+          const saved =
+            localStorage.getItem(
+              READINESS_SYNC_STORAGE_KEY,
+            );
+
+          return saved
+            ? {
+                ...defaultSyncPreferences,
+                ...JSON.parse(saved),
+              }
+            : defaultSyncPreferences;
+        } catch {
+          return defaultSyncPreferences;
+        }
+      },
+    );
+
+  useEffect(() => {
+    const refreshRpgProgress =
+      () => {
+        setRpgProgress(
+          readPlayerProgress(),
+        );
+      };
+
+    window.addEventListener(
+      PLAYER_PROGRESS_EVENT,
+      refreshRpgProgress,
+    );
+
+    return () =>
+      window.removeEventListener(
+        PLAYER_PROGRESS_EVENT,
+        refreshRpgProgress,
+      );
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(
+      READINESS_SYNC_STORAGE_KEY,
+      JSON.stringify(
+        syncPreferences,
+      ),
+    );
+  }, [syncPreferences]);
+
+  const rpgEngineeringLevel =
+    useMemo(
+      () =>
+        getRpgEngineeringLevel(
+          rpgProgress,
+        ),
+      [rpgProgress],
+    );
+
+  const rpgLeadershipLevel =
+    useMemo(
+      () =>
+        getRpgLeadershipLevel(
+          rpgProgress,
+        ),
+      [rpgProgress],
+    );
+
+  const projectDepth =
+    useMemo(
+      () =>
+        getProjectDepth(
+          rpgProgress,
+        ),
+      [rpgProgress],
+    );
+
+  useEffect(() => {
+    setProfile(
+      (current) => {
+        const next = {
+          ...current,
+        };
+
+        let changed = false;
+
+        if (
+          !syncPreferences
+            .engineeringManual
+        ) {
+          const synced =
+            strongerLevel(
+              current.engineering,
+              rpgEngineeringLevel,
+            );
+
+          if (
+            synced !==
+            current.engineering
+          ) {
+            next.engineering =
+              synced;
+
+            changed = true;
+          }
+        }
+
+        if (
+          !syncPreferences
+            .leadershipManual
+        ) {
+          const synced =
+            strongerLevel(
+              current.leadership,
+              rpgLeadershipLevel,
+            );
+
+          if (
+            synced !==
+            current.leadership
+          ) {
+            next.leadership =
+              synced;
+
+            changed = true;
+          }
+        }
+
+        return changed
+          ? next
+          : current;
+      },
+    );
+  }, [
+    rpgEngineeringLevel,
+    rpgLeadershipLevel,
+    syncPreferences,
+  ]);
+
+  const useAltWingEvidence = (
+    field:
+      | "engineering"
+      | "leadership",
+  ) => {
+    setSyncPreferences(
+      (current) => ({
+        ...current,
+
+        engineeringManual:
+          field === "engineering"
+            ? false
+            : current
+                .engineeringManual,
+
+        leadershipManual:
+          field === "leadership"
+            ? false
+            : current
+                .leadershipManual,
+      }),
+    );
+
+    setProfile(
+      (current) => ({
+        ...current,
+
+        [field]:
+          field ===
+          "engineering"
+            ? strongerLevel(
+                current.engineering,
+                rpgEngineeringLevel,
+              )
+            : strongerLevel(
+                current.leadership,
+                rpgLeadershipLevel,
+              ),
+      }),
+    );
+  };
 
   const [
     savedCollegeIds,
@@ -671,17 +1121,62 @@ function ReadinessPlan({
     );
 
   const targetColleges =
-    shortlistColleges.length > 0
-      ? shortlistColleges
-      : colleges;
+    useMemo(
+      () =>
+        [...colleges].sort(
+          (a, b) => {
+            const aSaved =
+              savedCollegeIds.includes(
+                a.id,
+              );
+
+            const bSaved =
+              savedCollegeIds.includes(
+                b.id,
+              );
+
+            if (
+              aSaved !== bSaved
+            ) {
+              return aSaved
+                ? -1
+                : 1;
+            }
+
+            return a.shortName.localeCompare(
+              b.shortName,
+            );
+          },
+        ),
+      [savedCollegeIds],
+    );
 
   const [
     selectedCollegeId,
     setSelectedCollegeId,
   ] = useState(
-    () =>
-      targetColleges[0]?.id ??
-      colleges[0].id,
+    () => {
+      const savedTarget =
+        localStorage.getItem(
+          READINESS_TARGET_STORAGE_KEY,
+        );
+
+      if (
+        savedTarget &&
+        colleges.some(
+          (college) =>
+            college.id ===
+            savedTarget,
+        )
+      ) {
+        return savedTarget;
+      }
+
+      return (
+        targetColleges[0]?.id ??
+        colleges[0].id
+      );
+    },
   );
 
   useEffect(() => {
@@ -690,6 +1185,13 @@ function ReadinessPlan({
       JSON.stringify(profile),
     );
   }, [profile]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      READINESS_TARGET_STORAGE_KEY,
+      selectedCollegeId,
+    );
+  }, [selectedCollegeId]);
 
   const college =
     targetColleges.find(
@@ -745,6 +1247,30 @@ function ReadinessPlan({
       ...current,
       [key]: value,
     }));
+
+    if (
+      key === "engineering"
+    ) {
+      setSyncPreferences(
+        (current) => ({
+          ...current,
+          engineeringManual:
+            true,
+        }),
+      );
+    }
+
+    if (
+      key === "leadership"
+    ) {
+      setSyncPreferences(
+        (current) => ({
+          ...current,
+          leadershipManual:
+            true,
+        }),
+      );
+    }
   };
 
   const showStandardScores =
@@ -1091,6 +1617,142 @@ function ReadinessPlan({
               </select>
             </label>
           </div>
+
+
+          <div className="readiness-altwing-sync">
+            <div className="readiness-altwing-sync-heading">
+              <div>
+                <span>
+                  ALTWING VERIFIED
+                </span>
+
+                <strong>
+                  Evidence from what
+                  you've actually done.
+                </strong>
+              </div>
+
+              <img
+                src="/brand/altwing-penguin.png"
+                alt=""
+              />
+            </div>
+
+            <div className="readiness-sync-grid">
+              <article>
+                <span>
+                  ENGINEERING EVIDENCE
+                </span>
+
+                <strong>
+                  {profile.engineering}
+                </strong>
+
+                <small>
+                  Technical Build LV.
+                  {
+                    rpgProgress
+                      .skills
+                      .technicalBuild
+                  }
+                  {" · "}
+                  Evidence LV.
+                  {
+                    rpgProgress
+                      .skills
+                      .evidenceReasoning
+                  }
+                </small>
+
+                {syncPreferences
+                  .engineeringManual ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      useAltWingEvidence(
+                        "engineering",
+                      )
+                    }
+                  >
+                    Use AltWing evidence
+                  </button>
+                ) : (
+                  <b>
+                    ✓ AUTO-SYNCED
+                  </b>
+                )}
+              </article>
+
+              <article>
+                <span>
+                  PROJECT DEPTH
+                </span>
+
+                <strong>
+                  {
+                    projectDepth.label
+                  }
+                </strong>
+
+                <small>
+                  {
+                    projectDepth.detail
+                  }
+                </small>
+
+                <b>
+                  VERIFIED ACTIVITY
+                </b>
+              </article>
+
+              <article>
+                <span>
+                  LEADERSHIP
+                </span>
+
+                <strong>
+                  {profile.leadership}
+                </strong>
+
+                <small>
+                  Leadership LV.
+                  {
+                    rpgProgress
+                      .skills
+                      .leadership
+                  }
+                </small>
+
+                {syncPreferences
+                  .leadershipManual ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      useAltWingEvidence(
+                        "leadership",
+                      )
+                    }
+                  >
+                    Use AltWing evidence
+                  </button>
+                ) : (
+                  <b>
+                    ✓ AUTO-SYNCED
+                  </b>
+                )}
+              </article>
+            </div>
+
+            <p>
+              GPA, SAT, SAT Math,
+              and Course Rigor stay
+              student-entered.
+              AltWing only syncs
+              activity it can verify
+              inside the platform.
+            </p>
+          </div>
+
         </div>
 
         <div className="readiness-target-panel">
@@ -1100,8 +1762,8 @@ function ReadinessPlan({
 
           {shortlistColleges.length > 0 && (
             <small className="readiness-shortlist-source">
-              Showing schools from
-              My College List
+              My College List schools
+              appear first · full catalog available
             </small>
           )}
 

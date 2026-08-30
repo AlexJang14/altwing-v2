@@ -9,15 +9,15 @@ export const missionScenes: MissionScene[] = [
     missionNumber: 1,
     totalMissions: 8,
 
-    phase: "ATMOSPHERIC ENTRY",
+    phase: "MARS ENTRY",
     timeRemaining: "T−15:02",
     altitude: "108 km",
 
     situation:
-      "The lander is entering Mars at 5.4 km/s. Heating is running 8% above the model while communications are degrading.",
+      "Peak heating in seconds. Heat is +8% and comms are fading.",
 
     question:
-      "Peak heating arrives in seconds. What do you protect first?",
+      "Heat spike. Your move?",
 
     telemetry: [
       {
@@ -46,13 +46,13 @@ export const missionScenes: MissionScene[] = [
       {
         id: "thermal-margin",
 
-        title: "Protect thermal margin",
+        title: "COOL DOWN",
 
         description:
-          "Reduce heating. Accept less trajectory margin.",
+          "Reduce heat. Lose trajectory margin.",
 
         consequence:
-          "Peak heating falls, but guidance has less room to correct the trajectory later.",
+          "Heating drops, but the vehicle has less room to correct its path later.",
 
         telemetryChanges: [
           {
@@ -85,13 +85,13 @@ export const missionScenes: MissionScene[] = [
       {
         id: "hold-corridor",
 
-        title: "Hold the corridor",
+        title: "HOLD COURSE",
 
         description:
-          "Preserve the planned path. Accept more thermal exposure.",
+          "Protect the landing path. Accept more heat.",
 
         consequence:
-          "The trajectory stays predictable, but the vehicle carries more thermal uncertainty.",
+          "The landing corridor stays predictable, but thermal exposure increases.",
 
         telemetryChanges: [
           {
@@ -124,22 +124,22 @@ export const missionScenes: MissionScene[] = [
       {
         id: "verify-model",
 
-        title: "Verify the signals",
+        title: "CHECK SIGNALS",
 
         description:
-          "Cross-check sensor evidence. Spend time before acting.",
+          "Verify the warning. Lose 4 seconds.",
 
         consequence:
-          "You lose several seconds, but gain stronger evidence about whether the thermal warning is real.",
+          "You spend time checking the data, but gain stronger evidence before changing the flight path.",
 
         telemetryChanges: [
           {
-            label: "SENSOR CONFIDENCE",
+            label: "CONFIDENCE",
             value: "RISING",
             status: "nominal",
           },
           {
-            label: "DECISION TIME",
+            label: "TIME",
             value: "−4 sec",
             status: "warning",
           },
@@ -159,45 +159,6 @@ export const missionScenes: MissionScene[] = [
           },
         },
       },
-
-      {
-        id: "optimize-entry",
-
-        title: "Reoptimize entry",
-
-        description:
-          "Balance heating, range, and landing accuracy.",
-
-        consequence:
-          "The vehicle adopts a compromise trajectory instead of protecting any single subsystem.",
-
-        telemetryChanges: [
-          {
-            label: "THERMAL",
-            value: "MARGIN +3%",
-            status: "nominal",
-          },
-          {
-            label: "LANDING ERROR",
-            value: "+0.7 km",
-            status: "warning",
-          },
-        ],
-
-        scores: {
-          wings: {
-            "mission-design": 3,
-            gnc: 2,
-            systems: 2,
-          },
-
-          reasoning: {
-            optimization: 3,
-            "mission-tradeoffs": 3,
-            "quantitative-reasoning": 2,
-          },
-        },
-      },
     ],
   },
 
@@ -206,29 +167,29 @@ export const missionScenes: MissionScene[] = [
     missionNumber: 2,
     totalMissions: 8,
 
-    phase: "SENSOR DISAGREEMENT",
+    phase: "NAVIGATION",
     timeRemaining: "T−11:47",
     altitude: "15.2 km",
 
     situation:
-      "The vehicle has cleared peak heating. Radar altitude reads 14.2 km, but the inertial navigation solution estimates 16.1 km. The landing burn depends on knowing which estimate is closer to reality.",
+      "Radar says 14.2 km. Inertial says 16.1 km. Burn window: 47 seconds.",
 
     question:
-      "Two systems disagree. What do you trust next?",
+      "Altitude conflict. Your move?",
 
     telemetry: [
       {
-        label: "RADAR ALT",
+        label: "RADAR",
         value: "14.2 km",
         status: "uncertain",
       },
       {
-        label: "INERTIAL ALT",
+        label: "INERTIAL",
         value: "16.1 km",
         status: "uncertain",
       },
       {
-        label: "DISAGREEMENT",
+        label: "GAP",
         value: "1.9 km",
         status: "warning",
       },
@@ -243,17 +204,17 @@ export const missionScenes: MissionScene[] = [
       {
         id: "independent-check",
 
-        title: "Find independent evidence",
+        title: "SCAN THIRD SENSOR",
 
         description:
-          "Check a third signal before trusting either estimate.",
+          "Get one more reading. Costs time.",
 
         consequence:
-          "Confidence improves, but several seconds of the burn-planning window are consumed.",
+          "Another signal improves confidence, but the burn window gets shorter.",
 
         telemetryChanges: [
           {
-            label: "STATE CONFIDENCE",
+            label: "CONFIDENCE",
             value: "RISING",
             status: "nominal",
           },
@@ -282,13 +243,13 @@ export const missionScenes: MissionScene[] = [
       {
         id: "trust-inertial",
 
-        title: "Trust the inertial solution",
+        title: "TRUST INERTIAL",
 
         description:
-          "Use the vehicle dynamics model. Treat radar as suspect.",
+          "Act now on the dynamics model.",
 
         consequence:
-          "The guidance solution stays continuous, but a modeling error could shift the burn timing.",
+          "Guidance stays continuous, but a model error could shift the landing burn.",
 
         telemetryChanges: [
           {
@@ -319,53 +280,15 @@ export const missionScenes: MissionScene[] = [
       },
 
       {
-        id: "isolate-radar",
-
-        title: "Isolate the radar fault",
-
-        description:
-          "Test whether the radar stream shows a sensor-specific failure.",
-
-        consequence:
-          "Fault isolation may identify a bad sensor, but diagnosis costs valuable descent time.",
-
-        telemetryChanges: [
-          {
-            label: "RADAR HEALTH",
-            value: "TESTING",
-            status: "uncertain",
-          },
-          {
-            label: "DECISION TIME",
-            value: "−6 sec",
-            status: "warning",
-          },
-        ],
-
-        scores: {
-          wings: {
-            avionics: 3,
-            systems: 1,
-          },
-
-          reasoning: {
-            "evidence-first": 2,
-            iteration: 3,
-            "quantitative-reasoning": 1,
-          },
-        },
-      },
-
-      {
         id: "fuse-estimates",
 
-        title: "Fuse all available estimates",
+        title: "FUSE BOTH",
 
         description:
-          "Combine the signals instead of choosing a single winner.",
+          "Blend both estimates. Keep some uncertainty.",
 
         consequence:
-          "The vehicle gains a blended state estimate, but the result depends on how each sensor is weighted.",
+          "The vehicle gets one blended altitude estimate without fully trusting either sensor.",
 
         telemetryChanges: [
           {
@@ -398,27 +321,20 @@ export const missionScenes: MissionScene[] = [
   },
 ];
 
-/*
-  Mission 03 is intentionally NOT inside missionScenes yet.
-
-  We are designing its controller-tuning interaction first so the
-  current Mission 01 → Mission 02 experience stays fully working.
-*/
-
 export const controlOscillationMission: ControllerMissionScene = {
   id: "control-oscillation",
   missionNumber: 3,
   totalMissions: 8,
 
-  phase: "CONTROL OSCILLATION",
+  phase: "FLIGHT CONTROL",
   timeRemaining: "T−08:18",
   altitude: "8.6 km",
 
   situation:
-    "The landing burn has started, but the vehicle keeps overshooting its commanded pitch angle. Each correction triggers another correction in the opposite direction.",
+    "Pitch keeps swinging past target. Every correction triggers another.",
 
   question:
-    "Tune the controller so the lander responds quickly without feeding the oscillation.",
+    "Stop the oscillation.",
 
   telemetry: [
     {
@@ -443,10 +359,6 @@ export const controlOscillationMission: ControllerMissionScene = {
     },
   ],
 
-  /*
-    Mission 03 will not use normal answer cards.
-    The slider interaction will replace these options.
-  */
   options: [],
 
   interaction: "controller-tuning",
@@ -461,10 +373,6 @@ export const controlOscillationMission: ControllerMissionScene = {
 
     initialValue: 1.2,
 
-    /*
-      Internal simulator range.
-      We will NOT display this as "the correct answer."
-    */
     stableRange: {
       min: 0.7,
       max: 0.9,
@@ -476,6 +384,7 @@ export const controlOscillationMission: ControllerMissionScene = {
     },
   },
 };
+
 export const activeMissionScenes: MissionScene[] = [
   ...missionScenes,
   controlOscillationMission,

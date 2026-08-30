@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local AltWing patch backups
+*-backup
+*.backup
+*.bak

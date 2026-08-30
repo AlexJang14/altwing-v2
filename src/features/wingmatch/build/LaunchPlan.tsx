@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { awardMilestone } from "../../progression/progression";
 import PathDashboard from "../path/PathDashboard";
 interface LaunchPlanProps {
   wingId: string;
@@ -11,6 +12,14 @@ interface LaunchRoute {
   title: string;
   description: string;
   action: string;
+}
+
+
+interface BuildQuestProgress {
+  routeIndex: number | null;
+  completedWeeks: number[];
+  evidence: Record<number, string>;
+  completed: boolean;
 }
 
 interface WingLaunchPlan {
@@ -389,6 +398,204 @@ function LaunchPlan({
     launchPlans[wingId] ??
     launchPlans.systems;
 
+  const BUILD_QUEST_STORAGE_KEY =
+    `altwing-build-quest-${wingId}`;
+
+  const [
+    buildQuest,
+    setBuildQuest,
+  ] = useState<BuildQuestProgress>(
+    () => {
+      try {
+        const raw =
+          localStorage.getItem(
+            BUILD_QUEST_STORAGE_KEY,
+          );
+
+        if (!raw) {
+          return {
+            routeIndex: null,
+            completedWeeks: [],
+            evidence: {},
+            completed: false,
+          };
+        }
+
+        return JSON.parse(
+          raw,
+        ) as BuildQuestProgress;
+      } catch {
+        return {
+          routeIndex: null,
+          completedWeeks: [],
+          evidence: {},
+          completed: false,
+        };
+      }
+    },
+  );
+
+  const [
+    draftEvidence,
+    setDraftEvidence,
+  ] = useState<
+    Record<number, string>
+  >(() => ({
+    ...(buildQuest.evidence ?? {}),
+  }));
+
+  const [
+    questAcceptedFlash,
+    setQuestAcceptedFlash,
+  ] = useState(false);
+
+  const selectedRoute =
+    useMemo(
+      () =>
+        buildQuest.routeIndex === null
+          ? null
+          : plan.routes[
+              buildQuest.routeIndex
+            ],
+      [
+        buildQuest.routeIndex,
+        plan.routes,
+      ],
+    );
+
+  useEffect(() => {
+    localStorage.setItem(
+      BUILD_QUEST_STORAGE_KEY,
+      JSON.stringify(
+        buildQuest,
+      ),
+    );
+  }, [
+    buildQuest,
+    BUILD_QUEST_STORAGE_KEY,
+  ]);
+
+  function chooseRoute(
+    index: number,
+  ) {
+    setBuildQuest(
+      (current) => ({
+        ...current,
+        routeIndex: index,
+      }),
+    );
+
+    setQuestAcceptedFlash(true);
+
+    window.setTimeout(
+      () =>
+        setQuestAcceptedFlash(
+          false,
+        ),
+      1400,
+    );
+  }
+
+  function completeWeek(
+    index: number,
+  ) {
+    const evidenceText =
+      (
+        draftEvidence[index] ??
+        ""
+      ).trim();
+
+    if (
+      evidenceText.length < 12 ||
+      buildQuest.completedWeeks.includes(
+        index,
+      )
+    ) {
+      return;
+    }
+
+    const nextCompletedWeeks = [
+      ...buildQuest.completedWeeks,
+      index,
+    ];
+
+    const finalWeek =
+      index ===
+      plan.monthPlan.length - 1;
+
+    setBuildQuest(
+      (current) => ({
+        ...current,
+
+        completedWeeks:
+          nextCompletedWeeks,
+
+        evidence: {
+          ...current.evidence,
+          [index]:
+            evidenceText,
+        },
+
+        completed:
+          finalWeek
+            ? true
+            : current.completed,
+      }),
+    );
+
+    awardMilestone(
+      `project:${wingId}:week:${index + 1}`,
+      25,
+      {
+        technicalBuild:
+          index === 0
+            ? 1
+            : 0,
+
+        evidenceReasoning:
+          index >= 1
+            ? 1
+            : 0,
+      },
+      `${plan.monthPlan[index].week} complete`,
+    );
+
+    if (finalWeek) {
+      awardMilestone(
+        `project:${wingId}:build-complete`,
+        100,
+        {
+          technicalBuild: 1,
+          evidenceReasoning: 1,
+        },
+        `${selectedRoute?.title ?? wingName} build complete`,
+      );
+    }
+  }
+
+  function resetBuildQuest() {
+    const empty:
+      BuildQuestProgress = {
+        routeIndex: null,
+        completedWeeks: [],
+        evidence: {},
+        completed: false,
+      };
+
+    setBuildQuest(
+      empty,
+    );
+
+    setDraftEvidence(
+      {},
+    );
+
+    localStorage.removeItem(
+      BUILD_QUEST_STORAGE_KEY,
+    );
+  }
+
+
   if (showFlightPlan) {
     return (
       <PathDashboard
@@ -404,6 +611,32 @@ function LaunchPlan({
 
   return (
     <main className="launch-shell">
+      {questAcceptedFlash &&
+        selectedRoute && (
+          <div
+            className="launch-quest-flash"
+            role="status"
+          >
+            <img
+              src="/brand/altwing-penguin.png"
+              alt=""
+            />
+
+            <div>
+              <span>
+                QUEST ACCEPTED
+              </span>
+
+              <strong>
+                {selectedRoute.title}
+              </strong>
+
+              <small>
+                BUILD PATH ACTIVE
+              </small>
+            </div>
+          </div>
+        )}
       <header className="launch-nav">
         <button
           type="button"
@@ -450,28 +683,58 @@ function LaunchPlan({
 
         <div className="launch-route-grid">
           {plan.routes.map(
-            (route, index) => (
-              <article
-                key={route.title}
-                className="launch-route-card"
-              >
-                <span>
-                  0{index + 1}
-                </span>
+            (route, index) => {
+              const selected =
+                buildQuest.routeIndex ===
+                index;
 
-                <h3>
-                  {route.title}
-                </h3>
+              return (
+                <article
+                  key={route.title}
+                  className={[
+                    "launch-route-card",
 
-                <p>
-                  {route.description}
-                </p>
+                    selected
+                      ? "launch-route-card--selected"
+                      : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  <span>
+                    0{index + 1}
+                  </span>
 
-                <strong>
-                  {route.action} →
-                </strong>
-              </article>
-            ),
+                  {selected && (
+                    <b className="launch-route-selected">
+                      ACTIVE PATH
+                    </b>
+                  )}
+
+                  <h3>
+                    {route.title}
+                  </h3>
+
+                  <p>
+                    {route.description}
+                  </p>
+
+                  <button
+                    type="button"
+                    className="launch-route-action"
+                    onClick={() =>
+                      chooseRoute(
+                        index,
+                      )
+                    }
+                  >
+                    {selected
+                      ? "Quest Accepted ✓"
+                      : `${route.action} →`}
+                  </button>
+                </article>
+              );
+            },
           )}
         </div>
       </section>
@@ -488,25 +751,221 @@ function LaunchPlan({
           </h2>
         </div>
 
-        <div className="launch-month-plan">
-          {plan.monthPlan.map(
-            (item) => (
-              <article key={item.week}>
+        {!selectedRoute ? (
+          <div className="launch-quest-gate">
+            <img
+              src="/brand/altwing-penguin.png"
+              alt=""
+            />
+
+            <span>
+              QUEST LOCKED
+            </span>
+
+            <h3>
+              Choose a Flight Path first.
+            </h3>
+
+            <p>
+              Your 30-day Build Quest
+              will unlock here.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="launch-active-path">
+              <div>
                 <span>
-                  {item.week}
+                  ACTIVE BUILD QUEST
+                </span>
+
+                <strong>
+                  {selectedRoute.title}
+                </strong>
+              </div>
+
+              <button
+                type="button"
+                onClick={
+                  resetBuildQuest
+                }
+              >
+                Change Path
+              </button>
+            </div>
+
+            <div className="launch-month-plan">
+              {plan.monthPlan.map(
+                (item, index) => {
+                  const complete =
+                    buildQuest.completedWeeks.includes(
+                      index,
+                    );
+
+                  const unlocked =
+                    index === 0 ||
+                    buildQuest.completedWeeks.includes(
+                      index - 1,
+                    );
+
+                  const evidenceValue =
+                    draftEvidence[index] ??
+                    buildQuest.evidence[
+                      index
+                    ] ??
+                    "";
+
+                  const canComplete =
+                    unlocked &&
+                    !complete &&
+                    evidenceValue
+                      .trim()
+                      .length >= 12;
+
+                  return (
+                    <article
+                      key={item.week}
+                      className={[
+                        complete
+                          ? "launch-week--complete"
+                          : "",
+
+                        unlocked
+                          ? "launch-week--unlocked"
+                          : "launch-week--locked",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                    >
+                      <span>
+                        {item.week}
+                      </span>
+
+                      <div className="launch-week-state">
+                        {complete
+                          ? "COMPLETE ✓"
+                          : unlocked
+                            ? "ACTIVE"
+                            : "LOCKED"}
+                      </div>
+
+                      <h3>
+                        {item.title}
+                      </h3>
+
+                      <p>
+                        {item.description}
+                      </p>
+
+                      {unlocked && (
+                        <div className="launch-evidence-entry">
+                          <label>
+                            EVIDENCE
+                          </label>
+
+                          <textarea
+                            value={
+                              evidenceValue
+                            }
+                            disabled={
+                              complete
+                            }
+                            onChange={(
+                              event,
+                            ) =>
+                              setDraftEvidence(
+                                (
+                                  current,
+                                ) => ({
+                                  ...current,
+
+                                  [index]:
+                                    event
+                                      .target
+                                      .value,
+                                }),
+                              )
+                            }
+                            placeholder={
+                              index === 0
+                                ? "What did you actually improve or build?"
+                                : index === 1
+                                  ? "What evidence did you create or publish?"
+                                  : index === 2
+                                    ? "Who reviewed it, and what feedback did you get?"
+                                    : "What changed in V2, and where did you share or submit it?"
+                            }
+                          />
+
+                          <div>
+                            <small>
+                              {
+                                evidenceValue
+                                  .trim()
+                                  .length
+                              }
+                              /12 minimum
+                            </small>
+
+                            <button
+                              type="button"
+                              disabled={
+                                !canComplete
+                              }
+                              onClick={() =>
+                                completeWeek(
+                                  index,
+                                )
+                              }
+                            >
+                              {complete
+                                ? "Completed ✓"
+                                : `Complete ${item.week} +25 XP`}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </article>
+                  );
+                },
+              )}
+            </div>
+
+            {buildQuest.completed && (
+              <div className="launch-build-complete">
+                <img
+                  src="/brand/altwing-penguin.png"
+                  alt=""
+                />
+
+                <span>
+                  BUILD QUEST COMPLETE
                 </span>
 
                 <h3>
-                  {item.title}
+                  {selectedRoute.title}
                 </h3>
 
                 <p>
-                  {item.description}
+                  You explored, built,
+                  tested, documented,
+                  and improved
+                  something real.
                 </p>
-              </article>
-            ),
-          )}
-        </div>
+
+                <strong>
+                  +100 XP · TECHNICAL BUILD ↑
+                </strong>
+
+                <small>
+                  A higher-rarity
+                  cosmic signal may
+                  have been detected.
+                </small>
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       <section className="launch-final">

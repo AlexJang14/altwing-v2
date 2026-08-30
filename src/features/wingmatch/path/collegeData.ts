@@ -671,4 +671,1088 @@ export const colleges: CollegeProfile[] = [
       "Learn by Doing and extensive aerospace laboratories",
     ],
   },
+
+  /* =====================================================
+     EXPANDED COLLEGE CATALOG V3
+     Admissions metrics intentionally unverified
+     ===================================================== */
+
+  {
+    id: "maryland",
+    name: "University of Maryland, College Park",
+    shortName: "Maryland",
+    location: "College Park, Maryland",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "vatech",
+    name: "Virginia Polytechnic Institute and State University",
+    shortName: "Virginia Tech",
+    location: "Blacksburg, Virginia",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "pennstate",
+    name: "Pennsylvania State University",
+    shortName: "Penn State",
+    location: "University Park, Pennsylvania",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "ohio-state",
+    name: "The Ohio State University",
+    shortName: "Ohio State",
+    location: "Columbus, Ohio",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "minnesota",
+    name: "University of Minnesota Twin Cities",
+    shortName: "Minnesota",
+    location: "Minneapolis, Minnesota",
+
+    major: "Aerospace Engineering and Mechanics",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering and Mechanics",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "usc",
+    name: "University of Southern California",
+    shortName: "USC",
+    location: "Los Angeles, California",
+
+    major: "Aerospace / Astronautical Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace / Astronautical Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "ucla",
+    name: "University of California, Los Angeles",
+    shortName: "UCLA",
+    location: "Los Angeles, California",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "ucsd",
+    name: "University of California, San Diego",
+    shortName: "UC San Diego",
+    location: "La Jolla, California",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "florida",
+    name: "University of Florida",
+    shortName: "Florida",
+    location: "Gainesville, Florida",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "auburn",
+    name: "Auburn University",
+    shortName: "Auburn",
+    location: "Auburn, Alabama",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "alabama",
+    name: "The University of Alabama",
+    shortName: "Alabama",
+    location: "Tuscaloosa, Alabama",
+
+    major: "Aerospace Engineering and Mechanics",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering and Mechanics",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "ncstate",
+    name: "North Carolina State University",
+    shortName: "NC State",
+    location: "Raleigh, North Carolina",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "iowastate",
+    name: "Iowa State University",
+    shortName: "Iowa State",
+    location: "Ames, Iowa",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "asu",
+    name: "Arizona State University",
+    shortName: "Arizona State",
+    location: "Tempe, Arizona",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "arizona",
+    name: "University of Arizona",
+    shortName: "Arizona",
+    location: "Tucson, Arizona",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "berkeley",
+    name: "University of California, Berkeley",
+    shortName: "UC Berkeley",
+    location: "Berkeley, California",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "rpi",
+    name: "Rensselaer Polytechnic Institute",
+    shortName: "RPI",
+    location: "Troy, New York",
+
+    major: "Aeronautical Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aeronautical Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "mst",
+    name: "Missouri University of Science and Technology",
+    shortName: "Missouri S&T",
+    location: "Rolla, Missouri",
+
+    major: "Aerospace Engineering",
+    aerospaceFit: "DIRECT MAJOR",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Aerospace Engineering",
+      "Dedicated or direct aerospace-focused undergraduate pathway",
+      "Engineering design and technical project opportunities",
+      "Aerospace-relevant research ecosystem",
+    ],
+  },
+
+  {
+    id: "cornell",
+    name: "Cornell University",
+    shortName: "Cornell",
+    location: "Ithaca, New York",
+
+    major: "Mechanical Engineering + aerospace-related study",
+    aerospaceFit: "RELATED ENGINEERING PATH",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Mechanical Engineering + aerospace-related study",
+      "Strong adjacent engineering pathway",
+      "Aerospace-relevant design, systems, or research opportunities",
+      "Useful option for students who want broader engineering flexibility",
+    ],
+  },
+
+  {
+    id: "princeton",
+    name: "Princeton University",
+    shortName: "Princeton",
+    location: "Princeton, New Jersey",
+
+    major: "Mechanical and Aerospace Engineering",
+    aerospaceFit: "RELATED ENGINEERING PATH",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Mechanical and Aerospace Engineering",
+      "Strong adjacent engineering pathway",
+      "Aerospace-relevant design, systems, or research opportunities",
+      "Useful option for students who want broader engineering flexibility",
+    ],
+  },
+
+  {
+    id: "cmu",
+    name: "Carnegie Mellon University",
+    shortName: "Carnegie Mellon",
+    location: "Pittsburgh, Pennsylvania",
+
+    major: "Mechanical Engineering + Robotics / autonomy",
+    aerospaceFit: "RELATED ENGINEERING PATH",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Mechanical Engineering + Robotics / autonomy",
+      "Strong adjacent engineering pathway",
+      "Aerospace-relevant design, systems, or research opportunities",
+      "Useful option for students who want broader engineering flexibility",
+    ],
+  },
+
+  {
+    id: "duke",
+    name: "Duke University",
+    shortName: "Duke",
+    location: "Durham, North Carolina",
+
+    major: "Mechanical Engineering + aerospace-related pathways",
+    aerospaceFit: "RELATED ENGINEERING PATH",
+
+    testingPolicy:
+      "CHECK_CURRENT",
+
+    testingPolicyNote:
+      "AltWing has not yet verified this school's testing policy for the current application cycle. Check the official first-year admissions page before making a testing decision.",
+
+    sat25: null,
+    sat50: null,
+    sat75: null,
+
+    act25: null,
+    act50: null,
+    act75: null,
+
+    scoreContext:
+      "No verified current SAT/ACT percentile profile is loaded yet. AltWing will not manufacture a comparison.",
+
+    averageGpa:
+      "Verify current official profile",
+
+    gpaNote:
+      "No verified comparable GPA profile is loaded yet. GPA methodology can vary by institution.",
+
+    admissionRate:
+      "Verify current official source",
+
+    source:
+      "Official undergraduate program + first-year admissions pages",
+
+    sourceYear:
+      "VERIFY CURRENT",
+
+    strengths: [
+      "Mechanical Engineering + aerospace-related pathways",
+      "Strong adjacent engineering pathway",
+      "Aerospace-relevant design, systems, or research opportunities",
+      "Useful option for students who want broader engineering flexibility",
+    ],
+  },
+
 ];

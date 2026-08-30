@@ -1,0 +1,1800 @@
+/* =========================================================
+   ALTWING COSMIC ATLAS
+   ========================================================= */
+
+.cosmic-discovery {
+  position: fixed;
+  inset: 0;
+
+  z-index: 15000;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  color: white;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(91,141,239,.14),
+      transparent 28%
+    ),
+    rgba(4,8,24,.96);
+
+  pointer-events: none;
+
+  animation:
+    cosmicFade
+    3.6s ease both;
+}
+
+.cosmic-stars {
+  position: absolute;
+  inset: -15%;
+
+  opacity: .5;
+
+  background-image:
+    radial-gradient(
+      white 1px,
+      transparent 1px
+    );
+
+  background-size:
+    44px 44px;
+
+  animation:
+    cosmicStarsMove
+    5s linear infinite;
+}
+
+.cosmic-scan-line {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(91,141,239,.8),
+      transparent
+    );
+
+  animation:
+    cosmicScan
+    1.3s ease both;
+}
+
+.cosmic-discovery-card {
+  position: relative;
+
+  z-index: 2;
+
+  width:
+    min(
+      430px,
+      calc(100vw - 38px)
+    );
+
+  text-align: center;
+}
+
+.cosmic-scan-label {
+  color: #5b8def;
+
+  font-size: 8px;
+  font-weight: 950;
+
+  letter-spacing: .25em;
+
+  animation:
+    cosmicReveal
+    .7s ease both;
+}
+
+.cosmic-orb {
+  position: relative;
+
+  width: 130px;
+  height: 130px;
+
+  margin:
+    20px auto 15px;
+
+  display: grid;
+  place-items: center;
+
+  animation:
+    cosmicOrbArrival
+    1.15s
+    cubic-bezier(.2,.8,.2,1)
+    both;
+}
+
+.cosmic-orb > div {
+  width: 92px;
+  height: 92px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      rgba(255,255,255,.85),
+      rgba(91,141,239,.62) 20%,
+      rgba(91,141,239,.2) 56%,
+      rgba(8,14,35,.9)
+    );
+
+  box-shadow:
+    0 0 50px
+    rgba(91,141,239,.28);
+}
+
+.cosmic-orb > i {
+  position: absolute;
+
+  width: 130px;
+  height: 43px;
+
+  border:
+    2px solid
+    rgba(255,200,87,.45);
+
+  border-radius: 50%;
+
+  transform:
+    rotate(-14deg);
+
+  animation:
+    cosmicOrbit
+    2.3s linear infinite;
+}
+
+.cosmic-discovery--rare
+.cosmic-orb > div {
+  box-shadow:
+    0 0 65px
+    rgba(91,141,239,.5);
+}
+
+.cosmic-discovery--epic
+.cosmic-orb > div {
+  background:
+    radial-gradient(
+      circle,
+      white 0%,
+      #5b8def 14%,
+      rgba(91,141,239,.28) 42%,
+      transparent 68%
+    );
+
+  box-shadow:
+    0 0 85px
+    rgba(91,141,239,.6);
+}
+
+.cosmic-discovery--legendary
+.cosmic-orb > div {
+  background:
+    radial-gradient(
+      circle,
+      #02030a 0%,
+      #02030a 36%,
+      #ffc857 41%,
+      #ff6b6b 47%,
+      transparent 64%
+    );
+
+  box-shadow:
+    0 0 95px
+    rgba(255,200,87,.35);
+}
+
+.cosmic-discovery--legendary
+.cosmic-orb > i {
+  border-color:
+    rgba(255,107,107,.7);
+}
+
+.cosmic-rarity {
+  margin: 0;
+
+  color: #ffc857;
+
+  font-size: 9px;
+  font-weight: 950;
+
+  letter-spacing: .18em;
+}
+
+.cosmic-discovery-card h2 {
+  margin:
+    8px 0 0;
+
+  color:
+    rgba(255,255,255,.5);
+
+  font-size: 9px;
+
+  letter-spacing: .16em;
+}
+
+.cosmic-discovery-card h1 {
+  margin:
+    5px 0;
+
+  font-size:
+    clamp(
+      28px,
+      5vw,
+      44px
+    );
+
+  letter-spacing: -.04em;
+}
+
+.cosmic-object-type {
+  color:
+    rgba(255,255,255,.5);
+
+  font-size: 9px;
+}
+
+.cosmic-added,
+.cosmic-duplicate {
+  margin:
+    16px auto 8px;
+
+  padding:
+    8px 11px;
+
+  width: fit-content;
+
+  border:
+    1px solid
+    rgba(91,141,239,.17);
+
+  border-radius: 999px;
+
+  background:
+    rgba(91,141,239,.06);
+
+  color: #5b8def;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  letter-spacing: .1em;
+}
+
+.cosmic-duplicate strong {
+  margin-left: 8px;
+
+  color: #ffc857;
+}
+
+.cosmic-discovery-card > small {
+  display: block;
+
+  margin-top: 9px;
+
+  color:
+    rgba(255,255,255,.32);
+
+  font-size: 7px;
+}
+
+
+/* =========================================================
+   ATLAS
+   ========================================================= */
+
+.cosmic-atlas {
+  position: relative;
+
+  padding: 14px;
+
+  border-radius: 16px;
+
+  border:
+    1px solid
+    rgba(91,141,239,.12);
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(91,141,239,.09),
+      transparent 40%
+    ),
+    rgba(255,255,255,.018);
+}
+
+.cosmic-atlas-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 14px;
+}
+
+.cosmic-atlas-heading small {
+  display: block;
+
+  color: #5b8def;
+
+  font-size: 6px;
+  font-weight: 950;
+
+  letter-spacing: .16em;
+}
+
+.cosmic-atlas-heading strong {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 10px;
+}
+
+.cosmic-atlas-count {
+  text-align: right;
+}
+
+.cosmic-atlas-count b {
+  display: block;
+
+  color: #ffc857;
+
+  font-size: 13px;
+}
+
+.cosmic-atlas-count span {
+  display: block;
+
+  margin-top: 3px;
+
+  color:
+    rgba(255,255,255,.42);
+
+  font-size: 6px;
+}
+
+.cosmic-atlas-progress {
+  height: 4px;
+
+  margin-top: 11px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255,255,255,.06);
+}
+
+.cosmic-atlas-progress i {
+  display: block;
+
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      #5b8def,
+      #ffc857
+    );
+}
+
+.cosmic-atlas-hint {
+  margin:
+    9px 0 12px;
+
+  color:
+    rgba(255,255,255,.38);
+
+  font-size: 7px;
+  line-height: 1.5;
+}
+
+.cosmic-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap: 7px;
+}
+
+.cosmic-object-card {
+  min-width: 0;
+  height: 76px;
+
+  padding: 7px;
+
+  border-radius: 11px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.05);
+
+  background:
+    rgba(255,255,255,.02);
+
+  color: white;
+
+  text-align: center;
+}
+
+.cosmic-object-icon {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color:
+    rgba(255,255,255,.24);
+
+  font-size: 15px;
+}
+
+.cosmic-object-card strong {
+  display: block;
+
+  overflow: hidden;
+
+  font-size: 7px;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+.cosmic-object-card small {
+  display: block;
+
+  margin-top: 3px;
+
+  color:
+    rgba(255,255,255,.25);
+
+  font-size: 5px;
+
+  letter-spacing: .08em;
+}
+
+.cosmic-object-card.is-locked {
+  opacity: .28;
+}
+
+.cosmic-object-card.is-discovered {
+  cursor: pointer;
+}
+
+.cosmic-object-card.rarity-common {
+  border-color:
+    rgba(255,255,255,.1);
+}
+
+.cosmic-object-card.rarity-uncommon {
+  border-color:
+    rgba(91,141,239,.24);
+}
+
+.cosmic-object-card.rarity-rare {
+  border-color:
+    rgba(91,141,239,.48);
+
+  box-shadow:
+    inset 0 0 18px
+    rgba(91,141,239,.05);
+}
+
+.cosmic-object-card.rarity-epic {
+  border-color:
+    rgba(255,107,107,.38);
+
+  box-shadow:
+    inset 0 0 20px
+    rgba(255,107,107,.055);
+}
+
+.cosmic-object-card.rarity-legendary {
+  border-color:
+    rgba(255,200,87,.48);
+
+  box-shadow:
+    inset 0 0 24px
+    rgba(255,200,87,.07);
+}
+
+.cosmic-object-card.rarity-legendary
+.cosmic-object-icon {
+  color: #ffc857;
+}
+
+.cosmic-detail {
+  position: relative;
+
+  margin-top: 10px;
+
+  padding: 12px;
+
+  border-radius: 12px;
+
+  background:
+    rgba(91,141,239,.06);
+
+  border:
+    1px solid
+    rgba(91,141,239,.12);
+}
+
+.cosmic-detail > button {
+  position: absolute;
+
+  top: 7px;
+  right: 7px;
+
+  width: 24px;
+  height: 24px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.07);
+
+  border-radius: 7px;
+
+  color:
+    rgba(255,255,255,.55);
+
+  background:
+    rgba(255,255,255,.03);
+}
+
+.cosmic-detail > small {
+  color: #ffc857;
+
+  font-size: 6px;
+  font-weight: 900;
+
+  letter-spacing: .12em;
+}
+
+.cosmic-detail h3 {
+  margin:
+    5px 0 2px;
+
+  font-size: 14px;
+}
+
+.cosmic-detail > span {
+  color: #5b8def;
+
+  font-size: 7px;
+}
+
+.cosmic-detail p {
+  margin:
+    7px 0 0;
+
+  padding-right: 20px;
+
+  color:
+    rgba(255,255,255,.48);
+
+  font-size: 7px;
+  line-height: 1.55;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes cosmicFade {
+  0% {
+    opacity: 0;
+  }
+
+  8%,
+  88% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes cosmicScan {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes cosmicStarsMove {
+  from {
+    transform:
+      translateY(0);
+  }
+
+  to {
+    transform:
+      translateY(44px);
+  }
+}
+
+@keyframes cosmicOrbArrival {
+  0% {
+    opacity: 0;
+
+    transform:
+      scale(.3)
+      rotate(-18deg);
+
+    filter:
+      blur(12px);
+  }
+
+  65% {
+    opacity: 1;
+
+    transform:
+      scale(1.08)
+      rotate(3deg);
+
+    filter:
+      blur(0);
+  }
+
+  100% {
+    transform:
+      scale(1)
+      rotate(0);
+  }
+}
+
+@keyframes cosmicOrbit {
+  from {
+    transform:
+      rotate(-14deg);
+  }
+
+  to {
+    transform:
+      rotate(346deg);
+  }
+}
+
+@keyframes cosmicReveal {
+  from {
+    opacity: 0;
+
+    letter-spacing:
+      .5em;
+  }
+
+  to {
+    opacity: 1;
+
+    letter-spacing:
+      .25em;
+  }
+}
+
+@media (
+  max-width: 520px
+) {
+  .cosmic-grid {
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+}
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .cosmic-discovery,
+  .cosmic-stars,
+  .cosmic-scan-line,
+  .cosmic-orb,
+  .cosmic-orb > i {
+    animation: none;
+  }
+}
+
+
+
+/* =========================================================
+   COSMIC ATLAS V2 — 36 OBJECT VISUAL SYSTEM
+   ========================================================= */
+
+.cosmic-atlas-v2 {
+  overflow: hidden;
+}
+
+.cosmic-filter {
+  margin-bottom: 11px;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 5px;
+}
+
+.cosmic-filter button {
+  padding: 5px 7px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.06);
+
+  border-radius: 999px;
+
+  color:
+    rgba(255,255,255,.36);
+
+  background:
+    rgba(255,255,255,.02);
+
+  font-size: 5px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.cosmic-filter button.active {
+  color: #0d132b;
+
+  background: #ffc857;
+
+  border-color: #ffc857;
+}
+
+.cosmic-object-icon {
+  position: relative;
+
+  width: 34px;
+  height: 34px;
+
+  margin:
+    0 auto 6px;
+
+  display: grid;
+  place-items: center;
+}
+
+.cosmic-object-icon i,
+.cosmic-detail-orb i {
+  display: block;
+
+  width: 28px;
+  height: 28px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #fff,
+      #5b8def 25%,
+      #18264f 70%
+    );
+
+  box-shadow:
+    0 0 16px
+    rgba(91,141,239,.2);
+}
+
+.cosmic-detail-orb {
+  width: 88px;
+  height: 88px;
+
+  margin:
+    2px auto 12px;
+
+  display: grid;
+  place-items: center;
+}
+
+.cosmic-detail-orb i {
+  width: 72px;
+  height: 72px;
+
+  box-shadow:
+    0 0 35px
+    rgba(91,141,239,.25);
+}
+
+
+/* ROCKY / SMALL WORLDS */
+
+[data-cosmic="rocky-world"]
+.cosmic-object-icon i,
+[data-cosmic="rocky-world"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle at 30% 28%,
+      #dec6a5,
+      #795f4b 48%,
+      #33261f 100%
+    );
+}
+
+[data-cosmic="desert-world"]
+.cosmic-object-icon i,
+[data-cosmic="desert-world"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle at 32% 28%,
+      #ffc88a,
+      #b75c32 52%,
+      #4a251d
+    );
+}
+
+[data-cosmic="dwarf-planet"]
+.cosmic-object-icon i,
+[data-cosmic="dwarf-planet"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      #ebe0cd,
+      #9a826f 50%,
+      #493d39
+    );
+}
+
+[data-cosmic="moon-world"]
+.cosmic-object-icon i,
+[data-cosmic="moon-world"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #f0f0ef,
+      #888d9b 55%,
+      #343844
+    );
+}
+
+
+/* ICE / WATER */
+
+[data-cosmic="ice-world"]
+.cosmic-object-icon i,
+[data-cosmic="ice-world"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle at 30% 24%,
+      #f5ffff,
+      #9de9ff 40%,
+      #466fbb 78%
+    );
+}
+
+[data-cosmic="ocean-world"]
+.cosmic-object-icon i,
+[data-cosmic="ocean-world"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle at 30% 25%,
+      #c9fbff,
+      #2b9fe7 42%,
+      #043b89 78%
+    );
+}
+
+[data-cosmic="ice-giant"]
+.cosmic-object-icon i,
+[data-cosmic="ice-giant"]
+.cosmic-detail-orb i {
+  background:
+    linear-gradient(
+      160deg,
+      #d7ffff,
+      #72ddeb 42%,
+      #3886b3
+    );
+}
+
+
+/* GIANTS */
+
+[data-cosmic="gas-giant"]
+.cosmic-object-icon i,
+[data-cosmic="gas-giant"]
+.cosmic-detail-orb i,
+[data-cosmic="hot-jupiter"]
+.cosmic-object-icon i,
+[data-cosmic="hot-jupiter"]
+.cosmic-detail-orb i {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      #e5b77e 0 5px,
+      #8f5a47 5px 9px,
+      #f1d4a6 9px 13px
+    );
+}
+
+[data-cosmic="hot-jupiter"]
+.cosmic-object-icon i,
+[data-cosmic="hot-jupiter"]
+.cosmic-detail-orb i {
+  box-shadow:
+    0 0 25px
+    rgba(255,107,107,.5);
+}
+
+[data-cosmic="ringed-giant"]
+.cosmic-object-icon::after,
+[data-cosmic="ringed-giant"]
+.cosmic-detail-orb::after {
+  content: "";
+
+  position: absolute;
+
+  width: 44px;
+  height: 13px;
+
+  border:
+    2px solid
+    rgba(255,220,160,.75);
+
+  border-radius: 50%;
+
+  transform:
+    rotate(-16deg);
+}
+
+.cosmic-detail-orb {
+  position: relative;
+}
+
+[data-cosmic="ringed-giant"]
+.cosmic-detail-orb::after {
+  width: 104px;
+  height: 30px;
+}
+
+
+/* HOT WORLDS */
+
+[data-cosmic="lava-world"]
+.cosmic-object-icon i,
+[data-cosmic="lava-world"]
+.cosmic-detail-orb i,
+[data-cosmic="55-cancri-e"]
+.cosmic-object-icon i,
+[data-cosmic="55-cancri-e"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle at 34% 28%,
+      #ffd16c,
+      #ff643d 32%,
+      #5b1519 68%,
+      #16080b
+    );
+
+  box-shadow:
+    0 0 22px
+    rgba(255,107,107,.5);
+}
+
+
+/* BLUE EXOPLANETS */
+
+[data-cosmic="super-earth"]
+.cosmic-object-icon i,
+[data-cosmic="super-earth"]
+.cosmic-detail-orb i,
+[data-cosmic="kepler-186f"]
+.cosmic-object-icon i,
+[data-cosmic="kepler-186f"]
+.cosmic-detail-orb i,
+[data-cosmic="trappist-1e"]
+.cosmic-object-icon i,
+[data-cosmic="trappist-1e"]
+.cosmic-detail-orb i,
+[data-cosmic="toi-700-d"]
+.cosmic-object-icon i,
+[data-cosmic="toi-700-d"]
+.cosmic-detail-orb i,
+[data-cosmic="proxima-centauri-b"]
+.cosmic-object-icon i,
+[data-cosmic="proxima-centauri-b"]
+.cosmic-detail-orb i,
+[data-cosmic="kepler-452b"]
+.cosmic-object-icon i,
+[data-cosmic="kepler-452b"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle at 34% 28%,
+      #d9f6ff,
+      #50a5c8 34%,
+      #416c5d 60%,
+      #172a32
+    );
+}
+
+
+/* NEPTUNES */
+
+[data-cosmic="mini-neptune"]
+.cosmic-object-icon i,
+[data-cosmic="mini-neptune"]
+.cosmic-detail-orb i {
+  background:
+    linear-gradient(
+      150deg,
+      #aad5ff,
+      #5b8def,
+      #28356f
+    );
+}
+
+[data-cosmic="hot-neptune"]
+.cosmic-object-icon i,
+[data-cosmic="hot-neptune"]
+.cosmic-detail-orb i {
+  background:
+    linear-gradient(
+      150deg,
+      #d8a7ff,
+      #6456c9,
+      #231c60
+    );
+
+  box-shadow:
+    0 0 24px
+    rgba(185,116,255,.35);
+}
+
+
+/* BINARY / LOCKED / ROGUE */
+
+[data-cosmic="circumbinary-planet"]
+.cosmic-object-icon::before,
+[data-cosmic="circumbinary-planet"]
+.cosmic-detail-orb::before {
+  content: "✦ ✦";
+
+  position: absolute;
+
+  top: -6px;
+
+  color: #ffc857;
+
+  font-size: 7px;
+}
+
+[data-cosmic="rogue-planet"]
+.cosmic-object-icon i,
+[data-cosmic="rogue-planet"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #8091b7,
+      #212b49 45%,
+      #050811 90%
+    );
+}
+
+[data-cosmic="tidally-locked-world"]
+.cosmic-object-icon i,
+[data-cosmic="tidally-locked-world"]
+.cosmic-detail-orb i {
+  background:
+    linear-gradient(
+      90deg,
+      #ffb45c 0 48%,
+      #172039 52% 100%
+    );
+}
+
+
+/* STELLAR REMNANTS */
+
+[data-cosmic="white-dwarf"]
+.cosmic-object-icon i,
+[data-cosmic="white-dwarf"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle,
+      #fff 0 18%,
+      #dff7ff 25%,
+      rgba(91,141,239,.35) 45%,
+      transparent 68%
+    );
+
+  box-shadow:
+    0 0 26px
+    rgba(220,250,255,.65);
+}
+
+[data-cosmic="neutron-star"]
+.cosmic-object-icon i,
+[data-cosmic="neutron-star"]
+.cosmic-detail-orb i,
+[data-cosmic="magnetar"]
+.cosmic-object-icon i,
+[data-cosmic="magnetar"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle,
+      white,
+      #6fa4ff 20%,
+      #202d78 45%,
+      transparent 66%
+    );
+
+  box-shadow:
+    0 0 28px
+    rgba(91,141,239,.7);
+}
+
+[data-cosmic="magnetar"]
+.cosmic-object-icon::after,
+[data-cosmic="magnetar"]
+.cosmic-detail-orb::after {
+  content: "";
+
+  position: absolute;
+
+  width: 42px;
+  height: 15px;
+
+  border:
+    1px solid
+    rgba(91,141,239,.7);
+
+  border-radius: 50%;
+
+  transform: rotate(65deg);
+}
+
+[data-cosmic="pulsar"]
+.cosmic-object-icon::before,
+[data-cosmic="pulsar"]
+.cosmic-detail-orb::before {
+  content: "";
+
+  position: absolute;
+
+  width: 2px;
+  height: 52px;
+
+  background:
+    linear-gradient(
+      transparent,
+      #dffaff,
+      transparent
+    );
+
+  transform:
+    rotate(28deg);
+}
+
+
+/* NEBULAE / EXPLOSIONS */
+
+[data-cosmic="supernova-remnant"]
+.cosmic-object-icon i,
+[data-cosmic="supernova-remnant"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle,
+      white 0 5%,
+      #ffc857 12%,
+      #ff6b6b 24%,
+      rgba(91,141,239,.32) 50%,
+      transparent 72%
+    );
+}
+
+[data-cosmic="planetary-nebula"]
+.cosmic-object-icon i,
+[data-cosmic="planetary-nebula"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle,
+      white 0 6%,
+      #60e5db 14%,
+      rgba(91,141,239,.55) 30%,
+      rgba(190,95,255,.3) 52%,
+      transparent 70%
+    );
+}
+
+
+/* ACTIVE GALAXIES */
+
+[data-cosmic="blazar"]
+.cosmic-object-icon::after,
+[data-cosmic="blazar"]
+.cosmic-detail-orb::after {
+  content: "";
+
+  position: absolute;
+
+  width: 64px;
+  height: 2px;
+
+  background:
+    linear-gradient(
+      transparent,
+      #dffaff,
+      transparent
+    );
+
+  transform:
+    rotate(-25deg);
+}
+
+[data-cosmic="quasar"]
+.cosmic-object-icon i,
+[data-cosmic="quasar"]
+.cosmic-detail-orb i,
+[data-cosmic="ton-618"]
+.cosmic-object-icon i,
+[data-cosmic="ton-618"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle,
+      #fff 0 6%,
+      #ffc857 11%,
+      #ff6b6b 19%,
+      #130c2a 34%,
+      transparent 65%
+    );
+
+  box-shadow:
+    0 0 36px
+    rgba(255,200,87,.55);
+}
+
+
+/* BLACK HOLES */
+
+[data-cosmic="stellar-black-hole"]
+.cosmic-object-icon i,
+[data-cosmic="stellar-black-hole"]
+.cosmic-detail-orb i,
+[data-cosmic="supermassive-black-hole"]
+.cosmic-object-icon i,
+[data-cosmic="supermassive-black-hole"]
+.cosmic-detail-orb i,
+[data-cosmic="sagittarius-a-star"]
+.cosmic-object-icon i,
+[data-cosmic="sagittarius-a-star"]
+.cosmic-detail-orb i,
+[data-cosmic="m87-star"]
+.cosmic-object-icon i,
+[data-cosmic="m87-star"]
+.cosmic-detail-orb i {
+  background:
+    radial-gradient(
+      circle,
+      #010208 0 34%,
+      #ffc857 39%,
+      #ff6b6b 45%,
+      rgba(91,141,239,.25) 56%,
+      transparent 68%
+    );
+
+  box-shadow:
+    0 0 28px
+    rgba(255,200,87,.28);
+}
+
+.is-achievement {
+  border-color:
+    rgba(255,200,87,.35) !important;
+}
+
+.cosmic-achievement-lock,
+.cosmic-earned-by {
+  margin-top: 10px;
+
+  padding: 10px;
+
+  border-radius: 9px;
+
+  text-align: left;
+
+  background:
+    rgba(255,200,87,.07);
+
+  border:
+    1px solid
+    rgba(255,200,87,.15);
+}
+
+.cosmic-achievement-lock b,
+.cosmic-earned-by b {
+  display: block;
+
+  color: #ffc857;
+
+  font-size: 6px;
+
+  letter-spacing: .12em;
+}
+
+.cosmic-achievement-lock span,
+.cosmic-earned-by span {
+  display: block;
+
+  margin-top: 4px;
+
+  color:
+    rgba(255,255,255,.52);
+
+  font-size: 7px;
+
+  line-height: 1.5;
+}
+
+
+
+/* =========================================================
+   COSMIC ATLAS — CLICKED OBJECT MODAL
+   ========================================================= */
+
+.cosmic-object-card.is-discovered,
+.cosmic-object-card.is-achievement {
+  cursor: pointer;
+}
+
+
+/* Clicking a discovered object should show its detail
+   immediately instead of rendering far below the Atlas. */
+
+.cosmic-detail {
+  position: fixed !important;
+
+  top: 50% !important;
+  left: 50% !important;
+
+  z-index: 26000 !important;
+
+  width:
+    min(
+      430px,
+      calc(100vw - 30px)
+    ) !important;
+
+  max-height:
+    calc(100vh - 40px);
+
+  margin: 0 !important;
+
+  padding: 26px !important;
+
+  overflow-y: auto;
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    ) !important;
+
+  border:
+    1px solid
+    rgba(91,141,239,.3) !important;
+
+  border-radius:
+    24px !important;
+
+  text-align:
+    center !important;
+
+  color: white !important;
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(91,141,239,.17),
+      transparent 35%
+    ),
+    #0d132b !important;
+
+  box-shadow:
+    0 0 0 9999px
+      rgba(2,5,16,.78),
+    0 30px 100px
+      rgba(0,0,0,.55) !important;
+}
+
+
+/* CLOSE BUTTON */
+
+.cosmic-detail > button {
+  position: absolute;
+
+  top: 13px;
+  right: 13px;
+
+  width: 32px;
+  height: 32px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius: 50%;
+
+  color:
+    rgba(255,255,255,.65);
+
+  background:
+    rgba(255,255,255,.04);
+
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+
+/* TYPE / RARITY */
+
+.cosmic-detail > small {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #ffc857;
+
+  font-size: 7px;
+  font-weight: 950;
+
+  letter-spacing: .16em;
+}
+
+
+/* NAME */
+
+.cosmic-detail h3 {
+  margin:
+    7px 0 3px;
+
+  color: white;
+
+  font-size: 28px;
+
+  letter-spacing:
+    -.035em;
+}
+
+
+/* SHORT TYPE */
+
+.cosmic-detail > span {
+  display: block;
+
+  color: #5b8def;
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+
+/* DESCRIPTION */
+
+.cosmic-detail > p {
+  margin:
+    16px auto 0;
+
+  max-width: 340px;
+
+  color:
+    rgba(255,255,255,.62);
+
+  font-size: 11px;
+
+  line-height: 1.65;
+}
+
+
+/* BIGGER CELESTIAL VISUAL */
+
+.cosmic-detail
+.cosmic-detail-orb {
+  width: 120px;
+  height: 120px;
+
+  margin:
+    12px auto 18px;
+}
+
+.cosmic-detail
+.cosmic-detail-orb i {
+  width: 96px;
+  height: 96px;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 520px) {
+
+  .cosmic-detail {
+    width:
+      calc(100vw - 20px)
+      !important;
+
+    padding:
+      22px 16px
+      !important;
+  }
+
+  .cosmic-detail h3 {
+    font-size: 23px;
+  }
+
+  .cosmic-detail > p {
+    font-size: 10px;
+  }
+}
+
+
+
+
+/* =========================================================
+   COSMIC MODAL — FINAL V2
+   Rendered through React portal, so Atlas overflow
+   can never hide the detail window.
+   ========================================================= */
+
+.cosmic-atlas-v2 {
+  overflow: visible !important;
+}
+
+
+.cosmic-modal-backdrop {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 31999;
+
+  display: grid;
+  place-items: center;
+
+  padding: 18px;
+
+  background:
+    rgba(2,5,16,.82);
+
+  backdrop-filter:
+    blur(8px);
+
+  animation:
+    cosmicBackdropIn
+    .18s ease both;
+}
+
+
+.cosmic-modal-backdrop
+.cosmic-detail {
+  position: relative !important;
+
+  top: auto !important;
+  left: auto !important;
+
+  z-index: 32000 !important;
+
+  width:
+    min(
+      430px,
+      100%
+    ) !important;
+
+  max-height:
+    calc(100vh - 36px);
+
+  margin: 0 !important;
+
+  padding:
+    25px !important;
+
+  overflow-y: auto;
+
+  transform:
+    none !important;
+
+  border:
+    1px solid
+    rgba(91,141,239,.28)
+    !important;
+
+  border-radius:
+    23px !important;
+
+  text-align:
+    center !important;
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(91,141,239,.16),
+      transparent 37%
+    ),
+    #0d132b !important;
+
+  box-shadow:
+    0 35px 110px
+    rgba(0,0,0,.55)
+    !important;
+
+  animation:
+    cosmicModalIn
+    .22s
+    cubic-bezier(.2,.8,.2,1)
+    both;
+}
+
+
+.cosmic-detail-close {
+  position: absolute;
+
+  top: 13px;
+  right: 13px;
+
+  width: 31px;
+  height: 31px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border:
+    1px solid
+    rgba(255,255,255,.09);
+
+  border-radius: 50%;
+
+  color:
+    rgba(255,255,255,.6);
+
+  background:
+    rgba(255,255,255,.04);
+
+  font-size: 17px;
+
+  cursor: pointer;
+}
+
+
+.cosmic-fact {
+  margin-top: 15px;
+
+  padding: 12px;
+
+  border-radius: 11px;
+
+  text-align: left;
+
+  background:
+    rgba(91,141,239,.055);
+
+  border:
+    1px solid
+    rgba(91,141,239,.1);
+}
+
+.cosmic-fact b {
+  display: block;
+
+  color: #5b8def;
+
+  font-size: 6px;
+
+  letter-spacing: .12em;
+}
+
+.cosmic-fact p {
+  margin:
+    5px 0 0 !important;
+
+  padding: 0 !important;
+
+  color:
+    rgba(255,255,255,.63)
+    !important;
+
+  font-size: 10px !important;
+
+  line-height: 1.6 !important;
+}
+
+
+.cosmic-collected {
+  margin-top: 12px;
+
+  padding: 7px;
+
+  border-radius: 8px;
+
+  color: #ffc857;
+
+  background:
+    rgba(255,200,87,.055);
+
+  border:
+    1px solid
+    rgba(255,200,87,.12);
+
+  font-size: 6px;
+  font-weight: 950;
+
+  letter-spacing: .1em;
+}
+
+
+@keyframes cosmicBackdropIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+@keyframes cosmicModalIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(8px)
+      scale(.97);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+

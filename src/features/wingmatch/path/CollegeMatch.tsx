@@ -13,6 +13,10 @@ import {
 interface CollegeMatchProps {
   major: string;
   onBack: () => void;
+
+  onAnalyzeReadiness?: (
+    collegeId: string,
+  ) => void;
 }
 
 const COLLEGE_LIST_STORAGE_KEY =
@@ -179,13 +183,43 @@ function CollegeCard({
 function CollegeMatch({
   major,
   onBack,
+  onAnalyzeReadiness,
 }: CollegeMatchProps) {
+
+  function analyzeReadiness(
+    collegeId: string,
+  ) {
+    localStorage.setItem(
+      "altwing-readiness-target-college",
+      collegeId,
+    );
+
+    onAnalyzeReadiness?.(
+      collegeId,
+    );
+  }
+
   const [
     selectedCollege,
     setSelectedCollege,
   ] = useState<CollegeProfile>(
     colleges[0],
   );
+
+  const [
+    profileOpen,
+    setProfileOpen,
+  ] = useState(false);
+
+  const openCollegeProfile = (
+    college: CollegeProfile,
+  ) => {
+    setSelectedCollege(
+      college,
+    );
+
+    setProfileOpen(true);
+  };
 
   const [
     savedCollegeIds,
@@ -563,7 +597,7 @@ function CollegeMatch({
                   key={college.id}
                   type="button"
                   onClick={() =>
-                    setSelectedCollege(
+                    openCollegeProfile(
                       college,
                     )
                   }
@@ -646,7 +680,7 @@ function CollegeMatch({
                   )
                 }
                 onSelect={() =>
-                  setSelectedCollege(
+                  openCollegeProfile(
                     college,
                   )
                 }
@@ -660,7 +694,38 @@ function CollegeMatch({
           )}
         </div>
 
-        <aside className="college-profile-panel">
+        {profileOpen && (
+          <button
+            type="button"
+            className="college-profile-backdrop"
+            aria-label="Close college profile"
+            onClick={() =>
+              setProfileOpen(false)
+            }
+          />
+        )}
+
+        <aside
+          className={[
+            "college-profile-panel",
+
+            profileOpen
+              ? "college-profile-panel--open"
+              : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          <button
+            type="button"
+            className="college-profile-close"
+            aria-label="Close college profile"
+            onClick={() =>
+              setProfileOpen(false)
+            }
+          >
+            ×
+          </button>
           <span className="college-profile-kicker">
             COLLEGE PROFILE
           </span>
@@ -693,6 +758,29 @@ function CollegeMatch({
             )
               ? "Saved to My College List ✓"
               : "+ Save to My College List"}
+          </button>
+
+          <button
+            type="button"
+            className="college-profile-readiness"
+            onClick={() =>
+              analyzeReadiness(
+                selectedCollege.id,
+              )
+            }
+          >
+            <span>
+              COLLEGE LAUNCH
+            </span>
+
+            <strong>
+              Analyze Readiness →
+            </strong>
+
+            <small>
+              See what to strengthen
+              for this school.
+            </small>
           </button>
 
           <div className="college-profile-program">

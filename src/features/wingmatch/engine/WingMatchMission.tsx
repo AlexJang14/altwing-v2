@@ -19,6 +19,9 @@ import FinalMissionPanel from "../interactions/FinalMissionPanel";
 import type { FinalMissionResult } from "../interactions/FinalMissionPanel";
 
 import WingMatchResult from "../result/WingMatchResult";
+import WingRevealLoading from "../result/WingRevealLoading";
+import PlayerProgressHUD from "../../progression/PlayerProgressHUD";
+import { awardMilestone } from "../../progression/progression";
 import BuildWing from "../build/BuildWing";
 import MissionVisual from "../visuals/MissionVisual";
 
@@ -813,6 +816,11 @@ function WingMatchMission({
   const [showBuild, setShowBuild] =
     useState(false);
 
+  const [
+    missionFlyby,
+    setMissionFlyby,
+  ] = useState(false);
+
   const [persistedSnapshot] =
     useState(() =>
       readMissionSnapshot(),
@@ -1192,6 +1200,7 @@ const [sceneIndex, setSceneIndex] =
     activeMissionScenes.length - 1;
 
   function resetMissionState() {
+    setMissionFlyby(false);
     setSceneIndex(0);
 
     setPreviewOption(null);
@@ -1275,6 +1284,13 @@ const [sceneIndex, setSceneIndex] =
     title: string,
     effects: TelemetryItem[],
   ) {
+    awardMilestone(
+      `aerospace:mission:${scene.id}`,
+      10,
+      {},
+      `${scene.phase} cleared`,
+    );
+
     setCommitFlash({
       title,
       effects,
@@ -1285,9 +1301,14 @@ const [sceneIndex, setSceneIndex] =
       setCommitFlash(null);
 
       if (hasNextBuiltScene) {
-        advanceMission();
+        setMissionFlyby(true);
+
+        window.setTimeout(() => {
+          advanceMission();
+          setMissionFlyby(false);
+        }, 700);
       }
-    }, 1200);
+    }, 820);
   }
 
   function showFinalResult(
@@ -1319,11 +1340,17 @@ const [sceneIndex, setSceneIndex] =
     }
 
     setPreviewOption(option);
+    handleChoiceCommit(option);
   }
 
-  function handleChoiceCommit() {
+  function handleChoiceCommit(
+    optionOverride?: MissionOption,
+  ) {
+    const choice =
+      optionOverride ??
+      previewOption;
     if (
-      !previewOption ||
+      !choice ||
       committedOption ||
       controllerScene ||
       thermalScene ||
@@ -1338,24 +1365,24 @@ const [sceneIndex, setSceneIndex] =
     const nextWingScores =
       addScores(
         wingScores,
-        previewOption.scores.wings,
+        choice.scores.wings,
       );
 
     const nextReasoningScores =
       addScores(
         reasoningScores,
-        previewOption.scores.reasoning,
+        choice.scores.reasoning,
       );
 
     const historyItem:
       MissionHistoryItem = {
         sceneId: scene.id,
         phase: scene.phase,
-        title: previewOption.title,
+        title: choice.title,
         consequence:
-          previewOption.consequence,
+          choice.consequence,
         effects:
-          previewOption.telemetryChanges,
+          choice.telemetryChanges,
       };
 
     setWingScores(
@@ -1376,20 +1403,19 @@ const [sceneIndex, setSceneIndex] =
         applyMissionDelta(
           current,
           getOptionMissionDelta(
-            previewOption,
+            choice,
           ),
         ),
     );
 
     setCommittedOption(
-      previewOption,
+      choice,
     );
 
     showDecisionFlash(
-      previewOption.title,
-      previewOption.telemetryChanges,
-    );
-  }
+      choice.title,
+      choice.telemetryChanges,
+    );  }
 
   function handleControllerLock(
     result: ControllerTuningResult,
@@ -2123,6 +2149,17 @@ const [sceneIndex, setSceneIndex] =
 
     console.groupEnd();
 
+    awardMilestone(
+      "aerospace:wingmatch:complete",
+      50,
+      {
+        systemsThinking: 1,
+        tradeoffs: 1,
+        evidenceReasoning: 1,
+      },
+      "Aerospace WingMatch complete",
+    );
+
     showFinalResult(
       title,
       effects,
@@ -2161,26 +2198,59 @@ const [sceneIndex, setSceneIndex] =
 
   if (showResult) {
     return (
-      <WingMatchResult
-        wingScores={
-          wingScores
-        }
-        reasoningScores={
-          reasoningScores
-        }
-        missionHistory={
-          missionHistory
-        }
-        onRestart={
-          resetMissionState
-        }
-              onContinue={() => setShowBuild(true)}
-/>
+      <WingRevealLoading>
+        <WingMatchResult
+          wingScores={
+            wingScores
+          }
+          reasoningScores={
+            reasoningScores
+          }
+          missionHistory={
+            missionHistory
+          }
+          onRestart={
+            resetMissionState
+          }
+          onContinue={() =>
+            setShowBuild(true)
+          }
+        />
+      </WingRevealLoading>
     );
   }
 
   return (
     <main className="wingmatch-shell">
+      <PlayerProgressHUD />
+
+      {missionFlyby && (
+        <div
+          className="mission-flyby"
+          aria-hidden="true"
+        >
+          <div className="mission-flyby__trail" />
+
+          <img
+            src="/brand/altwing-penguin.png"
+            alt=""
+            className="mission-flyby__penguin"
+          />
+
+          <div className="mission-flyby__label">
+            <span>NEXT</span>
+
+            <strong>
+              MISSION{" "}
+              {String(
+                sceneIndex + 2,
+              ).padStart(2, "0")}{" "}
+              INCOMING
+            </strong>
+          </div>
+        </div>
+      )}
+
       {commitFlash && (
         <div
           className="commit-flash"
@@ -2436,15 +2506,22 @@ const [sceneIndex, setSceneIndex] =
               />
             )}
 
-          <div className="wingmatch-phase">
-            <span>
-              {scene.phase}
-            </span>
+          {(controllerScene ||
+            thermalScene ||
+            landingScene ||
+            structureScene ||
+            faultScene ||
+            finalScene) && (
+            <div className="wingmatch-phase">
+              <span>
+                {scene.phase}
+              </span>
 
-            <h1>
-              {scene.situation}
-            </h1>
-          </div>
+              <h1>
+                {scene.situation}
+              </h1>
+            </div>
+          )}
 
           {!controllerScene &&
             !thermalScene &&
@@ -2554,7 +2631,7 @@ const [sceneIndex, setSceneIndex] =
                       ? "AVIONICS DIAGNOSTICS"
                       : finalScene
                         ? "MISSION COMMAND"
-                        : `DECISION ${String(
+                        : `${scene.phase} / ${String(
                             scene.missionNumber,
                           ).padStart(
                             2,
@@ -2753,22 +2830,9 @@ const [sceneIndex, setSceneIndex] =
             </>
           ) : (
             <>
-              <p className="decision-hint">
-                No perfect answer.
-                Choose the tradeoff you
-                would accept.
-              </p>
-
-              <div className="decision-options">
+              <div className="decision-options decision-options--console">
                 {scene.options.map(
-                  (
-                    option,
-                    index,
-                  ) => {
-                    const isSelected =
-                      previewOption?.id ===
-                      option.id;
-
+                  (option) => {
                     const isCommitted =
                       committedOption?.id ===
                       option.id;
@@ -2776,14 +2840,10 @@ const [sceneIndex, setSceneIndex] =
                     return (
                       <button
                         type="button"
-                        key={
-                          option.id
-                        }
+                        key={option.id}
                         className={[
                           "decision-option",
-                          isSelected
-                            ? "decision-option--selected"
-                            : "",
+                          "decision-option--action",
                           isCommitted
                             ? "decision-option--committed"
                             : "",
@@ -2800,19 +2860,12 @@ const [sceneIndex, setSceneIndex] =
                         )}
                       >
                         <div className="decision-option-number">
-                          {String(
-                            index + 1,
-                          ).padStart(
-                            2,
-                            "0",
-                          )}
+                          →
                         </div>
 
                         <div className="decision-option-copy">
                           <strong>
-                            {
-                              option.title
-                            }
+                            {option.title}
                           </strong>
 
                           <p>
@@ -2821,28 +2874,13 @@ const [sceneIndex, setSceneIndex] =
                             }
                           </p>
                         </div>
+
+
                       </button>
                     );
                   },
                 )}
               </div>
-
-              {!committedOption && (
-                <button
-                  type="button"
-                  className="commit-button"
-                  disabled={
-                    !previewOption
-                  }
-                  onClick={
-                    handleChoiceCommit
-                  }
-                >
-                  {previewOption
-                    ? "Commit decision"
-                    : "Select a tradeoff"}
-                </button>
-              )}
             </>
           )}
         </aside>

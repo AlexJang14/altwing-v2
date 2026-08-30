@@ -1,0 +1,285 @@
+.preflight-shell {
+  min-height: 100vh;
+
+  color: white;
+
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(91,141,239,.18),
+      transparent 35%
+    ),
+    #0d132b;
+}
+
+.preflight-nav {
+  height: 68px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 26px;
+
+  border-bottom:
+    1px solid rgba(255,255,255,.06);
+}
+
+.preflight-nav button {
+  border: 0;
+
+  color:
+    rgba(255,255,255,.55);
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.preflight-nav strong {
+  font-size: 18px;
+}
+
+.preflight-nav strong span {
+  color: #5b8def;
+}
+
+.preflight-card {
+  width:
+    min(
+      660px,
+      calc(100% - 32px)
+    );
+
+  margin: 55px auto;
+
+  text-align: center;
+}
+
+.preflight-penguin {
+  position: relative;
+
+  width: 110px;
+  height: 110px;
+
+  margin: 0 auto 18px;
+
+  display: grid;
+  place-items: center;
+}
+
+.preflight-penguin img {
+  width: 92px;
+
+  position: relative;
+  z-index: 2;
+}
+
+.preflight-penguin i {
+  position: absolute;
+
+  width: 100px;
+  height: 100px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(91,141,239,.25);
+
+  animation:
+    preflightOrbit
+    5s linear infinite;
+}
+
+.preflight-penguin i::after {
+  content: "";
+
+  position: absolute;
+
+  top: 8px;
+  left: 11px;
+
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #ffc857;
+}
+
+.preflight-kicker {
+  color: #5b8def;
+
+  font-size: 8px;
+  font-weight: 950;
+
+  letter-spacing: .2em;
+}
+
+.preflight-card h1 {
+  margin:
+    12px auto 0;
+
+  max-width: 620px;
+
+  font-size:
+    clamp(
+      34px,
+      7vw,
+      58px
+    );
+
+  line-height: 1;
+
+  letter-spacing: -.055em;
+}
+
+.preflight-card h1 strong {
+  color: #ffc857;
+}
+
+.preflight-intro {
+  max-width: 520px;
+
+  margin:
+    18px auto 0;
+
+  color:
+    rgba(255,255,255,.55);
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.preflight-facts {
+  margin-top: 28px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap: 8px;
+}
+
+.preflight-facts article {
+  padding: 15px 8px;
+
+  border-radius: 13px;
+
+  border:
+    1px solid
+    rgba(91,141,239,.12);
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+.preflight-facts b {
+  display: block;
+
+  color: #ffc857;
+
+  font-size: 9px;
+}
+
+.preflight-facts span {
+  display: block;
+
+  margin-top: 4px;
+
+  color:
+    rgba(255,255,255,.4);
+
+  font-size: 8px;
+}
+
+.preflight-rule {
+  margin-top: 12px;
+
+  padding: 16px;
+
+  border-radius: 14px;
+
+  background:
+    rgba(91,141,239,.07);
+}
+
+.preflight-rule span {
+  color: #5b8def;
+
+  font-size: 7px;
+  font-weight: 950;
+
+  letter-spacing: .15em;
+}
+
+.preflight-rule strong {
+  display: block;
+
+  margin-top: 5px;
+
+  font-size: 15px;
+}
+
+.preflight-rule p {
+  margin: 3px 0 0;
+
+  color:
+    rgba(255,255,255,.43);
+
+  font-size: 9px;
+}
+
+.preflight-start {
+  width: 100%;
+
+  margin-top: 17px;
+
+  padding: 16px;
+
+  border: 0;
+
+  border-radius: 14px;
+
+  color: #0d132b;
+
+  background: #ffc857;
+
+  font-weight: 950;
+
+  cursor: pointer;
+}
+
+.preflight-back {
+  margin-top: 10px;
+
+  border: 0;
+
+  color:
+    rgba(255,255,255,.4);
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+@keyframes preflightOrbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 580px) {
+  .preflight-facts {
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preflight-penguin i {
+    animation: none;
+  }
+}

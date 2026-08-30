@@ -2,11 +2,39 @@ import { useState } from "react";
 import "./App.css";
 import MissionPreview from "./components/MissionPreview";
 import WingMatchMission from "./features/wingmatch/engine/WingMatchMission";
+import PreFlightBriefing from "./features/wingmatch/briefing/PreFlightBriefing";
+import MyUniversePage from "./features/progression/MyUniversePage";
 
-type AppView = "home" | "wingmatch";
+type AppView = "home" | "preflight" | "wingmatch" | "universe";
 
 function App() {
   const [view, setView] = useState<AppView>("home");
+
+  if (view === "preflight") {
+    return (
+      <PreFlightBriefing
+        onBack={() =>
+          setView("home")
+        }
+        onStart={() =>
+          setView("wingmatch")
+        }
+      />
+    );
+  }
+
+  if (view === "universe") {
+    return (
+      <MyUniversePage
+        onBack={() =>
+          setView("home")
+        }
+        onStartMission={() =>
+          setView("preflight")
+        }
+      />
+    );
+  }
 
   if (view === "wingmatch") {
     return (
@@ -44,28 +72,24 @@ function App() {
               type="button"
               className="nav-text-button"
               onClick={() =>
-                setView("wingmatch")
+                setView("preflight")
               }
             >
-              WingMatch
+              Find My Wing
             </button>
 
-            <a href="#build">
-              Build
-            </a>
-
-            <a href="#college-launch">
-              College Launch
+            <a href="#journey">
+              Explore
             </a>
 
             <button
               type="button"
               className="nav-launch"
               onClick={() =>
-                setView("wingmatch")
+                setView("universe")
               }
             >
-              Explore
+              My Universe
             </button>
           </div>
         </nav>
@@ -101,17 +125,17 @@ function App() {
                 type="button"
                 className="button button-primary"
                 onClick={() =>
-                  setView("wingmatch")
+                  setView("preflight")
                 }
               >
-                Explore WingMatch
+                Find My Wing
               </button>
 
               <a
                 className="button button-secondary"
                 href="#journey"
               >
-                See how AltWing works
+                Explore Aerospace
               </a>
             </div>
 
@@ -125,12 +149,112 @@ function App() {
             type="button"
             className="mission-preview-button"
             onClick={() =>
-              setView("wingmatch")
+              setView("preflight")
             }
             aria-label="Launch Mars descent WingMatch mission"
           >
             <MissionPreview />
           </button>
+        </section>
+
+        <section className="simple-gateway">
+          <div className="simple-gateway-heading">
+            <span>
+              START HERE
+            </span>
+
+            <h2>
+              Three ways into AltWing.
+            </h2>
+
+            <p>
+              Play first, browse aerospace,
+              or open everything you&apos;ve
+              already earned.
+            </p>
+          </div>
+
+          <div className="simple-gateway-grid">
+            <button
+              type="button"
+              className="gateway-card gateway-card-main"
+              onClick={() =>
+                setView("preflight")
+              }
+            >
+              <span>🚀</span>
+
+              <div>
+                <small>
+                  RECOMMENDED
+                </small>
+
+                <strong>
+                  Find My Wing
+                </strong>
+
+                <p>
+                  Play a five-minute
+                  aerospace mission.
+                </p>
+              </div>
+
+              <b>→</b>
+            </button>
+
+            <a
+              className="gateway-card"
+              href="#journey"
+            >
+              <span>◉</span>
+
+              <div>
+                <small>
+                  FOR EVERYONE
+                </small>
+
+                <strong>
+                  Explore Aerospace
+                </strong>
+
+                <p>
+                  Careers, engineering
+                  paths, projects, and
+                  colleges.
+                </p>
+              </div>
+
+              <b>→</b>
+            </a>
+
+            <button
+              type="button"
+              className="gateway-card"
+              onClick={() =>
+                setView("universe")
+              }
+            >
+              <span>🐧</span>
+
+              <div>
+                <small>
+                  YOUR PROGRESS
+                </small>
+
+                <strong>
+                  My Universe
+                </strong>
+
+                <p>
+                  Level, impact,
+                  Cosmic Atlas, and
+                  discoveries.
+                </p>
+              </div>
+
+              <b>→</b>
+            </button>
+          </div>
         </section>
 
         <section
@@ -540,10 +664,10 @@ function App() {
                 type="button"
                 className="button button-primary"
                 onClick={() =>
-                  setView("wingmatch")
+                  setView("preflight")
                 }
               >
-                Explore WingMatch →
+                Find My Wing →
               </button>
             </div>
 
