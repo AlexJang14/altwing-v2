@@ -1,0 +1,469 @@
+
+/* =========================================================
+   ALTWING READINESS — EXACT CLASS FIX
+   Uses actual classes from ReadinessPlan.tsx.
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   1. PAGE HERO
+   --------------------------------------------------------- */
+
+.readiness-shell .readiness-hero .path-kicker {
+  color: #7fa6ff !important;
+  opacity: 1 !important;
+
+  font-size: 11px !important;
+  font-weight: 900 !important;
+
+  letter-spacing: .14em !important;
+}
+
+.readiness-shell .readiness-hero h1 {
+  color: #f7f9ff !important;
+  opacity: 1 !important;
+
+  font-size:
+    clamp(
+      42px,
+      5vw,
+      68px
+    ) !important;
+
+  line-height: 1.02 !important;
+  letter-spacing: -.04em !important;
+}
+
+.readiness-shell .readiness-hero p {
+  max-width: 950px;
+
+  color:
+    rgba(235, 240, 252, .78)
+    !important;
+
+  opacity: 1 !important;
+
+  font-size: 16px !important;
+  line-height: 1.65 !important;
+}
+
+.readiness-shell
+.readiness-hero p strong {
+  color: #ffffff !important;
+}
+
+
+/* ---------------------------------------------------------
+   2. READINESS SNAPSHOT HEADING
+   Compare context, not acceptance odds.
+   --------------------------------------------------------- */
+
+.readiness-shell
+.readiness-snapshot
+.readiness-section-heading > span {
+  color: #7fa6ff !important;
+  opacity: 1 !important;
+
+  font-size: 11px !important;
+  font-weight: 900 !important;
+
+  letter-spacing: .13em !important;
+}
+
+.readiness-shell
+.readiness-snapshot
+.readiness-section-heading h2 {
+  color: #f7f9ff !important;
+  opacity: 1 !important;
+
+  font-size:
+    clamp(
+      32px,
+      4vw,
+      48px
+    ) !important;
+
+  line-height: 1.08 !important;
+  letter-spacing: -.035em !important;
+}
+
+
+/* ---------------------------------------------------------
+   3. NEXT 3 MOVES
+   Focus beats adding more.
+   --------------------------------------------------------- */
+
+.readiness-shell
+.readiness-next-moves {
+  color: #f7f9ff !important;
+}
+
+.readiness-shell
+.readiness-next-moves > span {
+  color: #7fa6ff !important;
+  opacity: 1 !important;
+
+  font-size: 11px !important;
+  font-weight: 900 !important;
+
+  letter-spacing: .14em !important;
+}
+
+.readiness-shell
+.readiness-next-moves > h2 {
+  color: #f7f9ff !important;
+  opacity: 1 !important;
+
+  font-size:
+    clamp(
+      34px,
+      4vw,
+      52px
+    ) !important;
+
+  line-height: 1.06 !important;
+  letter-spacing: -.04em !important;
+}
+
+
+/*
+ * The three move cards are LIGHT cards.
+ */
+
+.readiness-shell
+.readiness-next-moves > div > article {
+  background: #f7f8fc !important;
+
+  color: #111a34 !important;
+}
+
+.readiness-shell
+.readiness-next-moves > div > article > span {
+  color: #10182f !important;
+
+  font-size: 11px !important;
+  font-weight: 900 !important;
+}
+
+.readiness-shell
+.readiness-next-moves > div > article > p {
+  color: #5a6479 !important;
+  opacity: 1 !important;
+
+  font-size: 15px !important;
+  font-weight: 500 !important;
+
+  line-height: 1.62 !important;
+}
+
+
+/* ---------------------------------------------------------
+   4. 90-DAY PLAN
+   Do fewer things that move more schools.
+   --------------------------------------------------------- */
+
+.readiness-shell
+.readiness-ninety-day {
+  color: #f7f9ff !important;
+}
+
+.readiness-shell
+.readiness-ninety-heading > div > span {
+  color: #ffc857 !important;
+  opacity: 1 !important;
+
+  font-size: 11px !important;
+  font-weight: 900 !important;
+
+  letter-spacing: .14em !important;
+}
+
+.readiness-shell
+.readiness-ninety-heading h2 {
+  max-width: 760px;
+
+  color: #f7f9ff !important;
+  opacity: 1 !important;
+
+  font-size:
+    clamp(
+      34px,
+      4vw,
+      52px
+    ) !important;
+
+  line-height: 1.06 !important;
+  letter-spacing: -.04em !important;
+}
+
+.readiness-shell
+.readiness-ninety-heading p {
+  max-width: 720px;
+
+  color:
+    rgba(235, 240, 252, .74)
+    !important;
+
+  opacity: 1 !important;
+
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+}
+
+.readiness-shell
+.readiness-ninety-heading > strong {
+  color: #ffc857 !important;
+  opacity: 1 !important;
+
+  font-size: 14px !important;
+}
+
+
+/* ---------------------------------------------------------
+   5. INDIVIDUAL 90-DAY ACTIONS
+   --------------------------------------------------------- */
+
+.readiness-shell
+.readiness-ninety-list > article {
+  border-color:
+    rgba(126, 166, 255, .16)
+    !important;
+
+  background:
+    rgba(255, 255, 255, .025)
+    !important;
+}
+
+.readiness-shell
+.readiness-ninety-number {
+  color: #ffc857 !important;
+  opacity: 1 !important;
+
+  font-size: 24px !important;
+  font-weight: 900 !important;
+}
+
+.readiness-shell
+.readiness-ninety-meta span {
+  color: #7fa6ff !important;
+  opacity: 1 !important;
+
+  font-size: 10px !important;
+  font-weight: 900 !important;
+
+  letter-spacing: .1em !important;
+}
+
+.readiness-shell
+.readiness-ninety-meta b {
+  color: #ffc857 !important;
+  opacity: 1 !important;
+
+  font-size: 10px !important;
+  font-weight: 900 !important;
+
+  letter-spacing: .08em !important;
+}
+
+.readiness-shell
+.readiness-ninety-content h3 {
+  color: #f7f9ff !important;
+  opacity: 1 !important;
+
+  font-size: 23px !important;
+  line-height: 1.28 !important;
+}
+
+.readiness-shell
+.readiness-ninety-content > p {
+  color:
+    rgba(235, 240, 252, .75)
+    !important;
+
+  opacity: 1 !important;
+
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+}
+
+.readiness-shell
+.readiness-ninety-schools {
+  color:
+    rgba(235, 240, 252, .62)
+    !important;
+}
+
+.readiness-shell
+.readiness-ninety-schools span,
+.readiness-shell
+.readiness-ninety-schools small,
+.readiness-shell
+.readiness-ninety-schools b {
+  color:
+    rgba(235, 240, 252, .72)
+    !important;
+
+  opacity: 1 !important;
+
+  font-size: 11px !important;
+}
+
+
+/* ---------------------------------------------------------
+   6. STRENGTH CARDS
+   Course rigor / engineering / leadership
+   --------------------------------------------------------- */
+
+.readiness-shell
+.readiness-strength-grid article > span {
+  color: #7fa6ff !important;
+  opacity: 1 !important;
+
+  font-size: 10px !important;
+  font-weight: 900 !important;
+
+  letter-spacing: .11em !important;
+}
+
+.readiness-shell
+.readiness-strength-grid article > strong {
+  color: #f7f9ff !important;
+  opacity: 1 !important;
+
+  font-size: 16px !important;
+}
+
+
+/* ---------------------------------------------------------
+   7. READINESS RULE AT BOTTOM
+   --------------------------------------------------------- */
+
+.readiness-shell
+.readiness-rule {
+  color: #f7f9ff !important;
+}
+
+.readiness-shell
+.readiness-rule > span {
+  color: #7fa6ff !important;
+  opacity: 1 !important;
+
+  font-size: 11px !important;
+  font-weight: 900 !important;
+
+  letter-spacing: .13em !important;
+}
+
+.readiness-shell
+.readiness-rule h2 {
+  color: #f7f9ff !important;
+  opacity: 1 !important;
+
+  font-size:
+    clamp(
+      30px,
+      3.4vw,
+      44px
+    ) !important;
+
+  line-height: 1.12 !important;
+  letter-spacing: -.03em !important;
+}
+
+.readiness-shell
+.readiness-rule p {
+  max-width: 1000px;
+
+  color:
+    rgba(235, 240, 252, .74)
+    !important;
+
+  opacity: 1 !important;
+
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+}
+
+.readiness-shell
+.readiness-rule small {
+  color:
+    rgba(235, 240, 252, .55)
+    !important;
+
+  opacity: 1 !important;
+
+  font-size: 11px !important;
+}
+
+
+/* ---------------------------------------------------------
+   8. WHITE READINESS CARDS
+   Explicitly protect these from dark text conflicts.
+   --------------------------------------------------------- */
+
+.readiness-shell
+.readiness-shortlist,
+.readiness-shell
+.readiness-score-card,
+.readiness-shell
+.readiness-policy-card,
+.readiness-shell
+.readiness-gpa-card {
+  color: #111a34;
+}
+
+.readiness-shell
+.readiness-shortlist h2,
+.readiness-shell
+.readiness-shortlist h3,
+.readiness-shell
+.readiness-score-card h2,
+.readiness-shell
+.readiness-score-card h3,
+.readiness-shell
+.readiness-policy-card h3,
+.readiness-shell
+.readiness-gpa-card h3 {
+  color: #111a34 !important;
+}
+
+.readiness-shell
+.readiness-shortlist p,
+.readiness-shell
+.readiness-score-card p,
+.readiness-shell
+.readiness-policy-card p,
+.readiness-shell
+.readiness-gpa-card p {
+  color: #606a7d !important;
+  opacity: 1 !important;
+
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 720px) {
+
+  .readiness-shell
+  .readiness-next-moves > h2,
+  .readiness-shell
+  .readiness-ninety-heading h2 {
+    font-size: 32px !important;
+  }
+
+  .readiness-shell
+  .readiness-next-moves
+  > div
+  > article
+  > p,
+  .readiness-shell
+  .readiness-ninety-content
+  > p {
+    font-size: 14px !important;
+  }
+}

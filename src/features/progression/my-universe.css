@@ -920,3 +920,56 @@ article.complete em {
   }
 }
 
+
+
+
+/* =========================================================
+   MY UNIVERSE — READABILITY PASS
+   ========================================================= */
+
+.my-universe-panel p {
+  color:
+    rgba(255,255,255,.62)
+    !important;
+
+  font-size:
+    10px !important;
+
+  line-height:
+    1.55 !important;
+}
+
+
+.universe-section-heading small,
+.universe-score-breakdown span,
+.universe-leadership-path span,
+.universe-profile-snapshot span,
+.universe-global-board span,
+.universe-impact-hero span {
+  font-size:
+    7px !important;
+}
+
+
+.universe-leadership-path strong,
+.universe-profile-snapshot p,
+.universe-global-board p,
+.universe-impact-hero p {
+  color:
+    rgba(255,255,255,.58)
+    !important;
+
+  font-size:
+    9px !important;
+
+  line-height:
+    1.5 !important;
+}
+
+
+.universe-score-breakdown span {
+  color:
+    rgba(255,255,255,.48)
+    !important;
+}
+

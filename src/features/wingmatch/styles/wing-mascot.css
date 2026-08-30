@@ -1,0 +1,580 @@
+/* =========================================================
+   ALTWING WING MASCOTS
+   Existing penguin PNG + CSS equipment only.
+   ========================================================= */
+
+.wing-mascot {
+  --mascot-blue:
+    #5b8def;
+
+  --mascot-yellow:
+    #ffc857;
+
+  --mascot-coral:
+    #ff6b6b;
+
+  position: relative;
+
+  display: grid;
+  place-items: center;
+
+  width: 190px;
+
+  aspect-ratio: 1;
+
+  isolation: isolate;
+}
+
+
+.wing-mascot--hero {
+  width: 215px;
+}
+
+
+.wing-mascot--home {
+  width: 175px;
+}
+
+
+.wing-mascot--card {
+  width: 120px;
+}
+
+
+.wing-mascot img {
+  position: relative;
+
+  z-index: 8;
+
+  width: 62%;
+
+  height: auto;
+
+  object-fit: contain;
+
+  filter:
+    drop-shadow(
+      0 18px 22px
+      rgba(0,0,0,.32)
+    );
+}
+
+
+.wing-mascot__aura {
+  position: absolute;
+
+  z-index: 0;
+
+  width: 76%;
+  height: 76%;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(91,141,239,.22),
+      rgba(91,141,239,.06) 43%,
+      transparent 69%
+    );
+}
+
+
+/* hidden accessories */
+
+.wing-mascot__orbit,
+.wing-mascot__booster,
+.wing-mascot__antenna,
+.wing-mascot__signal,
+.wing-mascot__frame,
+.wing-mascot__shield,
+.wing-mascot__mission-ring,
+.wing-mascot__mission-star {
+  display: none;
+}
+
+
+/* =========================================================
+   PROPULSION / HOME LAUNCH
+   ========================================================= */
+
+.wing-mascot--propulsion
+.wing-mascot__booster,
+.wing-mascot--launch
+.wing-mascot__booster {
+  position: absolute;
+
+  z-index: 5;
+
+  bottom: 20%;
+
+  display: block;
+
+  width: 19px;
+  height: 49px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.36);
+
+  border-radius:
+    7px 7px 12px 12px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #b9c6df,
+      #526485
+    );
+
+  box-shadow:
+    0 0 18px
+    rgba(91,141,239,.2);
+}
+
+
+.wing-mascot__booster--left {
+  left: 23%;
+
+  transform:
+    rotate(12deg);
+}
+
+
+.wing-mascot__booster--right {
+  right: 23%;
+
+  transform:
+    rotate(-12deg);
+}
+
+
+.wing-mascot--propulsion
+.wing-mascot__booster i,
+.wing-mascot--launch
+.wing-mascot__booster i {
+  position: absolute;
+
+  left: 3px;
+  top: 41px;
+
+  display: block;
+
+  width: 12px;
+  height: 45px;
+
+  clip-path:
+    polygon(
+      50% 100%,
+      0 0,
+      100% 0
+    );
+
+  background:
+    linear-gradient(
+      180deg,
+      #fff4b5,
+      #ffc857 28%,
+      #ff6b6b 66%,
+      transparent
+    );
+
+  filter:
+    drop-shadow(
+      0 0 10px
+      rgba(255,107,107,.65)
+    );
+
+  animation:
+    mascotBooster
+    .5s ease-in-out
+    infinite alternate;
+}
+
+
+.wing-mascot--propulsion
+.wing-mascot__aura,
+.wing-mascot--launch
+.wing-mascot__aura {
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,200,87,.25),
+      rgba(255,107,107,.08) 48%,
+      transparent 70%
+    );
+}
+
+
+/* =========================================================
+   GNC
+   ========================================================= */
+
+.wing-mascot--gnc
+.wing-mascot__orbit {
+  position: absolute;
+
+  z-index: 2;
+
+  display: block;
+
+  border:
+    1px solid
+    rgba(91,141,239,.54);
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 16px
+    rgba(91,141,239,.13);
+}
+
+
+.wing-mascot--gnc
+.wing-mascot__orbit--one {
+  width: 88%;
+  height: 40%;
+
+  transform:
+    rotate(-13deg);
+}
+
+
+.wing-mascot--gnc
+.wing-mascot__orbit--two {
+  width: 58%;
+  height: 88%;
+
+  transform:
+    rotate(28deg);
+}
+
+
+.wing-mascot--gnc
+.wing-mascot__orbit--one::after {
+  content: "";
+
+  position: absolute;
+
+  top: 1px;
+  left: 18%;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background:
+    #ffc857;
+
+  box-shadow:
+    0 0 12px
+    rgba(255,200,87,.8);
+}
+
+
+/* =========================================================
+   AVIONICS
+   ========================================================= */
+
+.wing-mascot--avionics
+.wing-mascot__antenna {
+  position: absolute;
+
+  z-index: 9;
+
+  top: 16%;
+  right: 30%;
+
+  display: block;
+
+  width: 3px;
+  height: 39px;
+
+  transform:
+    rotate(16deg);
+
+  background:
+    #9ebaff;
+}
+
+
+.wing-mascot--avionics
+.wing-mascot__antenna i {
+  position: absolute;
+
+  top: -6px;
+  left: -4px;
+
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+
+  background:
+    #ffc857;
+
+  box-shadow:
+    0 0 14px
+    rgba(255,200,87,.8);
+}
+
+
+.wing-mascot--avionics
+.wing-mascot__signal {
+  position: absolute;
+
+  z-index: 3;
+
+  top: 8%;
+
+  right: 18%;
+
+  display: block;
+
+  border:
+    2px solid
+    rgba(91,141,239,.44);
+
+  border-left-color:
+    transparent;
+
+  border-bottom-color:
+    transparent;
+
+  border-radius: 50%;
+}
+
+
+.wing-mascot--avionics
+.signal-one {
+  width: 38px;
+  height: 38px;
+}
+
+
+.wing-mascot--avionics
+.signal-two {
+  width: 57px;
+  height: 57px;
+
+  right: 12%;
+  top: 2%;
+}
+
+
+/* =========================================================
+   STRUCTURES
+   ========================================================= */
+
+.wing-mascot--structures
+.wing-mascot__frame {
+  position: absolute;
+
+  z-index: 6;
+
+  display: block;
+
+  background:
+    linear-gradient(
+      90deg,
+      #8fa4c9,
+      #e8efff,
+      #7388ae
+    );
+
+  box-shadow:
+    0 0 8px
+    rgba(255,255,255,.15);
+}
+
+
+.wing-mascot--structures
+.frame-left,
+.wing-mascot--structures
+.frame-right {
+  width: 7px;
+  height: 78px;
+
+  top: 35%;
+
+  border-radius: 999px;
+}
+
+
+.wing-mascot--structures
+.frame-left {
+  left: 25%;
+
+  transform:
+    rotate(22deg);
+}
+
+
+.wing-mascot--structures
+.frame-right {
+  right: 25%;
+
+  transform:
+    rotate(-22deg);
+}
+
+
+.wing-mascot--structures
+.frame-top {
+  top: 34%;
+  left: 28%;
+
+  width: 44%;
+  height: 6px;
+
+  border-radius: 999px;
+}
+
+
+/* =========================================================
+   THERMAL
+   ========================================================= */
+
+.wing-mascot--thermal
+.wing-mascot__shield {
+  position: absolute;
+
+  z-index: 4;
+
+  bottom: 14%;
+
+  display: block;
+
+  width: 73%;
+  height: 39%;
+
+  border:
+    2px solid
+    rgba(255,200,87,.42);
+
+  border-radius:
+    50% 50% 45% 45%;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 100%,
+      rgba(255,107,107,.45),
+      rgba(255,200,87,.16) 43%,
+      transparent 72%
+    );
+
+  box-shadow:
+    0 14px 34px
+    rgba(255,107,107,.17);
+}
+
+
+/* =========================================================
+   MISSION DESIGN
+   ========================================================= */
+
+.wing-mascot--mission-design
+.wing-mascot__mission-ring {
+  position: absolute;
+
+  z-index: 3;
+
+  display: block;
+
+  width: 91%;
+  height: 58%;
+
+  border:
+    1px dashed
+    rgba(199,133,255,.54);
+
+  border-radius: 50%;
+
+  transform:
+    rotate(-17deg);
+}
+
+
+.wing-mascot--mission-design
+.wing-mascot__mission-star {
+  position: absolute;
+
+  z-index: 4;
+
+  top: 13%;
+  right: 14%;
+
+  display: block;
+
+  color:
+    #ffc857;
+
+  font-size: 25px;
+
+  text-shadow:
+    0 0 18px
+    rgba(255,200,87,.75);
+}
+
+
+/* subtle distinction for all */
+
+.wing-mascot--structures
+.wing-mascot__aura {
+  background:
+    radial-gradient(
+      circle,
+      rgba(165,186,225,.18),
+      transparent 68%
+    );
+}
+
+
+.wing-mascot--thermal
+.wing-mascot__aura {
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,107,107,.19),
+      transparent 68%
+    );
+}
+
+
+.wing-mascot--mission-design
+.wing-mascot__aura {
+  background:
+    radial-gradient(
+      circle,
+      rgba(199,133,255,.18),
+      transparent 68%
+    );
+}
+
+
+@keyframes mascotBooster {
+  from {
+    transform:
+      scaleY(.8);
+
+    opacity: .72;
+  }
+
+  to {
+    transform:
+      scaleY(1.12);
+
+    opacity: 1;
+  }
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .wing-mascot__booster i {
+    animation: none !important;
+  }
+}

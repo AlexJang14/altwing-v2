@@ -1,0 +1,1058 @@
+/* =========================================================
+   ALTWING — SIMPLE VISUAL WINGMATCH
+   ========================================================= */
+
+.wm-simple-visual {
+  position: relative;
+
+  min-height: 370px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(91,141,239,.18);
+
+  border-radius: 26px;
+
+  background:
+    radial-gradient(
+      circle at 50% 110%,
+      rgba(91,141,239,.18),
+      transparent 45%
+    ),
+    linear-gradient(
+      180deg,
+      #0b1431,
+      #070b1c
+    );
+
+  box-shadow:
+    0 28px 80px
+    rgba(0,0,0,.25);
+}
+
+
+.wm-simple-stars {
+  position: absolute;
+
+  inset: 0;
+
+  opacity: .45;
+
+  background-image:
+    radial-gradient(
+      white .7px,
+      transparent .8px
+    );
+
+  background-size:
+    34px 34px;
+}
+
+
+.wm-simple-label {
+  position: absolute;
+
+  z-index: 4;
+
+  top: 18px;
+  left: 20px;
+
+  display: grid;
+
+  gap: 3px;
+}
+
+
+.wm-simple-label span {
+  color: #5b8def;
+
+  font-size: 7px;
+  font-weight: 950;
+
+  letter-spacing: .17em;
+}
+
+
+.wm-simple-label strong {
+  color:
+    rgba(255,255,255,.6);
+
+  font-size: 9px;
+
+  letter-spacing: .07em;
+}
+
+
+.wm-scene-art {
+  position: absolute;
+
+  inset:
+    52px 0 42px;
+
+  overflow: hidden;
+}
+
+
+.wm-simple-bottom {
+  position: absolute;
+
+  z-index: 5;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  min-height: 42px;
+
+  padding:
+    0 18px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.05);
+
+  background:
+    rgba(5,8,22,.65);
+}
+
+
+.wm-simple-bottom span {
+  color: #ffc857;
+
+  font-size: 6px;
+  font-weight: 950;
+
+  letter-spacing: .13em;
+}
+
+
+.wm-simple-bottom strong {
+  color:
+    rgba(255,255,255,.28);
+
+  font-size: 6px;
+}
+
+
+/* LANDING */
+
+.wm-planet {
+  position: absolute;
+
+  width: 620px;
+  height: 260px;
+
+  left: 50%;
+  bottom: -160px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 38% 25%,
+      #e0835e,
+      #9f493b 45%,
+      #4b242c 80%
+    );
+
+  box-shadow:
+    0 -15px 65px
+    rgba(255,107,107,.18);
+}
+
+
+.wm-lander {
+  position: absolute;
+
+  left: 50%;
+  top: 55px;
+
+  width: 48px;
+  height: 72px;
+
+  transform:
+    translateX(-50%);
+
+  animation:
+    simpleLanderFloat
+    2.5s ease-in-out
+    infinite;
+}
+
+
+.wm-lander::before {
+  content: "";
+
+  position: absolute;
+
+  left: 13px;
+
+  width: 22px;
+  height: 42px;
+
+  border-radius:
+    50% 50% 8px 8px;
+
+  background:
+    linear-gradient(
+      #eaf1ff,
+      #7283ad
+    );
+}
+
+
+.wm-lander::after {
+  content: "";
+
+  position: absolute;
+
+  left: 4px;
+  top: 30px;
+
+  width: 40px;
+  height: 20px;
+
+  clip-path:
+    polygon(
+      50% 0,
+      100% 100%,
+      0 100%
+    );
+
+  background: #5b8def;
+}
+
+
+.wm-lander i {
+  position: absolute;
+
+  left: 17px;
+  top: 41px;
+
+  width: 14px;
+  height: 30px;
+
+  background:
+    linear-gradient(
+      #ffc857,
+      #ff6b6b,
+      transparent
+    );
+
+  clip-path:
+    polygon(
+      50% 100%,
+      0 0,
+      100% 0
+    );
+}
+
+
+.wm-landing-zones {
+  position: absolute;
+
+  left: 50%;
+  bottom: 35px;
+
+  width: 300px;
+
+  transform:
+    translateX(-50%);
+
+  display: flex;
+
+  justify-content:
+    space-between;
+}
+
+
+.wm-landing-zones span {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid
+    rgba(255,255,255,.3);
+
+  border-radius: 50%;
+
+  color: white;
+
+  background:
+    rgba(10,15,38,.6);
+
+  box-shadow:
+    0 0 20px
+    rgba(91,141,239,.12);
+}
+
+
+/* SENSOR */
+
+.wm-rover {
+  position: absolute;
+
+  left: 50%;
+  bottom: 42px;
+
+  width: 82px;
+  height: 46px;
+
+  transform:
+    translateX(-50%);
+}
+
+
+.wm-rover::before {
+  content: "";
+
+  position: absolute;
+
+  left: 10px;
+  top: 6px;
+
+  width: 62px;
+  height: 28px;
+
+  border-radius: 9px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #dbe8ff,
+      #627aa7
+    );
+}
+
+
+.wm-rover::after {
+  content: "";
+
+  position: absolute;
+
+  left: 3px;
+  bottom: 0;
+
+  width: 76px;
+  height: 12px;
+
+  background:
+    radial-gradient(
+      circle,
+      #27334e 0 45%,
+      transparent 48%
+    );
+
+  background-size:
+    26px 12px;
+}
+
+
+.wm-rover i {
+  position: absolute;
+
+  z-index: 2;
+
+  width: 13px;
+  height: 13px;
+
+  left: 34px;
+  top: -5px;
+
+  border-radius: 50%;
+
+  background: #5b8def;
+
+  box-shadow:
+    0 0 12px
+    rgba(91,141,239,.65);
+}
+
+
+.wm-signal {
+  position: absolute;
+
+  top: 70px;
+
+  min-width: 100px;
+
+  padding: 11px 13px;
+
+  border-radius: 14px;
+
+  font-size: 24px;
+  font-weight: 900;
+
+  text-align: center;
+
+  background:
+    rgba(7,13,35,.8);
+}
+
+
+.wm-signal small {
+  margin-left: 3px;
+
+  font-size: 8px;
+}
+
+
+.wm-signal-a {
+  left: 15%;
+
+  color: #58dfd3;
+
+  border:
+    1px solid
+    rgba(88,223,211,.3);
+}
+
+
+.wm-signal-b {
+  right: 15%;
+
+  color: #ae91ff;
+
+  border:
+    1px solid
+    rgba(174,145,255,.3);
+}
+
+
+.wm-sensor-wave {
+  position: absolute;
+
+  width: 190px;
+  height: 70px;
+
+  left: 50%;
+  bottom: 62px;
+
+  transform:
+    translateX(-50%);
+
+  border:
+    1px solid
+    rgba(91,141,239,.25);
+
+  border-radius: 50%;
+
+  animation:
+    sensorPulse
+    1.6s ease-out
+    infinite;
+}
+
+
+/* CONTROL */
+
+.wm-control-target {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 160px;
+  height: 160px;
+
+  transform:
+    translate(-50%,-50%);
+
+  border:
+    1px dashed
+    rgba(91,141,239,.27);
+
+  border-radius: 50%;
+}
+
+
+.wm-control-target::before,
+.wm-control-target::after {
+  content: "";
+
+  position: absolute;
+
+  background:
+    rgba(91,141,239,.2);
+}
+
+
+.wm-control-target::before {
+  width: 1px;
+  height: 190px;
+
+  left: 50%;
+  top: -15px;
+}
+
+
+.wm-control-target::after {
+  width: 190px;
+  height: 1px;
+
+  left: -15px;
+  top: 50%;
+}
+
+
+.wm-control-lander {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 58px;
+  height: 72px;
+
+  transform:
+    translate(-50%,-50%)
+    rotate(12deg);
+
+  animation:
+    unstableTilt
+    1.3s ease-in-out
+    infinite alternate;
+}
+
+
+.wm-control-lander::before {
+  content: "";
+
+  position: absolute;
+
+  left: 15px;
+
+  width: 28px;
+  height: 48px;
+
+  border-radius:
+    50% 50% 8px 8px;
+
+  background:
+    linear-gradient(
+      #eef3ff,
+      #687ca6
+    );
+}
+
+
+.wm-control-lander::after {
+  content: "";
+
+  position: absolute;
+
+  top: 30px;
+
+  width: 58px;
+  height: 23px;
+
+  background: #5b8def;
+
+  clip-path:
+    polygon(
+      50% 0,
+      100% 100%,
+      0 100%
+    );
+}
+
+
+.wm-control-wave {
+  position: absolute;
+
+  left: 12%;
+  right: 12%;
+  bottom: 30px;
+
+  height: 42px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,107,107,.3),
+      transparent
+    );
+
+  clip-path:
+    polygon(
+      0 50%,
+      8% 20%,
+      16% 80%,
+      24% 15%,
+      32% 85%,
+      40% 25%,
+      48% 70%,
+      56% 35%,
+      64% 65%,
+      72% 42%,
+      80% 58%,
+      88% 46%,
+      100% 50%,
+      100% 55%,
+      0 55%
+    );
+}
+
+
+/* HEAT */
+
+.wm-spacecraft {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 170px;
+  height: 85px;
+
+  transform:
+    translate(-50%,-50%);
+}
+
+
+.wm-spacecraft-core {
+  position: absolute;
+
+  left: 55px;
+
+  width: 60px;
+  height: 85px;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      #e8efff,
+      #61769d
+    );
+}
+
+
+.wm-spacecraft-left,
+.wm-spacecraft-right {
+  position: absolute;
+
+  top: 25px;
+
+  width: 52px;
+  height: 35px;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #304f88 0 8px,
+      #5686d4 8px 10px
+    );
+}
+
+
+.wm-spacecraft-left {
+  left: 0;
+}
+
+
+.wm-spacecraft-right {
+  right: 0;
+}
+
+
+.wm-heat-ring {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 220px;
+  height: 220px;
+
+  transform:
+    translate(-50%,-50%);
+
+  border:
+    12px solid
+    rgba(255,107,107,.08);
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 55px
+    rgba(255,107,107,.22);
+
+  animation:
+    heatPulse
+    1.3s ease-in-out
+    infinite;
+}
+
+
+.wm-temperature {
+  position: absolute;
+
+  top: 45px;
+  right: 18%;
+
+  color: #ff8679;
+
+  font-size: 11px;
+  font-weight: 950;
+
+  letter-spacing: .16em;
+}
+
+
+/* STRUCTURE */
+
+.wm-leg {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 130px;
+  height: 170px;
+
+  transform:
+    translate(-50%,-45%);
+}
+
+
+.wm-leg i {
+  position: absolute;
+
+  left: 55px;
+  top: 10px;
+
+  width: 20px;
+  height: 125px;
+
+  transform:
+    rotate(12deg);
+
+  border-radius: 10px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #6f83a7,
+      #edf2ff,
+      #7283a3
+    );
+}
+
+
+.wm-leg b {
+  position: absolute;
+
+  left: 28px;
+  bottom: 16px;
+
+  width: 82px;
+  height: 18px;
+
+  border-radius: 50%;
+
+  background:
+    #7586a4;
+}
+
+
+.wm-leg span {
+  position: absolute;
+
+  left: 47px;
+  top: 44px;
+
+  width: 37px;
+  height: 37px;
+
+  border:
+    2px solid
+    #ff746e;
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 20px
+    rgba(255,116,110,.4);
+}
+
+
+.wm-force-arrow {
+  position: absolute;
+
+  left: calc(
+    50% + 70px
+  );
+
+  top: 35px;
+
+  color: #ffc857;
+
+  font-size: 48px;
+
+  animation:
+    forceBounce
+    1s ease-in-out
+    infinite;
+}
+
+
+.wm-ground {
+  position: absolute;
+
+  left: 10%;
+  right: 10%;
+  bottom: 25px;
+
+  height: 2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.2),
+      transparent
+    );
+}
+
+
+/* POWER */
+
+.wm-rover-final {
+  bottom: 55px;
+}
+
+
+.wm-power-battery {
+  position: absolute;
+
+  left: 15%;
+  top: 65px;
+
+  width: 95px;
+  height: 52px;
+
+  padding: 5px;
+
+  border:
+    2px solid
+    rgba(255,255,255,.4);
+
+  border-radius: 9px;
+}
+
+
+.wm-power-battery::after {
+  content: "";
+
+  position: absolute;
+
+  right: -8px;
+  top: 15px;
+
+  width: 6px;
+  height: 18px;
+
+  border-radius:
+    0 3px 3px 0;
+
+  background:
+    rgba(255,255,255,.4);
+}
+
+
+.wm-power-battery i {
+  display: block;
+
+  width: 20%;
+  height: 100%;
+
+  border-radius: 4px;
+
+  background:
+    #ff6b6b;
+}
+
+
+.wm-power-battery span {
+  position: absolute;
+
+  inset: 0;
+
+  display: grid;
+
+  place-items: center;
+
+  color: white;
+
+  font-size: 13px;
+  font-weight: 900;
+}
+
+
+.wm-earth-signal,
+.wm-science-target {
+  position: absolute;
+
+  top: 65px;
+
+  width: 65px;
+  height: 65px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 50%;
+
+  font-size: 24px;
+}
+
+
+.wm-earth-signal {
+  right: 18%;
+
+  color: #5b8def;
+
+  border:
+    1px solid
+    rgba(91,141,239,.3);
+
+  box-shadow:
+    0 0 24px
+    rgba(91,141,239,.18);
+}
+
+
+.wm-science-target {
+  right: 36%;
+
+  color: #ffc857;
+
+  border:
+    1px solid
+    rgba(255,200,87,.25);
+}
+
+
+/* animations */
+
+@keyframes simpleLanderFloat {
+  50% {
+    transform:
+      translateX(-50%)
+      translateY(-5px);
+  }
+}
+
+
+@keyframes sensorPulse {
+  from {
+    opacity: .7;
+
+    transform:
+      translateX(-50%)
+      scale(.3);
+  }
+
+  to {
+    opacity: 0;
+
+    transform:
+      translateX(-50%)
+      scale(2);
+  }
+}
+
+
+@keyframes unstableTilt {
+  from {
+    transform:
+      translate(-50%,-50%)
+      rotate(-14deg);
+  }
+
+  to {
+    transform:
+      translate(-50%,-50%)
+      rotate(14deg);
+  }
+}
+
+
+@keyframes heatPulse {
+  50% {
+    opacity: .45;
+
+    transform:
+      translate(-50%,-50%)
+      scale(1.08);
+  }
+}
+
+
+@keyframes forceBounce {
+  50% {
+    transform:
+      translateY(8px);
+  }
+}
+
+
+@media (
+  max-width: 650px
+) {
+  .wm-simple-visual {
+    min-height: 300px;
+  }
+
+  .wm-scene-art {
+    inset:
+      50px 0 42px;
+  }
+
+  .wm-signal {
+    min-width: 82px;
+
+    font-size: 18px;
+  }
+
+  .wm-signal-a {
+    left: 7%;
+  }
+
+  .wm-signal-b {
+    right: 7%;
+  }
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .wm-lander,
+  .wm-sensor-wave,
+  .wm-control-lander,
+  .wm-heat-ring,
+  .wm-force-arrow {
+    animation: none;
+  }
+}

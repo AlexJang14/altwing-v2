@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./build-wing.css";
+import "./project-evidence.css";
 import ProjectPortfolio from "./ProjectPortfolio";
 
 interface BuildWingProps {
@@ -36,6 +37,100 @@ interface BuildPlan {
 
 type EvidenceRecord = Record<string, string>;
 type EvidenceStore = Record<string, EvidenceRecord>;
+
+
+interface ProjectMeta {
+  contribution: string;
+  collaborators: string;
+  aiUse: string;
+  projectLink: string;
+  reflection: string;
+}
+
+
+interface VersionEntry {
+  id: string;
+  stepId: string;
+  title: string;
+  savedAt: string;
+}
+
+
+const EMPTY_PROJECT_META:
+  ProjectMeta = {
+
+  contribution: "",
+  collaborators: "",
+  aiUse: "",
+  projectLink: "",
+  reflection: "",
+};
+
+
+function readProjectMeta(
+  wingId: string,
+):
+  ProjectMeta {
+
+  try {
+    const raw =
+      localStorage.getItem(
+        `altwing-project-meta-v1-${wingId}`,
+      );
+
+    if (!raw) {
+      return {
+        ...EMPTY_PROJECT_META,
+      };
+    }
+
+    const parsed =
+      JSON.parse(
+        raw,
+      );
+
+    return {
+      ...EMPTY_PROJECT_META,
+      ...parsed,
+    };
+  } catch {
+    return {
+      ...EMPTY_PROJECT_META,
+    };
+  }
+}
+
+
+function readVersionHistory(
+  wingId: string,
+):
+  VersionEntry[] {
+
+  try {
+    const raw =
+      localStorage.getItem(
+        `altwing-project-versions-v1-${wingId}`,
+      );
+
+    if (!raw) {
+      return [];
+    }
+
+    const parsed =
+      JSON.parse(
+        raw,
+      );
+
+    return Array.isArray(
+      parsed,
+    )
+      ? parsed
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 
 function field(
   key: string,
@@ -2034,6 +2129,48 @@ function BuildWing({
   const storageKey =
     `altwing-evidence-v1-${effectiveWingId}`;
 
+
+  const projectMetaStorageKey =
+    `altwing-project-meta-v1-${effectiveWingId}`;
+
+
+  const versionStorageKey =
+    `altwing-project-versions-v1-${effectiveWingId}`;
+
+
+  const [
+    projectMeta,
+    setProjectMeta,
+  ] =
+    useState<ProjectMeta>(
+      () =>
+        readProjectMeta(
+          effectiveWingId,
+        ),
+    );
+
+
+  const [
+    versionHistory,
+    setVersionHistory,
+  ] =
+    useState<
+      VersionEntry[]
+    >(
+      () =>
+        readVersionHistory(
+          effectiveWingId,
+        ),
+    );
+
+
+  const [
+    contextSaved,
+    setContextSaved,
+  ] =
+    useState(false);
+
+
   const [evidence, setEvidence] =
     useState<EvidenceStore>(() => {
       try {
@@ -2139,6 +2276,103 @@ function BuildWing({
     }));
   }
 
+  function updateProjectMeta(
+    key:
+      keyof ProjectMeta,
+
+    value:
+      string,
+  ) {
+
+    setProjectMeta(
+      (
+        current,
+      ) => ({
+        ...current,
+        [key]:
+          value,
+      }),
+    );
+
+    setContextSaved(
+      false,
+    );
+  }
+
+
+  function recordVersion(
+    title: string,
+    stepId: string,
+  ) {
+
+    const entry:
+      VersionEntry = {
+
+      id:
+        `${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 8)}`,
+
+      stepId,
+
+      title,
+
+      savedAt:
+        new Date()
+          .toISOString(),
+    };
+
+
+    setVersionHistory(
+      (
+        current,
+      ) => {
+
+        const next = [
+          entry,
+          ...current,
+        ].slice(
+          0,
+          30,
+        );
+
+
+        localStorage.setItem(
+          versionStorageKey,
+          JSON.stringify(
+            next,
+          ),
+        );
+
+
+        return next;
+      },
+    );
+  }
+
+
+  function saveProjectContext() {
+
+    localStorage.setItem(
+      projectMetaStorageKey,
+      JSON.stringify(
+        projectMeta,
+      ),
+    );
+
+
+    recordVersion(
+      "Updated project ownership / context",
+      "project-context",
+    );
+
+
+    setContextSaved(
+      true,
+    );
+  }
+
+
   function saveEvidence() {
     if (!canSave) {
       return;
@@ -2154,6 +2388,16 @@ function BuildWing({
     localStorage.setItem(
       storageKey,
       JSON.stringify(next),
+    );
+
+
+    recordVersion(
+      `${
+        isSaved
+          ? "Revised"
+          : "Completed"
+      } · ${activeStep.title}`,
+      activeStep.id,
     );
   }
 
@@ -2200,6 +2444,24 @@ function BuildWing({
     localStorage.removeItem(
       storageKey,
     );
+
+    localStorage.removeItem(
+      projectMetaStorageKey,
+    );
+
+    localStorage.removeItem(
+      versionStorageKey,
+    );
+
+
+    setProjectMeta({
+      ...EMPTY_PROJECT_META,
+    });
+
+    setVersionHistory([]);
+
+    setContextSaved(false);
+
 
     setEvidence({});
 
@@ -2255,6 +2517,26 @@ function BuildWing({
       nextEvidence,
     );
 
+
+    setProjectMeta(
+      readProjectMeta(
+        nextWingId,
+      ),
+    );
+
+
+    setVersionHistory(
+      readVersionHistory(
+        nextWingId,
+      ),
+    );
+
+
+    setContextSaved(
+      false,
+    );
+
+
     setActiveStepId(
       nextPlan.steps[0].id,
     );
@@ -2293,9 +2575,13 @@ function BuildWing({
           ← Back to WingMatch
         </button>
 
-        <strong>
+        <a
+          href="/"
+          className="altwing-home-logo"
+          aria-label="Go to AltWing home"
+        >
           Alt<span>Wing</span>
-        </strong>
+        </a>
       </header>
 
       {import.meta.env.DEV && (
@@ -2380,6 +2666,191 @@ function BuildWing({
           </div>
         </div>
       </section>
+
+
+      <section className="build-project-context">
+
+        <div className="build-project-context-heading">
+
+          <span>
+            PROJECT OWNERSHIP
+          </span>
+
+          <h2>
+            Make your role
+            visible.
+          </h2>
+
+          <p>
+            Document what you
+            personally contributed,
+            who helped, how AI was
+            used, and where someone
+            can inspect the work.
+          </p>
+
+        </div>
+
+
+        <div className="build-project-context-grid">
+
+          <label className="context-wide">
+
+            <span>
+              MY CONTRIBUTION
+            </span>
+
+            <textarea
+              value={
+                projectMeta
+                  .contribution
+              }
+              placeholder="Example: I designed the simulation logic, chose the test cases, analyzed the results, and built the interface."
+              onChange={(
+                event,
+              ) =>
+                updateProjectMeta(
+                  "contribution",
+                  event.target
+                    .value,
+                )
+              }
+            />
+
+          </label>
+
+
+          <label>
+
+            <span>
+              COLLABORATORS /
+              TEAM
+            </span>
+
+            <textarea
+              value={
+                projectMeta
+                  .collaborators
+              }
+              placeholder="Example: Independent project / teammate names and exact roles / mentor guidance."
+              onChange={(
+                event,
+              ) =>
+                updateProjectMeta(
+                  "collaborators",
+                  event.target
+                    .value,
+                )
+              }
+            />
+
+          </label>
+
+
+          <label>
+
+            <span>
+              AI ASSISTANCE
+            </span>
+
+            <textarea
+              value={
+                projectMeta
+                  .aiUse
+              }
+              placeholder="Example: Used AI to debug TypeScript and brainstorm test cases. I made the engineering decisions and verified the final behavior."
+              onChange={(
+                event,
+              ) =>
+                updateProjectMeta(
+                  "aiUse",
+                  event.target
+                    .value,
+                )
+              }
+            />
+
+          </label>
+
+
+          <label className="context-wide">
+
+            <span>
+              PRIMARY PROJECT LINK
+            </span>
+
+            <input
+              type="text"
+              value={
+                projectMeta
+                  .projectLink
+              }
+              placeholder="GitHub, live demo, CAD, Drive folder, or technical brief"
+              onChange={(
+                event,
+              ) =>
+                updateProjectMeta(
+                  "projectLink",
+                  event.target
+                    .value,
+                )
+              }
+            />
+
+          </label>
+
+
+          <label className="context-wide">
+
+            <span>
+              REFLECTION /
+              NEXT ITERATION
+            </span>
+
+            <textarea
+              value={
+                projectMeta
+                  .reflection
+              }
+              placeholder="What is still weak? What would you test, redesign, or learn next?"
+              onChange={(
+                event,
+              ) =>
+                updateProjectMeta(
+                  "reflection",
+                  event.target
+                    .value,
+                )
+              }
+            />
+
+          </label>
+
+        </div>
+
+
+        <div className="build-project-context-actions">
+
+          <button
+            type="button"
+            onClick={
+              saveProjectContext
+            }
+          >
+            Save project context
+          </button>
+
+
+          {contextSaved && (
+            <span>
+              SAVED ✓
+            </span>
+          )}
+
+        </div>
+
+      </section>
+
 
       <section className="build-workbench">
         <aside className="build-checkpoints">
@@ -2716,6 +3187,73 @@ function BuildWing({
             </p>
           </article>
         </div>
+
+        <div className="build-version-history">
+
+          <span>
+            VERSION HISTORY
+          </span>
+
+          <h3>
+            Show how the
+            project changed.
+          </h3>
+
+
+          {versionHistory.length >
+          0 ? (
+
+            <div className="build-version-history-list">
+
+              {versionHistory
+                .slice(
+                  0,
+                  8,
+                )
+                .map(
+                  (
+                    version,
+                  ) => (
+                    <article
+                      key={
+                        version.id
+                      }
+                    >
+
+                      <strong>
+                        {
+                          version.title
+                        }
+                      </strong>
+
+                      <span>
+                        {
+                          new Date(
+                            version
+                              .savedAt,
+                          )
+                            .toLocaleString()
+                        }
+                      </span>
+
+                    </article>
+                  ),
+                )}
+
+            </div>
+
+          ) : (
+
+            <p className="build-version-empty">
+              Save or revise
+              evidence to begin the
+              engineering history.
+            </p>
+
+          )}
+
+        </div>
+
 
         <div className="build-final-artifact">
           <span>

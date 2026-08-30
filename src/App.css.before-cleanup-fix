@@ -843,194 +843,141 @@
 
 
 /* =========================================================
-   HOME HERO ONLY — SAFE READABILITY FIX
-   Do not override light cards.
+   FINAL HOME READABILITY / CONTRAST PASS
    ========================================================= */
+
+/* HERO — main problem in current screenshot */
 
 .hero h1 {
   color: #f7f9ff !important;
 }
 
-.hero .hero-highlight {
+.hero-highlight {
   color: #ff6b6b !important;
 }
 
-.hero .hero-copy {
-  color: rgba(247, 249, 255, .78) !important;
+.hero-copy {
+  color: rgba(247,249,255,.82) !important;
   font-size: 17px !important;
-  line-height: 1.65 !important;
+  line-height: 1.7 !important;
 }
 
-.hero .hero-note {
-  color: rgba(247, 249, 255, .56) !important;
-  font-size: 12px !important;
+.hero-note {
+  color: rgba(247,249,255,.60) !important;
+  font-size: 13px !important;
 }
 
-.hero .eyebrow {
-  color: #79a5ff !important;
-  font-size: 12px !important;
+.eyebrow {
+  color: #78a3ff !important;
+  font-size: 13px !important;
   font-weight: 850 !important;
 }
 
-/*
- * Light cards need DARK text.
- * These selectors intentionally override any older
- * accidental white-text rules.
- */
-
-.gateway-card:not(.gateway-card-primary) h3,
-.gateway-card:not(.gateway-card-primary) strong,
-.gateway-card:not(.gateway-card-primary) p,
-.gateway-card:not(.gateway-card-primary) small {
-  color: #17213b !important;
-}
-
-.gateway-card:not(.gateway-card-primary) p {
-  color: #5c6476 !important;
-}
-
-.journey-card h3,
-.journey-card p {
-  color: #17213b;
-}
-
-/* only if the journey card itself is light */
-.journey-card[style*="white"] p,
-.journey-card[style*="#fff"] p {
-  color: #5c6476 !important;
+.eyebrow-dot {
+  box-shadow: 0 0 12px rgba(255,107,107,.65);
 }
 
 
+/* NAV */
 
-/* =========================================================
-   JOURNEY CARDS — FINAL LIGHT-CARD READABILITY FIX
-   ========================================================= */
-
-.journey-card {
-  color: #111b36 !important;
-}
-
-.journey-card h3 {
-  color: #111b36 !important;
-  opacity: 1 !important;
-}
-
-.journey-card p,
-.journey-card .journey-card-description {
-  color: #596274 !important;
-  opacity: 1 !important;
-}
-
-.journey-card small {
-  opacity: 1 !important;
-}
-
-.journey-card .journey-number {
-  opacity: 1 !important;
-}
-
-/* Make body copy clearly readable without turning it black */
-.journey-card p {
-  font-size: 14px !important;
-  line-height: 1.6 !important;
-  font-weight: 500 !important;
+.site-header .nav-links a,
+.site-header .nav-text-button {
+  color: #25304b !important;
+  font-weight: 750 !important;
 }
 
 
+/* HOME SECTION HEADINGS */
 
-/* =========================================================
-   EXPLORE GATEWAY BUTTON RESET
-   ========================================================= */
-
-button.gateway-card {
-  width: 100%;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-
-
-
-/* =========================================================
-   START HERE + DARK GATEWAY CARD
-   FINAL READABILITY FIX
-   ========================================================= */
-
-/* Section heading on dark background */
-
-.simple-gateway-heading h2 {
-  color: #f7f9ff !important;
-  opacity: 1 !important;
-}
-
-.simple-gateway-heading p {
-  color: rgba(247, 249, 255, .68) !important;
-  opacity: 1 !important;
-
-  font-size: 15px !important;
-  line-height: 1.6 !important;
-}
-
-.simple-gateway-heading > span {
+.simple-gateway-heading > span,
+.section-label,
+.journey-number {
   color: #79a5ff !important;
-  opacity: 1 !important;
+}
 
-  font-size: 10px !important;
-  font-weight: 900 !important;
+.simple-gateway-heading h2,
+.journey-section h2,
+.home-section-heading h2,
+.why-copy h2,
+.founder-copy h2,
+.launch-panel h2 {
+  color: #f7f9ff !important;
 }
 
 
-/* FIRST / DARK Find My Wing card */
+/* BODY COPY */
 
-.gateway-card.gateway-card-main {
+.simple-gateway-heading p,
+.gateway-card p,
+.journey-intro,
+.journey-card p,
+.home-section-heading p,
+.outcome-card p,
+.why-copy p,
+.why-contrast p,
+.founder-copy p,
+.launch-panel p,
+.launch-note {
+  color: rgba(247,249,255,.68) !important;
+  line-height: 1.65 !important;
+}
+
+
+/* CARDS */
+
+.gateway-card strong,
+.journey-card h3,
+.outcome-card h3,
+.founder-proof h3,
+.why-contrast strong {
+  color: #f7f9ff !important;
+}
+
+.gateway-card small,
+.outcome-card > span,
+.founder-proof span,
+.why-contrast > article > span {
+  color: #85aaff !important;
+}
+
+
+/* HERO BUTTONS */
+
+.button-primary {
   color: #ffffff !important;
 }
 
-.gateway-card.gateway-card-main small {
-  color: #91afff !important;
-  opacity: 1 !important;
-
-  font-size: 9px !important;
-  font-weight: 900 !important;
-  letter-spacing: .12em !important;
-}
-
-.gateway-card.gateway-card-main strong {
-  color: #ffffff !important;
-  opacity: 1 !important;
-
-  font-size: 22px !important;
-  line-height: 1.25 !important;
-}
-
-.gateway-card.gateway-card-main p {
-  color: rgba(255, 255, 255, .70) !important;
-  opacity: 1 !important;
-
-  font-size: 13px !important;
-  line-height: 1.55 !important;
-}
-
-.gateway-card.gateway-card-main > b {
-  color: #ffc857 !important;
-  opacity: 1 !important;
+.button-secondary {
+  color: #111830 !important;
 }
 
 
-/* Keep the two LIGHT cards dark and readable */
+/* Keep dark page visually continuous */
 
-.gateway-card:not(.gateway-card-main) strong {
-  color: #111b36 !important;
-  opacity: 1 !important;
+.hero,
+.simple-gateway,
+.journey-section,
+.outcomes-section,
+.why-section,
+.founder-section,
+.launch-section {
+  color: #f7f9ff;
 }
 
-.gateway-card:not(.gateway-card-main) p {
-  color: #596274 !important;
-  opacity: 1 !important;
-}
 
-.gateway-card:not(.gateway-card-main) small {
-  color: #5079d7 !important;
-  opacity: 1 !important;
+/* Mobile readability */
+
+@media (max-width: 760px) {
+  .hero-copy {
+    font-size: 16px !important;
+  }
+
+  .hero-note {
+    font-size: 12px !important;
+  }
+
+  .eyebrow {
+    font-size: 11px !important;
+  }
 }
 

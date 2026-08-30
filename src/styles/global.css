@@ -1454,3 +1454,42 @@ button:disabled {
   box-shadow: none !important;
 }
 
+
+
+
+/* =========================================================
+   GLOBAL PAGE BACKGROUND FIX
+   Prevent white document body from showing below dark views.
+   ========================================================= */
+
+html,
+body,
+#root {
+  min-height: 100%;
+
+  background:
+    #070b1b !important;
+}
+
+
+body {
+  min-height: 100vh;
+
+  margin: 0;
+}
+
+
+#root {
+  min-height: 100vh;
+}
+
+
+.app,
+.v5-result,
+.wm-v5-shell,
+.my-universe-page,
+.my-universe-panel,
+.beginner-build-shell {
+  min-height: 100vh;
+}
+

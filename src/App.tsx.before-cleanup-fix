@@ -4,14 +4,9 @@ import MissionPreview from "./components/MissionPreview";
 import WingMatchMission from "./features/wingmatch/engine/WingMatchMission";
 import PreFlightBriefing from "./features/wingmatch/briefing/PreFlightBriefing";
 import MyUniversePage from "./features/progression/MyUniversePage";
-import PathDashboard from "./features/wingmatch/path/PathDashboard";
+import WingMascot from "./features/wingmatch/result/WingMascot";
 
-type AppView =
-  | "home"
-  | "preflight"
-  | "wingmatch"
-  | "path"
-  | "universe";
+type AppView = "home" | "preflight" | "wingmatch" | "universe";
 
 function App() {
   const [view, setView] = useState<AppView>("home");
@@ -38,24 +33,6 @@ function App() {
         onStartMission={() =>
           setView("preflight")
         }
-      />
-    );
-  }
-
-  if (view === "path") {
-    return (
-      <PathDashboard
-        wingName="Not selected yet"
-        major="Aerospace Engineering"
-        grade={0}
-        onBack={() => {
-          setView("home");
-
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        }}
       />
     );
   }
@@ -102,15 +79,9 @@ function App() {
               Find My Wing
             </button>
 
-            <button
-              type="button"
-              className="nav-text-button"
-              onClick={() =>
-                setView("path")
-              }
-            >
+            <a href="#journey">
               Explore
-            </button>
+            </a>
 
             <button
               type="button"
@@ -130,7 +101,8 @@ function App() {
           <div>
             <div className="eyebrow">
               <span className="eyebrow-dot" />
-              AEROSPACE EXPLORATION FOR ANYONE
+              Aerospace exploration for
+              high-school students
             </div>
 
             <h1>
@@ -160,15 +132,12 @@ function App() {
                 Find My Wing
               </button>
 
-              <button
-                type="button"
+              <a
                 className="button button-secondary"
-                onClick={() =>
-                  setView("path")
-                }
+                href="#journey"
               >
                 Explore Aerospace
-              </button>
+              </a>
             </div>
 
             <p className="hero-note">
@@ -185,6 +154,15 @@ function App() {
             }
             aria-label="Launch Mars descent WingMatch mission"
           >
+            <div
+              className="hero-mascot-home"
+              aria-hidden="true"
+            >
+              <WingMascot
+                wingId="launch"
+                size="home"
+              />
+            </div>
 
             <MissionPreview />
           </button>
@@ -235,12 +213,9 @@ function App() {
               <b>→</b>
             </button>
 
-            <button
-              type="button"
+            <a
               className="gateway-card"
-              onClick={() =>
-                setView("path")
-              }
+              href="#journey"
             >
               <span>◉</span>
 
@@ -254,14 +229,14 @@ function App() {
                 </strong>
 
                 <p>
-                  Academics, activities,
-                  leadership, colleges,
-                  readiness, and decisions.
+                  Careers, engineering
+                  paths, projects, and
+                  colleges.
                 </p>
               </div>
 
               <b>→</b>
-            </button>
+            </a>
 
             <button
               type="button"

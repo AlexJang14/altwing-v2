@@ -1,6 +1,17 @@
-import { useState, useEffect, useMemo } from "react";
-import { awardMilestone } from "../../progression/progression";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  awardMilestone,
+} from "../../progression/progression";
+
 import PathDashboard from "../path/PathDashboard";
+
+import "../styles/beginner-first.css";
+
+
 interface LaunchPlanProps {
   wingId: string;
   wingName: string;
@@ -8,590 +19,463 @@ interface LaunchPlanProps {
   onBack: () => void;
 }
 
-interface LaunchRoute {
-  title: string;
-  description: string;
-  action: string;
+
+interface BuildProgress {
+  routeIndex:
+    number | null;
+
+  completedSteps:
+    number[];
+
+  evidence:
+    Record<
+      number,
+      string
+    >;
+
+  completed:
+    boolean;
 }
 
 
-interface BuildQuestProgress {
-  routeIndex: number | null;
-  completedWeeks: number[];
-  evidence: Record<number, string>;
-  completed: boolean;
-}
+const routeTypes = [
+  {
+    title:
+      "Design something",
 
-interface WingLaunchPlan {
-  routes: LaunchRoute[];
-  monthPlan: {
-    week: string;
-    title: string;
-    description: string;
-  }[];
-}
+    description:
+      "Sketch, model, or create a small engineering idea.",
 
-const launchPlans: Record<
-  string,
-  WingLaunchPlan
-> = {
-  systems: {
-    routes: [
-      {
-        title: "GitHub Engineering Project",
-        description:
-          "Publish the simulator, assumptions, test scenarios, and V1 → V2 comparison.",
-        action: "Create project README",
-      },
-      {
-        title: "TSA / Engineering Design",
-        description:
-          "Turn the tradeoff simulator into a design project with requirements, alternatives, and evidence.",
-        action: "Prepare competition version",
-      },
-      {
-        title: "Research Extension",
-        description:
-          "Ask how changing uncertainty, mission priorities, or subsystem limits changes the recommended design.",
-        action: "Write a research question",
-      },
-    ],
-
-    monthPlan: [
-      {
-        week: "WEEK 01",
-        title: "Polish the engineering model",
-        description:
-          "Replace weak assumptions, improve calculations, and make the simulator understandable to another student.",
-      },
-      {
-        week: "WEEK 02",
-        title: "Publish the evidence",
-        description:
-          "Create a GitHub README with the problem, constraints, screenshots, scenarios, and results.",
-      },
-      {
-        week: "WEEK 03",
-        title: "Get outside review",
-        description:
-          "Ask a teacher, engineer, mentor, or another student to test the model and give one specific critique.",
-      },
-      {
-        week: "WEEK 04",
-        title: "Launch V2",
-        description:
-          "Use the feedback to improve the project and submit, share, present, or expand it.",
-      },
-    ],
+    icon:
+      "◇",
   },
 
-  gnc: {
-    routes: [
-      {
-        title: "Interactive Control Simulator",
-        description:
-          "Publish controller tuning experiments, response plots, and stability comparisons.",
-        action: "Publish simulation",
-      },
-      {
-        title: "Robotics Extension",
-        description:
-          "Apply the same feedback-control ideas to a robot, drone, or simulated autonomous vehicle.",
-        action: "Design hardware extension",
-      },
-      {
-        title: "GNC Investigation",
-        description:
-          "Study how disturbances, sensor noise, or different gains affect vehicle stability.",
-        action: "Create experiment",
-      },
-    ],
+  {
+    title:
+      "Test something",
 
-    monthPlan: [
-      {
-        week: "WEEK 01",
-        title: "Improve controller behavior",
-        description:
-          "Refine gains and document overshoot, settling time, error, and control effort.",
-      },
-      {
-        week: "WEEK 02",
-        title: "Publish response evidence",
-        description:
-          "Create graphs and a clear comparison of slow, balanced, and aggressive tuning.",
-      },
-      {
-        week: "WEEK 03",
-        title: "Add a disturbance",
-        description:
-          "Introduce noise, wind, sensor error, or another disturbance and evaluate robustness.",
-      },
-      {
-        week: "WEEK 04",
-        title: "Share the control project",
-        description:
-          "Publish the final simulator or connect it to a robotics, TSA, or engineering activity.",
-      },
-    ],
+    description:
+      "Change one thing and see what happens.",
+
+    icon:
+      "↻",
   },
 
-  structures: {
-    routes: [
-      {
-        title: "CAD Portfolio Project",
-        description:
-          "Publish the landing structure, load path, mass comparison, and V1 → V2 reinforcement.",
-        action: "Publish CAD case study",
-      },
-      {
-        title: "FEA Extension",
-        description:
-          "Use structural analysis software to investigate stress, displacement, or buckling.",
-        action: "Add structural analysis",
-      },
-      {
-        title: "Design Competition",
-        description:
-          "Turn the structure into a lightweight design challenge with measurable constraints.",
-        action: "Prepare competition entry",
-      },
-    ],
+  {
+    title:
+      "Investigate something",
 
-    monthPlan: [
-      {
-        week: "WEEK 01",
-        title: "Clean the CAD model",
-        description:
-          "Make geometry, dimensions, load paths, and structural assumptions easy to understand.",
-      },
-      {
-        week: "WEEK 02",
-        title: "Add quantitative evidence",
-        description:
-          "Compare mass, estimated loads, strength margin, or simulation results.",
-      },
-      {
-        week: "WEEK 03",
-        title: "Review the weak region",
-        description:
-          "Get feedback on the most critical structural member or joint.",
-      },
-      {
-        week: "WEEK 04",
-        title: "Publish the final design",
-        description:
-          "Document why V2 is stronger or more efficient than V1.",
-      },
-    ],
+    description:
+      "Ask one space question and look for evidence.",
+
+    icon:
+      "⌕",
   },
 
-  avionics: {
-    routes: [
-      {
-        title: "Fault Detection Software",
-        description:
-          "Publish telemetry data, diagnostic logic, test cases, and false-alarm analysis.",
-        action: "Publish software project",
-      },
-      {
-        title: "Sensor Prototype",
-        description:
-          "Connect the diagnostic logic to Arduino, Raspberry Pi, or another sensor platform.",
-        action: "Build hardware extension",
-      },
-      {
-        title: "Embedded Systems Project",
-        description:
-          "Expand the software into a small autonomous monitoring or fault-response system.",
-        action: "Design embedded version",
-      },
-    ],
+  {
+    title:
+      "Surprise me",
 
-    monthPlan: [
-      {
-        week: "WEEK 01",
-        title: "Improve fault logic",
-        description:
-          "Refine thresholds and identify ambiguous diagnostic cases.",
-      },
-      {
-        week: "WEEK 02",
-        title: "Create test telemetry",
-        description:
-          "Build a clear healthy-vs-fault dataset and record diagnosis accuracy.",
-      },
-      {
-        week: "WEEK 03",
-        title: "Reduce false alarms",
-        description:
-          "Add stronger evidence rules or multiple-signal confirmation.",
-      },
-      {
-        week: "WEEK 04",
-        title: "Publish or prototype",
-        description:
-          "Release the software or connect it to a real sensor system.",
-      },
-    ],
+    description:
+      "Let AltWing choose a simple starter challenge.",
+
+    icon:
+      "✦",
   },
+];
 
-  thermal: {
-    routes: [
-      {
-        title: "Thermal Simulation",
-        description:
-          "Publish temperature-over-time models, component limits, and cooling decisions.",
-        action: "Publish thermal model",
-      },
-      {
-        title: "Research Investigation",
-        description:
-          "Study how insulation, radiation, exposure time, or thermal-control power changes survival margin.",
-        action: "Create research question",
-      },
-      {
-        title: "Systems Extension",
-        description:
-          "Connect thermal decisions to spacecraft power, battery, and mission constraints.",
-        action: "Expand system model",
-      },
-    ],
 
-    monthPlan: [
-      {
-        week: "WEEK 01",
-        title: "Improve thermal assumptions",
-        description:
-          "Review heating, cooling, temperature limits, and exposure assumptions.",
-      },
-      {
-        week: "WEEK 02",
-        title: "Create temperature evidence",
-        description:
-          "Generate plots comparing multiple thermal-control strategies.",
-      },
-      {
-        week: "WEEK 03",
-        title: "Stress-test the model",
-        description:
-          "Run a hotter, colder, or longer-duration mission case.",
-      },
-      {
-        week: "WEEK 04",
-        title: "Publish the investigation",
-        description:
-          "Turn the model and findings into a technical project page or research-style brief.",
-      },
-    ],
-  },
+const starterIdeas:
+  Record<
+    string,
+    string[]
+  > = {
 
-  propulsion: {
-    routes: [
-      {
-        title: "ΔV Mission Calculator",
-        description:
-          "Publish an interactive calculator comparing mission ΔV, Isp, mass, and propellant requirements.",
-        action: "Publish calculator",
-      },
-      {
-        title: "Mission Design Challenge",
-        description:
-          "Compare propulsion options for a real lunar, Mars, or orbital mission scenario.",
-        action: "Create mission case",
-      },
-      {
-        title: "Research Extension",
-        description:
-          "Investigate how propulsion assumptions change spacecraft architecture.",
-        action: "Write trade-study question",
-      },
-    ],
+  systems: [
+    "Design a tiny Mars mission with only three resources.",
+    "Compare two mission plans by changing one constraint.",
+    "Ask which system should get priority when power is low.",
+    "Create a simple Mars rescue mission.",
+  ],
 
-    monthPlan: [
-      {
-        week: "WEEK 01",
-        title: "Validate the equations",
-        description:
-          "Check ΔV, specific impulse, dry mass, and propellant calculations.",
-      },
-      {
-        week: "WEEK 02",
-        title: "Compare propulsion options",
-        description:
-          "Run high-thrust, high-efficiency, and balanced mission scenarios.",
-      },
-      {
-        week: "WEEK 03",
-        title: "Add mission realism",
-        description:
-          "Include reserve margin, maneuver requirements, or another realistic constraint.",
-      },
-      {
-        week: "WEEK 04",
-        title: "Publish the trade study",
-        description:
-          "Share the calculator, assumptions, results, and final propulsion recommendation.",
-      },
-    ],
-  },
+  gnc: [
+    "Sketch how a lander could correct its tilt.",
+    "Test different correction strengths in a simple simulator.",
+    "Investigate why vehicles overshoot a target.",
+    "Build a simple virtual landing challenge.",
+  ],
 
-  "mission-design": {
-    routes: [
-      {
-        title: "Mission Proposal",
-        description:
-          "Turn the architecture into a complete mission concept with objectives, constraints, and system decisions.",
-        action: "Publish mission proposal",
-      },
-      {
-        title: "Space Competition",
-        description:
-          "Adapt the architecture to a NASA-style challenge, competition, or student design program.",
-        action: "Find submission path",
-      },
-      {
-        title: "Mission Research",
-        description:
-          "Investigate how changing cost, risk, payload, or mission duration changes the preferred architecture.",
-        action: "Create research extension",
-      },
-    ],
+  avionics: [
+    "Design a simple spacecraft warning system.",
+    "Test what happens when one sensor gives bad data.",
+    "Investigate how spacecraft know when a sensor fails.",
+    "Create a three-sensor detective challenge.",
+  ],
 
-    monthPlan: [
-      {
-        week: "WEEK 01",
-        title: "Strengthen the architecture",
-        description:
-          "Make objectives, constraints, alternatives, and decision criteria explicit.",
-      },
-      {
-        week: "WEEK 02",
-        title: "Create mission visuals",
-        description:
-          "Build a timeline, architecture diagram, or mission sequence.",
-      },
-      {
-        week: "WEEK 03",
-        title: "Challenge the assumptions",
-        description:
-          "Change one important mission assumption and determine whether the architecture still wins.",
-      },
-      {
-        week: "WEEK 04",
-        title: "Publish the proposal",
-        description:
-          "Package the architecture as a concise technical mission proposal.",
-      },
-    ],
-  },
+  structures: [
+    "Design a lightweight landing leg.",
+    "Compare two shapes under the same load.",
+    "Investigate why thin structures buckle.",
+    "Create a paper landing-leg design challenge.",
+  ],
+
+  thermal: [
+    "Design a simple way to keep a CubeSat cool.",
+    "Compare two cooling strategies.",
+    "Investigate why spacecraft overheat in space.",
+    "Create a sunlight-vs-shadow temperature challenge.",
+  ],
+
+  propulsion: [
+    "Design a mission that needs very little fuel.",
+    "Compare two virtual engine choices.",
+    "Investigate why some spacecraft use efficient low-thrust engines.",
+    "Create a simple fuel-budget mission.",
+  ],
+
+  "mission-design": [
+    "Design a tiny Mars science mission.",
+    "Compare two landing-site choices.",
+    "Investigate what makes a mission worth doing.",
+    "Create a one-day rover mission with limited power.",
+  ],
 };
+
+
+const steps = [
+  {
+    label:
+      "STEP 01",
+
+    title:
+      "Pick one small question",
+
+    description:
+      "Keep it tiny. You should be able to explain the problem in one sentence.",
+
+    placeholder:
+      "Example: How could I make a lander leg lighter without making it too weak?",
+  },
+
+  {
+    label:
+      "STEP 02",
+
+    title:
+      "Make version 1",
+
+    description:
+      "Sketch it, model it, simulate it, calculate it, or build a simple first version.",
+
+    placeholder:
+      "What did you make for V1?",
+  },
+
+  {
+    label:
+      "STEP 03",
+
+    title:
+      "Test one thing",
+
+    description:
+      "Change one variable or compare two versions. Record what happened.",
+
+    placeholder:
+      "What did you test and what happened?",
+  },
+
+  {
+    label:
+      "STEP 04",
+
+    title:
+      "Improve and show it",
+
+    description:
+      "Make one improvement and save a screenshot, photo, graph, or short explanation.",
+
+    placeholder:
+      "What changed in V2?",
+  },
+];
+
 
 function LaunchPlan({
   wingId,
   wingName,
-  project,
   onBack,
 }: LaunchPlanProps) {
-  const [showFlightPlan, setShowFlightPlan] =
-    useState(false);
-  const plan =
-    launchPlans[wingId] ??
-    launchPlans.systems;
 
-  const BUILD_QUEST_STORAGE_KEY =
+  const STORAGE_KEY =
     `altwing-build-quest-${wingId}`;
 
-  const [
-    buildQuest,
-    setBuildQuest,
-  ] = useState<BuildQuestProgress>(
-    () => {
-      try {
-        const raw =
-          localStorage.getItem(
-            BUILD_QUEST_STORAGE_KEY,
-          );
 
-        if (!raw) {
+  const [
+    showFlightPlan,
+    setShowFlightPlan,
+  ] =
+    useState(false);
+
+
+  const [
+    progress,
+    setProgress,
+  ] =
+    useState<BuildProgress>(
+      () => {
+        try {
+          const raw =
+            localStorage.getItem(
+              STORAGE_KEY,
+            );
+
+          if (!raw) {
+            return {
+              routeIndex:
+                null,
+
+              completedSteps:
+                [],
+
+              evidence:
+                {},
+
+              completed:
+                false,
+            };
+          }
+
+          const old =
+            JSON.parse(
+              raw,
+            );
+
           return {
-            routeIndex: null,
-            completedWeeks: [],
-            evidence: {},
-            completed: false,
+            routeIndex:
+              typeof
+                old.routeIndex ===
+              "number"
+                ? old.routeIndex
+                : null,
+
+            completedSteps:
+              old.completedSteps ??
+              old.completedWeeks ??
+              [],
+
+            evidence:
+              old.evidence ??
+              {},
+
+            completed:
+              Boolean(
+                old.completed,
+              ),
+          };
+        } catch {
+          return {
+            routeIndex:
+              null,
+
+            completedSteps:
+              [],
+
+            evidence:
+              {},
+
+            completed:
+              false,
           };
         }
-
-        return JSON.parse(
-          raw,
-        ) as BuildQuestProgress;
-      } catch {
-        return {
-          routeIndex: null,
-          completedWeeks: [],
-          evidence: {},
-          completed: false,
-        };
-      }
-    },
-  );
-
-  const [
-    draftEvidence,
-    setDraftEvidence,
-  ] = useState<
-    Record<number, string>
-  >(() => ({
-    ...(buildQuest.evidence ?? {}),
-  }));
-
-  const [
-    questAcceptedFlash,
-    setQuestAcceptedFlash,
-  ] = useState(false);
-
-  const selectedRoute =
-    useMemo(
-      () =>
-        buildQuest.routeIndex === null
-          ? null
-          : plan.routes[
-              buildQuest.routeIndex
-            ],
-      [
-        buildQuest.routeIndex,
-        plan.routes,
-      ],
+      },
     );
+
+
+  const [
+    drafts,
+    setDrafts,
+  ] =
+    useState<
+      Record<
+        number,
+        string
+      >
+    >(
+      () => ({
+        ...progress.evidence,
+      }),
+    );
+
 
   useEffect(() => {
     localStorage.setItem(
-      BUILD_QUEST_STORAGE_KEY,
+      STORAGE_KEY,
       JSON.stringify(
-        buildQuest,
+        progress,
       ),
     );
   }, [
-    buildQuest,
-    BUILD_QUEST_STORAGE_KEY,
+    progress,
+    STORAGE_KEY,
   ]);
+
+
+  const ideas =
+    starterIdeas[
+      wingId
+    ] ??
+    starterIdeas.systems;
+
+
+  const routeIndex =
+    progress.routeIndex;
+
+
+  const starter =
+    routeIndex === null
+      ? null
+      : ideas[
+          routeIndex
+        ] ??
+        ideas[0];
+
 
   function chooseRoute(
     index: number,
   ) {
-    setBuildQuest(
-      (current) => ({
+    setProgress(
+      (
+        current,
+      ) => ({
         ...current,
-        routeIndex: index,
+        routeIndex:
+          index,
       }),
-    );
-
-    setQuestAcceptedFlash(true);
-
-    window.setTimeout(
-      () =>
-        setQuestAcceptedFlash(
-          false,
-        ),
-      1400,
     );
   }
 
-  function completeWeek(
+
+  function completeStep(
     index: number,
   ) {
-    const evidenceText =
+    const text =
       (
-        draftEvidence[index] ??
+        drafts[index] ??
         ""
       ).trim();
 
     if (
-      evidenceText.length < 12 ||
-      buildQuest.completedWeeks.includes(
-        index,
-      )
+      text.length < 8
     ) {
       return;
     }
 
-    const nextCompletedWeeks = [
-      ...buildQuest.completedWeeks,
+    if (
+      progress.completedSteps
+        .includes(index)
+    ) {
+      return;
+    }
+
+    const next = [
+      ...progress
+        .completedSteps,
       index,
     ];
 
-    const finalWeek =
-      index ===
-      plan.monthPlan.length - 1;
 
-    setBuildQuest(
-      (current) => ({
+    const finished =
+      index ===
+      steps.length -
+      1;
+
+
+    setProgress(
+      (
+        current,
+      ) => ({
         ...current,
 
-        completedWeeks:
-          nextCompletedWeeks,
+        completedSteps:
+          next,
 
         evidence: {
           ...current.evidence,
           [index]:
-            evidenceText,
+            text,
         },
 
         completed:
-          finalWeek
+          finished
             ? true
             : current.completed,
       }),
     );
 
+
     awardMilestone(
       `project:${wingId}:week:${index + 1}`,
       25,
+
       {
         technicalBuild:
-          index === 0
+          index === 1
             ? 1
             : 0,
 
         evidenceReasoning:
-          index >= 1
+          index >= 2
             ? 1
             : 0,
       },
-      `${plan.monthPlan[index].week} complete`,
+
+      `Build Step ${index + 1} complete`,
     );
 
-    if (finalWeek) {
+
+    if (finished) {
       awardMilestone(
         `project:${wingId}:build-complete`,
         100,
+
         {
           technicalBuild: 1,
           evidenceReasoning: 1,
         },
-        `${selectedRoute?.title ?? wingName} build complete`,
+
+        `${wingName} beginner build complete`,
       );
     }
   }
 
-  function resetBuildQuest() {
+
+  function restartBuild() {
     const empty:
-      BuildQuestProgress = {
-        routeIndex: null,
-        completedWeeks: [],
-        evidence: {},
-        completed: false,
+      BuildProgress = {
+        routeIndex:
+          null,
+
+        completedSteps:
+          [],
+
+        evidence:
+          {},
+
+        completed:
+          false,
       };
 
-    setBuildQuest(
+    setProgress(
       empty,
     );
 
-    setDraftEvidence(
+    setDrafts(
       {},
     );
 
     localStorage.removeItem(
-      BUILD_QUEST_STORAGE_KEY,
+      STORAGE_KEY,
     );
   }
 
@@ -599,281 +483,282 @@ function LaunchPlan({
   if (showFlightPlan) {
     return (
       <PathDashboard
-        wingName={wingName}
+        wingName={
+          wingName
+        }
+
         major="Aerospace Engineering"
+
         grade={11}
+
         onBack={() =>
-          setShowFlightPlan(false)
+          setShowFlightPlan(
+            false,
+          )
         }
       />
     );
   }
 
+
   return (
-    <main className="launch-shell">
-      {questAcceptedFlash &&
-        selectedRoute && (
-          <div
-            className="launch-quest-flash"
-            role="status"
-          >
-            <img
-              src="/brand/altwing-penguin.png"
-              alt=""
-            />
+    <main className="beginner-build-shell">
 
-            <div>
-              <span>
-                QUEST ACCEPTED
-              </span>
+      <header className="beginner-build-nav">
 
-              <strong>
-                {selectedRoute.title}
-              </strong>
-
-              <small>
-                BUILD PATH ACTIVE
-              </small>
-            </div>
-          </div>
-        )}
-      <header className="launch-nav">
         <button
           type="button"
           onClick={onBack}
         >
-          ← Back to Portfolio
+          ← Back to my Wing
         </button>
 
         <strong>
-          Alt<span>Wing</span>
+          Alt
+          <span>
+            Wing
+          </span>
         </strong>
+
       </header>
 
-      <section className="launch-hero">
+
+      <section className="beginner-build-hero">
+
         <span>
-          LAUNCH YOUR WING
+          TRY YOUR WING
         </span>
 
         <h1>
-          Don't let the project
+          Start small.
           <br />
-          stop at completion.
+          Make something.
         </h1>
 
         <p>
-          Your {wingName} Wing produced
-          <strong> {project}</strong>.
-          Now turn that evidence into
-          something other people can see,
-          test, review, or build on.
+          You matched with
+          {" "}
+          <strong>
+            {wingName}
+          </strong>.
+          You do not need to turn
+          it into a competition,
+          research paper, or big
+          project yet.
         </p>
+
       </section>
 
-      <section className="launch-section">
-        <div className="launch-heading">
+
+      <section className="beginner-build-section">
+
+        <div className="beginner-build-heading">
+
           <span>
-            01 / CHOOSE A FLIGHT PATH
+            01 / CHOOSE HOW TO START
           </span>
 
           <h2>
-            Where could this project go next?
+            What sounds most fun?
           </h2>
+
+          <p>
+            There is no wrong choice.
+          </p>
+
         </div>
 
-        <div className="launch-route-grid">
-          {plan.routes.map(
-            (route, index) => {
+
+        <div className="beginner-route-grid">
+
+          {routeTypes.map(
+            (
+              route,
+              index,
+            ) => {
+
               const selected =
-                buildQuest.routeIndex ===
+                routeIndex ===
                 index;
 
               return (
-                <article
-                  key={route.title}
-                  className={[
-                    "launch-route-card",
+                <button
+                  type="button"
+                  key={
+                    route.title
+                  }
 
+                  className={
                     selected
-                      ? "launch-route-card--selected"
-                      : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
+                      ? "selected"
+                      : ""
+                  }
+
+                  onClick={() =>
+                    chooseRoute(
+                      index,
+                    )
+                  }
                 >
-                  <span>
-                    0{index + 1}
-                  </span>
 
-                  {selected && (
-                    <b className="launch-route-selected">
-                      ACTIVE PATH
-                    </b>
-                  )}
+                  <b>
+                    {route.icon}
+                  </b>
 
-                  <h3>
-                    {route.title}
-                  </h3>
+                  <strong>
+                    {
+                      route.title
+                    }
+                  </strong>
 
                   <p>
-                    {route.description}
+                    {
+                      route.description
+                    }
                   </p>
 
-                  <button
-                    type="button"
-                    className="launch-route-action"
-                    onClick={() =>
-                      chooseRoute(
-                        index,
-                      )
-                    }
-                  >
+                  <span>
                     {selected
-                      ? "Quest Accepted ✓"
-                      : `${route.action} →`}
-                  </button>
-                </article>
+                      ? "SELECTED ✓"
+                      : "CHOOSE →"}
+                  </span>
+
+                </button>
               );
             },
           )}
+
         </div>
+
       </section>
 
-      <section className="launch-section">
-        <div className="launch-heading">
-          <span>
-            02 / 30-DAY LAUNCH PLAN
-          </span>
 
-          <h2>
-            Four weeks from project
-            to visible evidence.
-          </h2>
-        </div>
+      {starter && (
+        <section className="beginner-build-section">
 
-        {!selectedRoute ? (
-          <div className="launch-quest-gate">
-            <img
-              src="/brand/altwing-penguin.png"
-              alt=""
-            />
+          <div className="beginner-starter">
 
             <span>
-              QUEST LOCKED
+              YOUR STARTER IDEA
             </span>
 
-            <h3>
-              Choose a Flight Path first.
-            </h3>
+            <h2>
+              {starter}
+            </h2>
 
             <p>
-              Your 30-day Build Quest
-              will unlock here.
+              You can change the idea.
+              This is only a starting
+              point.
             </p>
+
           </div>
-        ) : (
-          <>
-            <div className="launch-active-path">
-              <div>
-                <span>
-                  ACTIVE BUILD QUEST
-                </span>
 
-                <strong>
-                  {selectedRoute.title}
-                </strong>
-              </div>
 
-              <button
-                type="button"
-                onClick={
-                  resetBuildQuest
-                }
-              >
-                Change Path
-              </button>
-            </div>
+          <div className="beginner-step-list">
 
-            <div className="launch-month-plan">
-              {plan.monthPlan.map(
-                (item, index) => {
-                  const complete =
-                    buildQuest.completedWeeks.includes(
+            {steps.map(
+              (
+                step,
+                index,
+              ) => {
+
+                const complete =
+                  progress
+                    .completedSteps
+                    .includes(
                       index,
                     );
 
-                  const unlocked =
-                    index === 0 ||
-                    buildQuest.completedWeeks.includes(
-                      index - 1,
+
+                const unlocked =
+                  index === 0 ||
+                  progress
+                    .completedSteps
+                    .includes(
+                      index -
+                      1,
                     );
 
-                  const evidenceValue =
-                    draftEvidence[index] ??
-                    buildQuest.evidence[
+
+                const value =
+                  drafts[index] ??
+                  progress
+                    .evidence[
                       index
                     ] ??
-                    "";
+                  "";
 
-                  const canComplete =
-                    unlocked &&
-                    !complete &&
-                    evidenceValue
-                      .trim()
-                      .length >= 12;
 
-                  return (
-                    <article
-                      key={item.week}
-                      className={[
-                        complete
-                          ? "launch-week--complete"
-                          : "",
+                return (
+                  <article
+                    key={
+                      step.label
+                    }
 
-                        unlocked
-                          ? "launch-week--unlocked"
-                          : "launch-week--locked",
-                      ]
-                        .filter(Boolean)
-                        .join(" ")}
-                    >
+                    className={[
+                      complete
+                        ? "complete"
+                        : "",
+
+                      unlocked
+                        ? "unlocked"
+                        : "locked",
+                    ]
+                      .filter(
+                        Boolean,
+                      )
+                      .join(" ")}
+                  >
+
+                    <div className="beginner-step-number">
+                      {complete
+                        ? "✓"
+                        : index + 1}
+                    </div>
+
+
+                    <div className="beginner-step-copy">
+
                       <span>
-                        {item.week}
+                        {
+                          step.label
+                        }
                       </span>
 
-                      <div className="launch-week-state">
-                        {complete
-                          ? "COMPLETE ✓"
-                          : unlocked
-                            ? "ACTIVE"
-                            : "LOCKED"}
-                      </div>
-
                       <h3>
-                        {item.title}
+                        {
+                          step.title
+                        }
                       </h3>
 
                       <p>
-                        {item.description}
+                        {
+                          step.description
+                        }
                       </p>
 
+
                       {unlocked && (
-                        <div className="launch-evidence-entry">
-                          <label>
-                            EVIDENCE
-                          </label>
+                        <div className="beginner-step-evidence">
 
                           <textarea
                             value={
-                              evidenceValue
+                              value
                             }
+
                             disabled={
                               complete
                             }
+
+                            placeholder={
+                              step.placeholder
+                            }
+
                             onChange={(
                               event,
                             ) =>
-                              setDraftEvidence(
+                              setDrafts(
                                 (
                                   current,
                                 ) => ({
@@ -886,118 +771,155 @@ function LaunchPlan({
                                 }),
                               )
                             }
-                            placeholder={
-                              index === 0
-                                ? "What did you actually improve or build?"
-                                : index === 1
-                                  ? "What evidence did you create or publish?"
-                                  : index === 2
-                                    ? "Who reviewed it, and what feedback did you get?"
-                                    : "What changed in V2, and where did you share or submit it?"
-                            }
                           />
 
-                          <div>
-                            <small>
-                              {
-                                evidenceValue
-                                  .trim()
-                                  .length
-                              }
-                              /12 minimum
-                            </small>
+                          <button
+                            type="button"
 
-                            <button
-                              type="button"
-                              disabled={
-                                !canComplete
-                              }
-                              onClick={() =>
-                                completeWeek(
-                                  index,
-                                )
-                              }
-                            >
-                              {complete
-                                ? "Completed ✓"
-                                : `Complete ${item.week} +25 XP`}
-                            </button>
-                          </div>
+                            disabled={
+                              complete ||
+                              value
+                                .trim()
+                                .length <
+                                8
+                            }
+
+                            onClick={() =>
+                              completeStep(
+                                index,
+                              )
+                            }
+                          >
+                            {complete
+                              ? "Done ✓"
+                              : "Finish this step →"}
+                          </button>
+
                         </div>
                       )}
-                    </article>
-                  );
-                },
-              )}
-            </div>
 
-            {buildQuest.completed && (
-              <div className="launch-build-complete">
-                <img
-                  src="/brand/altwing-penguin.png"
-                  alt=""
-                />
-
-                <span>
-                  BUILD QUEST COMPLETE
-                </span>
-
-                <h3>
-                  {selectedRoute.title}
-                </h3>
-
-                <p>
-                  You explored, built,
-                  tested, documented,
-                  and improved
-                  something real.
-                </p>
-
-                <strong>
-                  +100 XP · TECHNICAL BUILD ↑
-                </strong>
-
-                <small>
-                  A higher-rarity
-                  cosmic signal may
-                  have been detected.
-                </small>
-              </div>
+                    </div>
+                  </article>
+                );
+              },
             )}
-          </>
-        )}
-      </section>
 
-      <section className="launch-final">
+          </div>
+
+        </section>
+      )}
+
+
+      {progress.completed && (
+        <section className="beginner-build-complete">
+
+          <img
+            src="/brand/altwing-penguin.png"
+            alt=""
+          />
+
+          <span>
+            FIRST BUILD COMPLETE
+          </span>
+
+          <h2>
+            You actually tried
+            {` ${wingName}.`}
+          </h2>
+
+          <p>
+            That matters more than
+            simply receiving a career
+            recommendation.
+          </p>
+
+          <strong>
+            +100 XP
+          </strong>
+
+        </section>
+      )}
+
+
+      <section className="beginner-go-further">
+
         <span>
-          EXPLORE → BUILD → LAUNCH
+          WHEN YOU&apos;RE READY
         </span>
 
         <h2>
-          Your Wing matters when
-          you do something with it.
+          Take it further.
         </h2>
 
         <p>
-          The goal is not to collect
-          another badge. The goal is to
-          leave with evidence that shows
-          how you think, build, test,
-          improve, and contribute.
+          These are optional next
+          steps — not things you need
+          before you start.
         </p>
+
+        <div>
+          <article>
+            <b>
+              GitHub
+            </b>
+
+            <span>
+              Publish your project
+            </span>
+          </article>
+
+          <article>
+            <b>
+              TSA / Competition
+            </b>
+
+            <span>
+              Turn it into an entry
+            </span>
+          </article>
+
+          <article>
+            <b>
+              Research
+            </b>
+
+            <span>
+              Ask a deeper question
+            </span>
+          </article>
+        </div>
+
 
         <button
           type="button"
-          className="launch-flight-plan-button"
           onClick={() =>
-            setShowFlightPlan(true)
+            setShowFlightPlan(
+              true,
+            )
           }
         >
-          Build My Flight Plan →
+          Explore colleges & next steps →
         </button>
+
+
+        {routeIndex !==
+          null && (
+          <button
+            type="button"
+            className="beginner-reset-build"
+            onClick={
+              restartBuild
+            }
+          >
+            Start a different build
+          </button>
+        )}
+
       </section>
+
     </main>
   );
 }
+
 
 export default LaunchPlan;

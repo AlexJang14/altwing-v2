@@ -1,17 +1,22 @@
 import "./preflight-briefing.css";
 
-interface PreFlightBriefingProps {
+
+interface Props {
   onBack: () => void;
   onStart: () => void;
 }
 
+
 function PreFlightBriefing({
   onBack,
   onStart,
-}: PreFlightBriefingProps) {
+}: Props) {
+
   return (
     <main className="preflight-shell">
+
       <header className="preflight-nav">
+
         <button
           type="button"
           onClick={onBack}
@@ -22,101 +27,137 @@ function PreFlightBriefing({
         <strong>
           Alt<span>Wing</span>
         </strong>
+
       </header>
 
+
       <section className="preflight-card">
+
         <div className="preflight-penguin">
+
           <img
             src="/brand/altwing-penguin.png"
             alt=""
           />
 
           <i />
+
         </div>
 
+
         <span className="preflight-kicker">
-          PRE-FLIGHT BRIEFING
+          WINGMATCH V5
         </span>
 
+
         <h1>
-          You&apos;re about to fly
+          Make decisions.
           <strong>
-            {" "}8 aerospace
-            mini-missions.
+            {" "}Don&apos;t describe
+            yourself.
           </strong>
         </h1>
 
+
         <p className="preflight-intro">
-          This is not a personality test.
-          You&apos;ll make engineering
-          decisions and discover the kind
-          of aerospace work that feels
-          natural to you.
+          You do not need aerospace
+          knowledge. AltWing uses
+          short mission situations
+          and mini interactions
+          instead of asking what
+          kind of person you think
+          you are.
         </p>
 
+
         <div className="preflight-facts">
+
           <article>
-            <b>~5 MIN</b>
+            <b>
+              ~5 MIN
+            </b>
+
             <span>
-              Short mission
+              Quick mission
             </span>
           </article>
 
           <article>
-            <b>NO QUIZ</b>
+            <b>
+              8 SCENES
+            </b>
+
             <span>
-              Make decisions
+              Different situations
             </span>
           </article>
 
           <article>
-            <b>1 WING</b>
+            <b>
+              2 MINI LABS
+            </b>
+
             <span>
-              Find your pattern
+              Actual interaction
             </span>
           </article>
 
           <article>
-            <b>1 DISCOVERY</b>
+            <b>
+              NO GRADES
+            </b>
+
             <span>
-              Start your Atlas
+              No right answer
             </span>
           </article>
+
         </div>
 
+
         <div className="preflight-rule">
+
           <span>
-            ONE RULE
+            IMPORTANT
           </span>
 
           <strong>
-            There is no perfect answer.
+            Every option can be a
+            reasonable engineering
+            choice.
           </strong>
 
           <p>
-            Choose what you would actually
-            do under pressure.
+            Choose what you would
+            actually want to examine
+            or do next.
           </p>
+
         </div>
+
 
         <button
           type="button"
           className="preflight-start"
           onClick={onStart}
         >
-          START MISSION →
+          START WINGMATCH →
         </button>
+
 
         <button
           type="button"
           className="preflight-back"
           onClick={onBack}
         >
-          Explore AltWing first
+          Maybe later
         </button>
+
       </section>
+
     </main>
   );
 }
+
 
 export default PreFlightBriefing;

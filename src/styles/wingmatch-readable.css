@@ -1,0 +1,184 @@
+
+/* =========================================================
+   ALTWING WINGMATCH — FINAL READABILITY
+   This file MUST load after all WingMatch component CSS.
+   ========================================================= */
+
+/* ---------- QUESTION ---------- */
+
+.wingmatch-shell .wm-question-kicker,
+.wingmatch-shell [class*="question-kicker"] {
+  color: #ffc857 !important;
+  opacity: 1 !important;
+
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  letter-spacing: .10em !important;
+}
+
+.wingmatch-shell .wm-question h2,
+.wingmatch-shell .wm-mission-question h2,
+.wingmatch-shell [class*="question"] h2 {
+  color: #ffffff !important;
+  opacity: 1 !important;
+
+  font-size: clamp(34px, 3vw, 46px) !important;
+  line-height: 1.12 !important;
+}
+
+
+/* =========================================================
+   CURRENT V5 CHOICE CARDS
+   ========================================================= */
+
+.wingmatch-shell .wm-choice-card {
+  min-height: 235px !important;
+  padding: 26px 24px !important;
+}
+
+/* OPTION 1 */
+.wingmatch-shell .wm-choice-card small {
+  margin-top: 0 !important;
+
+  color: rgba(158, 184, 248, .88) !important;
+  opacity: 1 !important;
+
+  font-size: 12px !important;
+  font-weight: 850 !important;
+  line-height: 1.35 !important;
+
+  letter-spacing: .09em !important;
+}
+
+/* A science-value map */
+.wingmatch-shell .wm-choice-card > strong,
+.wingmatch-shell .wm-choice-card strong {
+  display: block !important;
+
+  margin-top: 18px !important;
+
+  color: #ffffff !important;
+  opacity: 1 !important;
+
+  font-size: 25px !important;
+  font-weight: 800 !important;
+
+  line-height: 1.24 !important;
+  letter-spacing: -.015em !important;
+}
+
+/* See which site contains... */
+.wingmatch-shell .wm-choice-card > p,
+.wingmatch-shell .wm-choice-card p {
+  margin: 11px 0 0 !important;
+
+  color: rgba(241, 245, 255, .82) !important;
+  opacity: 1 !important;
+
+  font-size: 17px !important;
+  font-weight: 500 !important;
+
+  line-height: 1.55 !important;
+}
+
+/* CHOOSE → */
+.wingmatch-shell .wm-choice-card > b,
+.wingmatch-shell .wm-choice-card b {
+  margin-top: auto !important;
+  padding-top: 22px !important;
+
+  color: #ffc857 !important;
+  opacity: 1 !important;
+
+  font-size: 12px !important;
+  font-weight: 900 !important;
+
+  line-height: 1.3 !important;
+  letter-spacing: .07em !important;
+}
+
+
+/* =========================================================
+   GAME VISUAL MICROCOPY
+   ========================================================= */
+
+.wingmatch-shell .wm-game-visual-top span {
+  color: rgba(180, 199, 243, .86) !important;
+  opacity: 1 !important;
+
+  font-size: 11px !important;
+  font-weight: 850 !important;
+}
+
+.wingmatch-shell .wm-game-visual-top strong {
+  color: #f7f9ff !important;
+  opacity: 1 !important;
+
+  font-size: 14px !important;
+}
+
+.wingmatch-shell .wm-game-mission-track,
+.wingmatch-shell .wm-game-mission-track span,
+.wingmatch-shell .wm-game-mission-track small {
+  font-size: 11px !important;
+}
+
+
+/* WHAT WOULD YOU DO? / NO RIGHT ANSWER */
+.wingmatch-shell
+:where(
+  .wm-game-footer,
+  [class*="game-footer"],
+  [class*="visual-footer"]
+)
+:where(span, small, strong) {
+  opacity: .9 !important;
+  font-size: 11px !important;
+}
+
+
+/* =========================================================
+   GENERAL WINGMATCH MICROCOPY FLOOR
+   ========================================================= */
+
+.wingmatch-shell small {
+  font-size: max(11px, .6875rem) !important;
+}
+
+.wingmatch-shell
+:where(
+  [class*="hint"],
+  [class*="note"],
+  [class*="helper"],
+  [class*="description"]
+) {
+  opacity: .85 !important;
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 720px) {
+
+  .wingmatch-shell .wm-choice-card {
+    min-height: 205px !important;
+    padding: 21px !important;
+  }
+
+  .wingmatch-shell .wm-choice-card strong {
+    font-size: 22px !important;
+  }
+
+  .wingmatch-shell .wm-choice-card p {
+    font-size: 16px !important;
+  }
+
+  .wingmatch-shell .wm-choice-card small,
+  .wingmatch-shell .wm-choice-card b {
+    font-size: 11px !important;
+  }
+}

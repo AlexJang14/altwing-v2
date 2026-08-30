@@ -1,74 +1,163 @@
-import { useState } from "react";
-import LaunchPlan from "./LaunchPlan";
+import {
+  useMemo,
+  useState,
+} from "react";
 
-interface PortfolioStep {
-  id: string;
-  title: string;
-  output: string;
+import "./project-portfolio.css";
+
+
+interface EvidenceField {
+  key: string;
+  label: string;
+  placeholder: string;
+  multiline?: boolean;
+  required?: boolean;
 }
 
+
+interface BuildStep {
+  id: string;
+  week: number;
+
+  phase:
+    | "EXPLORE"
+    | "BUILD"
+    | "LAUNCH";
+
+  title: string;
+  description: string;
+  output: string;
+  why: string;
+
+  evidenceFields:
+    EvidenceField[];
+}
+
+
 type EvidenceRecord =
-  Record<string, string>;
+  Record<
+    string,
+    string
+  >;
+
 
 type EvidenceStore =
-  Record<string, EvidenceRecord>;
+  Record<
+    string,
+    EvidenceRecord
+  >;
 
-interface ProjectPortfolioProps {
+
+interface ProjectMeta {
+  contribution: string;
+  collaborators: string;
+  aiUse: string;
+  projectLink: string;
+  reflection: string;
+}
+
+
+interface VersionEntry {
+  id: string;
+  stepId: string;
+  title: string;
+  savedAt: string;
+}
+
+
+interface Props {
   wingId: string;
   wingName: string;
+
   project: string;
   question: string;
   finalArtifact: string;
-  steps: PortfolioStep[];
-  evidence: EvidenceStore;
+
+  steps:
+    BuildStep[];
+
+  evidence:
+    EvidenceStore;
+
   onBack: () => void;
 }
 
-function cleanText(
-  value: string | undefined,
-) {
-  return value
-    ?.replace(/\s+/g, " ")
-    .trim() ?? "";
-}
 
-function firstEvidenceText(
-  record:
-    | EvidenceRecord
-    | undefined,
-) {
-  if (!record) {
-    return "";
+const EMPTY_META:
+  ProjectMeta = {
+
+  contribution: "",
+  collaborators: "",
+  aiUse: "",
+  projectLink: "",
+  reflection: "",
+};
+
+
+function readProjectMeta(
+  wingId: string,
+):
+  ProjectMeta {
+
+  try {
+    const raw =
+      localStorage.getItem(
+        `altwing-project-meta-v1-${wingId}`,
+      );
+
+    if (!raw) {
+      return {
+        ...EMPTY_META,
+      };
+    }
+
+    const parsed =
+      JSON.parse(
+        raw,
+      );
+
+    return {
+      ...EMPTY_META,
+      ...parsed,
+    };
+  } catch {
+    return {
+      ...EMPTY_META,
+    };
   }
-
-  return Object.values(record)
-    .map(cleanText)
-    .filter(Boolean)
-    .join(" ");
 }
 
-function shorten(
-  value: string,
-  maxLength: number,
-) {
-  const cleaned = cleanText(value);
 
-  if (
-    cleaned.length <=
-    maxLength
-  ) {
-    return cleaned;
+function readVersions(
+  wingId: string,
+):
+  VersionEntry[] {
+
+  try {
+    const raw =
+      localStorage.getItem(
+        `altwing-project-versions-v1-${wingId}`,
+      );
+
+    if (!raw) {
+      return [];
+    }
+
+    const parsed =
+      JSON.parse(
+        raw,
+      );
+
+    return Array.isArray(
+      parsed,
+    )
+      ? parsed
+      : [];
+  } catch {
+    return [];
   }
-
-  return (
-    cleaned
-      .slice(
-        0,
-        maxLength - 1,
-      )
-      .trimEnd() + "…"
-  );
 }
+
 
 function ProjectPortfolio({
   wingId,
@@ -79,505 +168,494 @@ function ProjectPortfolio({
   steps,
   evidence,
   onBack,
-}: ProjectPortfolioProps) {
-  const [copied, setCopied] =
-    useState<string | null>(
-      null,
+}: Props) {
+
+  const [
+    copied,
+    setCopied,
+  ] =
+    useState(false);
+
+
+  const meta =
+    useMemo(
+      () =>
+        readProjectMeta(
+          wingId,
+        ),
+      [wingId],
     );
 
-  const [showLaunch, setShowLaunch] =
-    useState(false);
+
+  const versions =
+    useMemo(
+      () =>
+        readVersions(
+          wingId,
+        ),
+      [wingId],
+    );
+
 
   const completedSteps =
     steps.filter(
-      (step) =>
-        evidence[step.id] &&
-        Object.keys(
-          evidence[step.id],
-        ).length > 0,
-    );
-
-  const exploreEvidence =
-    firstEvidenceText(
-      evidence[
-        steps[0]?.id
-      ],
-    );
-
-  const buildEvidence =
-    firstEvidenceText(
-      evidence[
-        steps[2]?.id
-      ],
-    );
-
-  const testEvidence =
-    firstEvidenceText(
-      evidence[
-        steps[3]?.id
-      ],
-    );
-
-  const iterationEvidence =
-    firstEvidenceText(
-      evidence[
-        steps[4]?.id
-      ],
-    );
-
-  const publishEvidence =
-    firstEvidenceText(
-      evidence[
-        steps[5]?.id
-      ],
-    );
-
-  function pickEvidence(
-    record: EvidenceRecord | undefined,
-    keys: string[],
-  ) {
-    if (!record) {
-      return "";
-    }
-
-    for (const key of keys) {
-      const value = cleanText(record[key]);
-
-      if (value) {
-        return value;
-      }
-    }
-
-    return "";
-  }
-
-  const buildRecord =
-    evidence[steps[2]?.id];
-
-  const testRecord =
-    evidence[steps[3]?.id];
-
-  const iterationRecord =
-    evidence[steps[4]?.id];
-
-  const publishRecord =
-    evidence[steps[5]?.id];
-
-  const isPreviewData =
-    Object.values(evidence).some(
-      (record) =>
-        Object.values(record).some(
-          (value) =>
-            value.startsWith(
-              "Preview evidence for",
-            ),
+      (
+        step,
+      ) =>
+        Boolean(
+          evidence[
+            step.id
+          ],
         ),
     );
 
-  const activityNames:
-    Record<string, string> = {
-      "Systems Engineering":
-        "Spacecraft Systems Design Project",
-      "Guidance, Navigation & Control":
-        "Lander Guidance & Control Project",
-      Structures:
-        "Lunar Lander Structures Project",
-      Avionics:
-        "Spacecraft Avionics & Fault Detection Project",
-      "Thermal Engineering":
-        "Spacecraft Thermal Design Project",
-      Propulsion:
-        "Spacecraft Propulsion Trade Study",
-      "Mission Design":
-        "Lunar Mission Architecture Project",
-    };
 
-  const activityRoles:
-    Record<string, string> = {
-      "Systems Engineering":
-        "Systems Designer & Developer",
-      "Guidance, Navigation & Control":
-        "Simulation Designer & Developer",
-      Structures:
-        "CAD Designer & Structural Analyst",
-      Avionics:
-        "Avionics Developer & Systems Tester",
-      "Thermal Engineering":
-        "Thermal Modeler & Analyst",
-      Propulsion:
-        "Propulsion Analyst & Model Developer",
-      "Mission Design":
-        "Mission Architect & Systems Analyst",
-    };
+  const links =
+    useMemo(
+      () => {
 
-  const activityName =
-    activityNames[wingName] ??
-    `${project} Independent Project`;
+        const found:
+          {
+            label: string;
+            value: string;
+          }[] = [];
 
-  const activityRole =
-    activityRoles[wingName] ??
-    "Independent Designer & Developer";
 
-  const buildDetail =
-    pickEvidence(
-      buildRecord,
-      [
-        "build",
-        "controller",
-        "logic",
-        "model",
-        "loadPath",
-        "inputs",
-        "outputs",
-        "tool",
-      ],
-    ) || buildEvidence;
+        steps.forEach(
+          (
+            step,
+          ) => {
 
-  const testDetail =
-    pickEvidence(
-      testRecord,
-      [
-        "finding",
-        "decision",
-        "choice",
-        "falseAlarm",
-        "result",
-        "scenario3",
-        "testC",
-        "healthy",
-      ],
-    ) || testEvidence;
+            const record =
+              evidence[
+                step.id
+              ];
 
-  const iterationDetail =
-    pickEvidence(
-      iterationRecord,
-      [
-        "revision",
-        "change",
-        "result",
-        "impact",
-        "decision",
-      ],
-    ) || iterationEvidence;
+            if (!record) {
+              return;
+            }
 
-  const finalResult =
-    pickEvidence(
-      publishRecord,
-      [
-        "result",
-        "decision",
-        "summary",
-        "architecture",
-        "method",
-      ],
-    ) || publishEvidence;
 
-  const activityDescription =
-    isPreviewData
-      ? `Preview only — ${project} portfolio output. Complete the real evidence checkpoints to generate an application-ready project description.`
-      : shorten(
-          [
-            buildDetail
-              ? `Designed and built ${project}: ${shorten(
-                  buildDetail,
-                  85,
-                )}.`
-              : `Designed and built ${project}.`,
-            testDetail
-              ? `Tested the system and identified ${shorten(
-                  testDetail,
-                  85,
-                )}.`
-              : "Tested the system across multiple conditions.",
-            iterationDetail
-              ? `Iterated V1 → V2 based on evidence by ${shorten(
-                  iterationDetail,
-                  80,
-                )}.`
-              : "Iterated V1 → V2 using recorded engineering evidence.",
-          ].join(" "),
-          300,
+            step.evidenceFields.forEach(
+              (
+                field,
+              ) => {
+
+                const value =
+                  record[
+                    field.key
+                  ]?.trim();
+
+                if (!value) {
+                  return;
+                }
+
+
+                if (
+                  /link|location|cad|portfolio/i
+                    .test(
+                      field.key,
+                    )
+                ) {
+                  found.push({
+                    label:
+                      field.label,
+
+                    value,
+                  });
+                }
+              },
+            );
+          },
         );
 
-  const commonAppDescription =
-    isPreviewData
-      ? shorten(
-          `DEV PREVIEW — ${project}. Complete real evidence to generate the final activity draft.`,
-          150,
-        )
-      : shorten(
-          [
-            `Built ${project};`,
-            testDetail
-              ? `tested ${shorten(
-                  testDetail,
-                  48,
-                )};`
-              : "tested multiple conditions;",
-            "iterated V1→V2 using engineering evidence.",
-          ]
-            .filter(Boolean)
-            .join(" "),
-          150,
-        );
 
-  const resumeBullet =
-    isPreviewData
-      ? `DEV PREVIEW — Resume language will be generated from the student's real build, test, and iteration evidence.`
-      : shorten(
-          [
-            `Designed and built ${project} to investigate ${question}`,
-            testDetail
-              ? `tested the system and identified ${shorten(
-                  testDetail,
-                  105,
-                )}`
-              : "tested performance across multiple conditions",
-            iterationDetail
-              ? `iterated V1 → V2 based on ${shorten(
-                  iterationDetail,
-                  100,
-                )}`
-              : "iterated V1 → V2 using recorded engineering evidence",
-          ]
-            .filter(Boolean)
-            .join("; "),
-          420,
-        );
+        if (
+          meta.projectLink
+            .trim()
+        ) {
+          found.unshift({
+            label:
+              "PRIMARY PROJECT LINK",
 
-  const reflection =
-    isPreviewData
-      ? "This is preview data. Complete the real engineering checkpoints to generate a technical reflection grounded in your work."
-      : finalResult ||
-        iterationDetail ||
-        exploreEvidence ||
-        "Complete the evidence checkpoints to generate a stronger project reflection.";
+            value:
+              meta.projectLink
+                .trim(),
+          });
+        }
 
-  const fullPortfolioText = [
-    `# ${project}`,
-    ``,
-    `**Wing:** ${wingName}`,
-    `**Role:** ${activityRole}`,
-    ``,
-    `## Engineering Question`,
+
+        return found;
+      },
+      [
+        evidence,
+        meta.projectLink,
+        steps,
+      ],
+    );
+
+
+  const activityDraft =
+    `Built ${project}, a ${wingName} engineering project investigating ${question} Completed ${completedSteps.length} evidence checkpoints across problem definition, design/build, testing, iteration, and technical documentation.`;
+
+
+  const portfolioSummary = [
+    "ALTWING PROJECT EVIDENCE PORTFOLIO",
+    "",
+    `PROJECT: ${project}`,
+    `WING: ${wingName}`,
+    "",
+    "ENGINEERING QUESTION",
     question,
-    ``,
-    `## What I Built`,
+    "",
+    "FINAL ARTIFACT",
     finalArtifact,
-    buildDetail || "Build evidence not yet available.",
-    ``,
-    `## Testing`,
-    testDetail || "Testing evidence not yet available.",
-    ``,
-    `## V1 → V2 Iteration`,
-    iterationDetail || "Iteration evidence not yet available.",
-    ``,
-    `## Technical Reflection`,
-    reflection,
-    ``,
-    `## Activity Name`,
-    activityName,
-    ``,
-    `## Project Description`,
-    activityDescription,
-    ``,
-    `## 150-Character Activity Draft`,
-    commonAppDescription,
-    ``,
-    `## Resume Bullet`,
-    resumeBullet,
-    ``,
-    `---`,
-    `Generated from evidence recorded in AltWing.`,
+    "",
+    "MY CONTRIBUTION",
+    meta.contribution ||
+      "Not documented yet.",
+    "",
+    "COLLABORATORS",
+    meta.collaborators ||
+      "Not documented yet.",
+    "",
+    "AI ASSISTANCE",
+    meta.aiUse ||
+      "Not documented yet.",
+    "",
+    "REFLECTION / NEXT ITERATION",
+    meta.reflection ||
+      "Not documented yet.",
+    "",
+    "PROCESS",
+    ...completedSteps.map(
+      (
+        step,
+        index,
+      ) =>
+        `${index + 1}. ${step.title} — ${step.output}`,
+    ),
   ].join("\n");
 
-  function downloadPortfolio() {
-    const blob = new Blob(
-      [fullPortfolioText],
-      {
-        type: "text/markdown;charset=utf-8",
-      },
-    );
 
-    const url =
-      URL.createObjectURL(blob);
+  function copySummary() {
+    void navigator.clipboard
+      .writeText(
+        portfolioSummary,
+      )
+      .then(
+        () => {
 
-    const anchor =
-      document.createElement("a");
+          setCopied(
+            true,
+          );
 
-    const safeName = project
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-
-    anchor.href = url;
-    anchor.download =
-      `${safeName || "altwing-project"}-portfolio.md`;
-
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-
-    URL.revokeObjectURL(url);
-  }
-
-  async function copyText(
-    id: string,
-    text: string,
-  ) {
-    try {
-      await navigator.clipboard
-        .writeText(text);
-
-      setCopied(id);
-
-      window.setTimeout(
+          window.setTimeout(
+            () =>
+              setCopied(
+                false,
+              ),
+            1500,
+          );
+        },
+      )
+      .catch(
         () =>
-          setCopied(null),
-        1400,
+          setCopied(
+            false,
+          ),
       );
-    } catch {
-      setCopied(null);
-    }
   }
 
-  if (showLaunch) {
-    return (
-      <LaunchPlan
-        wingId={wingId}
-        wingName={wingName}
-        project={project}
-        onBack={() =>
-          setShowLaunch(false)
-        }
-      />
-    );
-  }
 
   return (
-    <main className="portfolio-shell">
+    <main className="project-portfolio">
+
       <header className="portfolio-nav">
+
         <button
           type="button"
-          onClick={onBack}
+          onClick={
+            onBack
+          }
         >
           ← Back to Build
         </button>
 
-        <strong>
+
+        <a
+          href="/"
+          className="altwing-home-logo"
+          aria-label="Go to AltWing home"
+        >
           Alt<span>Wing</span>
-        </strong>
+        </a>
+
+
+        <button
+          type="button"
+          onClick={() =>
+            window.print()
+          }
+        >
+          Print / Save PDF
+        </button>
+
       </header>
 
+
       <section className="portfolio-hero">
-        <span className="portfolio-kicker">
-          PROJECT PORTFOLIO
-        </span>
 
-        {isPreviewData && (
-          <div className="portfolio-preview-badge">
-            DEV PREVIEW DATA — NOT FOR APPLICATION USE
-          </div>
-        )}
+        <div className="portfolio-hero-copy">
 
-        <h1>
-          You didn't just explore
-          a Wing.
-          <br />
-          <em>
-            You built evidence.
-          </em>
-        </h1>
+          <span>
+            PROJECT EVIDENCE
+            PORTFOLIO
+          </span>
 
-        <p>
-          This portfolio is assembled
-          from the engineering work
-          you saved during Build My
-          Wing.
-        </p>
+          <h1>
+            {project}
+          </h1>
 
-        <div className="portfolio-summary-card">
-          <div>
-            <span>
-              YOUR PROJECT
-            </span>
+          <p>
+            {question}
+          </p>
 
-            <h2>
-              {project}
-            </h2>
 
-            <p>
+          <div className="portfolio-hero-tags">
+
+            <b>
               {wingName}
-            </p>
-          </div>
+            </b>
 
-          <div className="portfolio-completion">
-            <strong>
+            <b>
               {
-                completedSteps.length
+                completedSteps
+                  .length
               }
               /{steps.length}
-            </strong>
+              {" "}
+              CHECKPOINTS
+            </b>
 
-            <span>
-              evidence checkpoints
-            </span>
+            <b>
+              {
+                versions.length
+              }
+              {" "}
+              VERSION EVENTS
+            </b>
+
           </div>
+
         </div>
+
+
+        <div className="portfolio-penguin">
+
+          <img
+            src="/brand/altwing-penguin.png"
+            alt=""
+          />
+
+          <span>
+            EVIDENCE BUILT
+          </span>
+
+        </div>
+
       </section>
 
+
       <section className="portfolio-section">
+
         <div className="portfolio-section-heading">
+
           <span>
-            01 / ENGINEERING QUESTION
+            01 / THE PROJECT
           </span>
 
           <h2>
-            What did you actually
-            investigate?
+            What was actually
+            investigated?
           </h2>
+
         </div>
 
-        <article className="portfolio-feature">
-          <p>{question}</p>
-        </article>
+
+        <div className="portfolio-project-grid">
+
+          <article>
+
+            <small>
+              ENGINEERING
+              QUESTION
+            </small>
+
+            <p>
+              {question}
+            </p>
+
+          </article>
+
+
+          <article>
+
+            <small>
+              FINAL ARTIFACT
+            </small>
+
+            <p>
+              {finalArtifact}
+            </p>
+
+          </article>
+
+        </div>
+
       </section>
 
+
       <section className="portfolio-section">
+
         <div className="portfolio-section-heading">
+
           <span>
-            02 / EVIDENCE TRAIL
+            02 / OWNERSHIP
           </span>
 
           <h2>
-            Build → test → iterate.
+            What did you
+            actually do?
           </h2>
+
+          <p>
+            Strong project
+            documentation separates
+            your own contribution
+            from collaborators,
+            mentors, and AI tools.
+          </p>
+
         </div>
 
-        <div className="portfolio-evidence-grid">
+
+        <div className="portfolio-ownership-grid">
+
+          <article>
+
+            <small>
+              MY CONTRIBUTION
+            </small>
+
+            <p>
+              {meta.contribution ||
+                "Not documented yet."}
+            </p>
+
+          </article>
+
+
+          <article>
+
+            <small>
+              COLLABORATORS /
+              TEAM
+            </small>
+
+            <p>
+              {meta.collaborators ||
+                "Not documented yet."}
+            </p>
+
+          </article>
+
+
+          <article>
+
+            <small>
+              AI ASSISTANCE
+            </small>
+
+            <p>
+              {meta.aiUse ||
+                "Not documented yet."}
+            </p>
+
+          </article>
+
+
+          <article>
+
+            <small>
+              REFLECTION /
+              NEXT ITERATION
+            </small>
+
+            <p>
+              {meta.reflection ||
+                "Not documented yet."}
+            </p>
+
+          </article>
+
+        </div>
+
+      </section>
+
+
+      <section className="portfolio-section">
+
+        <div className="portfolio-section-heading">
+
+          <span>
+            03 / ENGINEERING
+            PROCESS
+          </span>
+
+          <h2>
+            Evidence before
+            conclusions.
+          </h2>
+
+          <p>
+            The portfolio keeps the
+            process visible instead
+            of showing only a final
+            polished artifact.
+          </p>
+
+        </div>
+
+
+        <div className="portfolio-process">
+
           {steps.map(
-            (step, index) => {
-              const saved =
+            (
+              step,
+              index,
+            ) => {
+
+              const record =
                 evidence[
                   step.id
                 ];
 
-              const text =
-                firstEvidenceText(
-                  saved,
-                );
 
               return (
                 <article
-                  key={step.id}
+                  key={
+                    step.id
+                  }
                   className={
-                    saved
-                      ? "portfolio-evidence-card portfolio-evidence-card--saved"
-                      : "portfolio-evidence-card"
+                    record
+                      ? "complete"
+                      : "missing"
                   }
                 >
-                  <div className="portfolio-evidence-number">
-                    {saved
+
+                  <div className="portfolio-process-number">
+                    {record
                       ? "✓"
                       : String(
                           index + 1,
@@ -587,360 +665,349 @@ function ProjectPortfolio({
                         )}
                   </div>
 
-                  <span>
-                    {step.output}
-                  </span>
 
-                  <h3>
-                    {step.title}
-                  </h3>
+                  <div className="portfolio-process-main">
 
-                  <p>
-                    {text
-                      ? shorten(
-                          text,
-                          190,
-                        )
-                      : "No evidence saved yet."}
-                  </p>
+                    <div className="portfolio-process-top">
+
+                      <span>
+                        WEEK{" "}
+                        {
+                          step.week
+                        }
+                        {" · "}
+                        {
+                          step.phase
+                        }
+                      </span>
+
+                      <b>
+                        {record
+                          ? "EVIDENCE SAVED"
+                          : "NOT YET SAVED"}
+                      </b>
+
+                    </div>
+
+
+                    <h3>
+                      {
+                        step.title
+                      }
+                    </h3>
+
+
+                    <p className="portfolio-output">
+                      OUTPUT →{" "}
+                      {
+                        step.output
+                      }
+                    </p>
+
+
+                    {record && (
+                      <div className="portfolio-evidence-list">
+
+                        {
+                          step
+                            .evidenceFields
+                            .map(
+                              (
+                                field,
+                              ) => {
+
+                                const value =
+                                  record[
+                                    field.key
+                                  ]?.trim();
+
+                                if (
+                                  !value
+                                ) {
+                                  return null;
+                                }
+
+
+                                return (
+                                  <div
+                                    key={
+                                      field.key
+                                    }
+                                  >
+
+                                    <small>
+                                      {
+                                        field.label
+                                      }
+                                    </small>
+
+                                    <p>
+                                      {
+                                        value
+                                      }
+                                    </p>
+
+                                  </div>
+                                );
+                              },
+                            )
+                        }
+
+                      </div>
+                    )}
+
+                  </div>
+
                 </article>
               );
             },
           )}
+
         </div>
+
       </section>
 
+
       <section className="portfolio-section">
+
         <div className="portfolio-section-heading">
+
           <span>
-            03 / WHAT I BUILT
+            04 / VERSION HISTORY
           </span>
 
           <h2>
-            The artifact.
+            Show the iteration.
           </h2>
+
+          <p>
+            Every evidence save can
+            become part of a visible
+            engineering history.
+          </p>
+
         </div>
 
-        <article className="portfolio-feature">
-          <strong>
-            {finalArtifact}
-          </strong>
 
-          {buildEvidence && (
-            <p>
-              {buildEvidence}
-            </p>
-          )}
+        {versions.length >
+        0 ? (
+
+          <div className="portfolio-version-list">
+
+            {versions.map(
+              (
+                version,
+              ) => (
+                <article
+                  key={
+                    version.id
+                  }
+                >
+
+                  <i />
+
+                  <div>
+
+                    <strong>
+                      {
+                        version.title
+                      }
+                    </strong>
+
+                    <span>
+                      {
+                        new Date(
+                          version
+                            .savedAt,
+                        )
+                          .toLocaleString()
+                      }
+                    </span>
+
+                  </div>
+
+                </article>
+              ),
+            )}
+
+          </div>
+
+        ) : (
+
+          <div className="portfolio-empty">
+
+            Version history starts
+            when evidence is saved
+            or revised.
+
+          </div>
+
+        )}
+
+      </section>
+
+
+      <section className="portfolio-section">
+
+        <div className="portfolio-section-heading">
+
+          <span>
+            05 / EVIDENCE LINKS
+          </span>
+
+          <h2>
+            Where can someone
+            inspect the work?
+          </h2>
+
+        </div>
+
+
+        {links.length >
+        0 ? (
+
+          <div className="portfolio-links">
+
+            {links.map(
+              (
+                link,
+                index,
+              ) => (
+                <article
+                  key={
+                    `${link.label}-${index}`
+                  }
+                >
+
+                  <small>
+                    {
+                      link.label
+                    }
+                  </small>
+
+                  <strong>
+                    {
+                      link.value
+                    }
+                  </strong>
+
+                </article>
+              ),
+            )}
+
+          </div>
+
+        ) : (
+
+          <div className="portfolio-empty">
+
+            No project link has
+            been documented yet.
+
+          </div>
+
+        )}
+
+      </section>
+
+
+      <section className="portfolio-section portfolio-drafts">
+
+        <div className="portfolio-section-heading">
+
+          <span>
+            06 / APPLICATION
+            DRAFTS
+          </span>
+
+          <h2>
+            Translate the work.
+          </h2>
+
+          <p>
+            These are starting
+            drafts, not final
+            admissions language.
+          </p>
+
+        </div>
+
+
+        <article>
+
+          <small>
+            ACTIVITY /
+            PROJECT DRAFT
+          </small>
+
+          <p>
+            {
+              activityDraft
+            }
+          </p>
+
         </article>
-      </section>
 
-      <section className="portfolio-section">
-        <div className="portfolio-two-column">
-          <article className="portfolio-story-card">
-            <span>
-              TEST
-            </span>
 
-            <h3>
-              How I tested it
-            </h3>
+        <div className="portfolio-draft-actions">
 
-            <p>
-              {testEvidence ||
-                "Complete the testing checkpoint to document your test evidence."}
-            </p>
-          </article>
+          <button
+            type="button"
+            onClick={
+              copySummary
+            }
+          >
+            {copied
+              ? "COPIED ✓"
+              : "COPY PORTFOLIO SUMMARY"}
+          </button>
 
-          <article className="portfolio-story-card">
-            <span>
-              ITERATE
-            </span>
 
-            <h3>
-              What changed from
-              V1 → V2
-            </h3>
-
-            <p>
-              {iterationEvidence ||
-                "Complete the iteration checkpoint to document how evidence changed your design."}
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section className="portfolio-section">
-        <div className="portfolio-section-heading">
-          <span>
-            04 / TECHNICAL REFLECTION
-          </span>
-
-          <h2>
-            What the project taught
-            you.
-          </h2>
-        </div>
-
-        <article className="portfolio-feature">
-          <p>
-            {reflection}
-          </p>
-        </article>
-      </section>
-
-      <section className="portfolio-section portfolio-ready-section">
-        <div className="portfolio-section-heading">
-          <span>
-            05 / EXTRACURRICULAR READY
-          </span>
-
-          <h2>
-            Turn the work into
-            something usable.
-          </h2>
-
-          <p>
-            These drafts are generated
-            only from the project and
-            evidence already saved in
-            AltWing. Review and edit
-            them before using them in
-            an application.
-          </p>
-        </div>
-
-        <div className="portfolio-output-list">
-          <article className="portfolio-output">
-            <div className="portfolio-output-header">
-              <span>
-                ACTIVITY NAME
-              </span>
-
-              <button
-                type="button"
-                onClick={() =>
-                  copyText(
-                    "activity-name",
-                    activityName,
-                  )
-                }
-              >
-                {copied ===
-                "activity-name"
-                  ? "Copied ✓"
-                  : "Copy"}
-              </button>
-            </div>
-
-            <strong>
-              {activityName}
-            </strong>
-          </article>
-
-          <article className="portfolio-output">
-            <div className="portfolio-output-header">
-              <span>
-                ROLE
-              </span>
-
-              <button
-                type="button"
-                onClick={() =>
-                  copyText(
-                    "role",
-                    activityRole,
-                  )
-                }
-              >
-                {copied === "role"
-                  ? "Copied ✓"
-                  : "Copy"}
-              </button>
-            </div>
-
-            <strong>
-              {activityRole}
-            </strong>
-          </article>
-
-          <article className="portfolio-output">
-            <div className="portfolio-output-header">
-              <span>
-                PROJECT DESCRIPTION
-              </span>
-
-              <button
-                type="button"
-                onClick={() =>
-                  copyText(
-                    "description",
-                    activityDescription,
-                  )
-                }
-              >
-                {copied ===
-                "description"
-                  ? "Copied ✓"
-                  : "Copy"}
-              </button>
-            </div>
-
-            <p>
-              {activityDescription}
-            </p>
-          </article>
-
-          <article className="portfolio-output">
-            <div className="portfolio-output-header">
-              <span>
-                150-CHARACTER ACTIVITY DRAFT
-              </span>
-
-              <button
-                type="button"
-                onClick={() =>
-                  copyText(
-                    "common-app",
-                    commonAppDescription,
-                  )
-                }
-              >
-                {copied ===
-                "common-app"
-                  ? "Copied ✓"
-                  : "Copy"}
-              </button>
-            </div>
-
-            <p>
-              {commonAppDescription}
-            </p>
-
-            <small>
-              {
-                commonAppDescription.length
-              }
-              /150 characters
-            </small>
-          </article>
-
-          <article className="portfolio-output">
-            <div className="portfolio-output-header">
-              <span>
-                RESUME-READY BULLET
-              </span>
-
-              <button
-                type="button"
-                onClick={() =>
-                  copyText(
-                    "resume",
-                    resumeBullet,
-                  )
-                }
-              >
-                {copied === "resume"
-                  ? "Copied ✓"
-                  : "Copy"}
-              </button>
-            </div>
-
-            <p>
-              {resumeBullet}
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section className="portfolio-section portfolio-export">
-        <div className="portfolio-section-heading">
-          <span>
-            06 / TAKE IT WITH YOU
-          </span>
-
-          <h2>
-            Your work should leave AltWing with you.
-          </h2>
-
-          <p>
-            Copy the complete portfolio or download a Markdown file
-            for GitHub, a project website, or your own records.
-          </p>
-        </div>
-
-        <div className="portfolio-export-actions">
           <button
             type="button"
             onClick={() =>
-              copyText(
-                "full-portfolio",
-                fullPortfolioText,
-              )
+              window.print()
             }
           >
-            {copied === "full-portfolio"
-              ? "Copied full portfolio ✓"
-              : "Copy full portfolio"}
+            PRINT / SAVE PDF
           </button>
 
-          <button
-            type="button"
-            onClick={downloadPortfolio}
-          >
-            Download portfolio .md ↓
-          </button>
         </div>
 
-        <small className="portfolio-export-note">
-          Keep your final application language accurate to work
-          you actually completed and can explain.
-        </small>
       </section>
 
-      <section className="portfolio-section portfolio-next">
+
+      <section className="portfolio-integrity">
+
         <span>
-          YOUR NEXT FLIGHT
+          EVIDENCE INTEGRITY
         </span>
 
         <h2>
-          Don't stop at the first
-          version.
+          Documented does not
+          automatically mean
+          externally verified.
         </h2>
 
         <p>
-          Use this project as a launch
-          point for a deeper build,
-          competition entry, TSA
-          project, research question,
-          GitHub portfolio piece, or
-          collaboration with another
-          student.
+          This portfolio currently
+          shows student-entered
+          evidence and links.
+          AltWing does not claim
+          that an AI or human
+          reviewer has independently
+          verified authorship.
+          A future Evidence Check
+          can be added when verified
+          accounts and a secure
+          backend exist.
         </p>
 
-        <button
-          type="button"
-          className="portfolio-launch-next"
-          onClick={() =>
-            setShowLaunch(true)
-          }
-        >
-          Launch this project →
-        </button>
-
-        <div className="portfolio-flow">
-          DISCOVER
-          <b>→</b>
-          BUILD
-          <b>→</b>
-          TEST
-          <b>→</b>
-          PROVE
-          <b>→</b>
-          TAKE FLIGHT
-        </div>
       </section>
+
     </main>
   );
 }
+
 
 export default ProjectPortfolio;

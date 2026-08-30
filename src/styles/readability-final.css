@@ -1,0 +1,442 @@
+
+/* =========================================================
+   ALTWING READABILITY PASS
+   Functional dark screens only.
+   Loaded LAST so old 4–8px rules
+   cannot override it.
+   ========================================================= */
+
+
+/* =========================================================
+   FLIGHT PLAN
+   ========================================================= */
+
+.path-shell .path-kicker {
+  font-size: 11px !important;
+  letter-spacing: .16em;
+}
+
+.path-shell .path-hero > p {
+  color:
+    rgba(255, 255, 255, .74)
+    !important;
+
+  font-size: 17px !important;
+  line-height: 1.65 !important;
+}
+
+.path-shell .path-profile span {
+  color: #79a6ff !important;
+
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: .13em;
+}
+
+.path-shell .path-profile strong {
+  color: #ffffff !important;
+
+  font-size: 16px !important;
+  line-height: 1.35 !important;
+}
+
+.path-shell .path-number {
+  color:
+    rgba(255, 255, 255, .48)
+    !important;
+
+  font-size: 12px !important;
+}
+
+.path-shell .path-card-eyebrow {
+  color: #76a5ff !important;
+
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  letter-spacing: .13em;
+}
+
+.path-shell .path-card-body h2 {
+  color: #ffffff !important;
+}
+
+.path-shell .path-card-body p {
+  color:
+    rgba(255, 255, 255, .70)
+    !important;
+
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1.65 !important;
+}
+
+.path-shell
+.path-card-bottom > span {
+  color:
+    rgba(255, 255, 255, .56)
+    !important;
+
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+
+.path-shell
+.path-card-bottom button {
+  font-size: 12px !important;
+  font-weight: 850 !important;
+}
+
+.path-shell
+.path-principle > span {
+  font-size: 11px !important;
+}
+
+.path-shell
+.path-principle p {
+  color:
+    rgba(255, 255, 255, .74)
+    !important;
+
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  line-height: 1.7 !important;
+}
+
+
+/* =========================================================
+   WINGMATCH — GENERAL
+   ========================================================= */
+
+.wingmatch-shell small {
+  font-size: 10px !important;
+}
+
+.wingmatch-shell
+.wingmatch-progress span {
+  color:
+    rgba(255, 255, 255, .72)
+    !important;
+
+  font-size: 11px !important;
+}
+
+.wingmatch-shell
+.wingmatch-flight-topline {
+  font-size: 11px !important;
+}
+
+.wingmatch-shell
+.wingmatch-phase span {
+  font-size: 11px !important;
+}
+
+.wingmatch-shell
+.wingmatch-metric span {
+  color:
+    rgba(255, 255, 255, .62)
+    !important;
+
+  font-size: 10px !important;
+}
+
+.wingmatch-shell
+.wingmatch-metric strong {
+  font-size: 15px !important;
+}
+
+.wingmatch-shell
+.entry-altitude span {
+  color:
+    rgba(255, 255, 255, .62)
+    !important;
+
+  font-size: 10px !important;
+}
+
+
+/* =========================================================
+   WINGMATCH — QUESTIONS / CHOICES
+   ========================================================= */
+
+.wingmatch-shell
+.decision-hint {
+  color:
+    rgba(255, 255, 255, .73)
+    !important;
+
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+}
+
+.wingmatch-shell
+.decision-option-number {
+  color:
+    rgba(255, 255, 255, .58)
+    !important;
+
+  font-size: 11px !important;
+}
+
+.wingmatch-shell
+.decision-option-copy strong {
+  color: #ffffff !important;
+
+  font-size: 18px !important;
+  line-height: 1.3 !important;
+}
+
+.wingmatch-shell
+.decision-option-copy p {
+  color:
+    rgba(255, 255, 255, .70)
+    !important;
+
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.55 !important;
+}
+
+
+/*
+ * Custom mission cards sometimes
+ * use their own option/choice classes.
+ * Give those the same readable floor.
+ */
+
+.wingmatch-shell
+button[class*="option"] strong,
+.wingmatch-shell
+button[class*="choice"] strong {
+  font-size: 18px !important;
+  line-height: 1.3 !important;
+}
+
+.wingmatch-shell
+button[class*="option"] h3,
+.wingmatch-shell
+button[class*="choice"] h3 {
+  font-size: 20px !important;
+  line-height: 1.3 !important;
+}
+
+.wingmatch-shell
+button[class*="option"] p,
+.wingmatch-shell
+button[class*="choice"] p {
+  color:
+    rgba(255, 255, 255, .70)
+    !important;
+
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
+
+.wingmatch-shell
+button[class*="option"] small,
+.wingmatch-shell
+button[class*="choice"] small,
+.wingmatch-shell
+button[class*="option"] > span,
+.wingmatch-shell
+button[class*="choice"] > span {
+  font-size: 11px !important;
+}
+
+
+/* Quick-action missions */
+
+.wingmatch-shell
+.decision-option--action
+.decision-option-copy strong {
+  font-size: 16px !important;
+}
+
+.wingmatch-shell
+.decision-option--action
+.decision-option-copy p {
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+}
+
+.wingmatch-shell
+.decision-option-go {
+  font-size: 10px !important;
+}
+
+.wingmatch-shell
+.commit-button {
+  min-height: 52px;
+
+  font-size: 13px !important;
+}
+
+
+/* =========================================================
+   WINGMATCH — GAME VISUAL LABELS
+   ========================================================= */
+
+.wingmatch-shell
+.wm-game-mission-track span {
+  font-size: 9px !important;
+}
+
+.wingmatch-shell
+.wm-game-mission-track small {
+  font-size: 8px !important;
+}
+
+.wingmatch-shell
+.wm-game-foot > span {
+  font-size: 10px !important;
+}
+
+.wingmatch-shell
+.wm-game-foot p {
+  color:
+    rgba(255, 255, 255, .62)
+    !important;
+
+  font-size: 11px !important;
+  line-height: 1.45 !important;
+}
+
+.wingmatch-shell
+.wm-game-foot b {
+  color:
+    rgba(255, 255, 255, .55)
+    !important;
+
+  font-size: 9px !important;
+}
+
+.wingmatch-shell
+.wm-sensor-reading span {
+  font-size: 9px !important;
+}
+
+.wingmatch-shell
+.wm-sensor-reading small {
+  color:
+    rgba(255, 255, 255, .58)
+    !important;
+
+  font-size: 9px !important;
+}
+
+
+/* =========================================================
+   LIVE MISSION STATE
+   ========================================================= */
+
+.wingmatch-shell
+.mission-state-item-top span {
+  font-size: 10px !important;
+}
+
+.wingmatch-shell
+.mission-state-delta {
+  font-size: 10px !important;
+}
+
+.wingmatch-shell
+.mission-continuity-label {
+  font-size: 10px !important;
+}
+
+.wingmatch-shell
+.mission-continuity-main strong {
+  font-size: 14px !important;
+}
+
+.wingmatch-shell
+.mission-continuity-main span {
+  font-size: 10px !important;
+}
+
+.wingmatch-shell
+.mission-continuity-effects small {
+  font-size: 9px !important;
+}
+
+.wingmatch-shell
+.mission-continuity-effects b {
+  font-size: 11px !important;
+}
+
+.wingmatch-shell
+.commit-flash-effects small {
+  font-size: 9px !important;
+}
+
+.wingmatch-shell
+.commit-flash-effects b {
+  font-size: 14px !important;
+}
+
+.wingmatch-shell
+.commit-flash-inner > p {
+  font-size: 10px !important;
+}
+
+
+/* =========================================================
+   WINGMATCH RESULT V5
+   ========================================================= */
+
+.v5-result p {
+  color:
+    rgba(255, 255, 255, .70)
+    !important;
+
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+.v5-result small {
+  font-size: 10px !important;
+  line-height: 1.45 !important;
+}
+
+.v5-result
+section > span {
+  font-size: 10px !important;
+}
+
+.v5-result button {
+  font-size: 12px !important;
+}
+
+.v5-wing-landscape-copy > strong {
+  font-size: 17px !important;
+  line-height: 1.3 !important;
+}
+
+.v5-style-grid strong,
+.v5-result-moments strong,
+.v5-try-grid strong {
+  font-size: 15px !important;
+  line-height: 1.4 !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .path-shell
+  .path-card-body p {
+    font-size: 14px !important;
+  }
+
+  .wingmatch-shell
+  .decision-option-copy strong {
+    font-size: 17px !important;
+  }
+
+  .wingmatch-shell
+  .decision-option-copy p {
+    font-size: 13px !important;
+  }
+}

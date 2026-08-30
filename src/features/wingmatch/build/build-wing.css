@@ -2321,3 +2321,39 @@
     0 14px 34px
     rgba(255, 107, 107, 0.18);
 }
+
+
+/* =========================================================
+   ALTWING LOGO → HOME
+   ========================================================= */
+
+.altwing-home-logo {
+  display: inline-flex;
+  align-items: center;
+
+  color: #f7f9ff;
+
+  text-decoration: none;
+
+  font-size: inherit;
+  font-weight: 900;
+
+  letter-spacing: -.04em;
+
+  cursor: pointer;
+}
+
+.altwing-home-logo span {
+  color: #ff6b6b;
+}
+
+.altwing-home-logo:hover {
+  opacity: .82;
+}
+
+.altwing-home-logo:focus-visible {
+  outline: 2px solid #5b8def;
+  outline-offset: 5px;
+  border-radius: 4px;
+}
+

@@ -1,1057 +1,823 @@
-import "./wingmatch-result.css";
+import { useEffect } from "react";
 
-export interface ResultTelemetryItem {
-  label: string;
-  value: string;
-  status?: string;
-}
+import {
+  WING_PROFILES,
+  STYLE_NAMES,
+  rankScores,
 
-export interface ResultMissionHistoryItem {
+  type PrimaryWingId,
+  type StyleScores,
+  type ThinkingStyleId,
+  type WingEvidence,
+  type WingScores,
+} from "../engine/wingmatchV5";
+
+import OpportunityRadar from "../opportunities/OpportunityRadar";
+import WingMascot from "./WingMascot";
+
+import "../styles/beginner-first.css";
+import "../styles/wingmatch-v5.css";
+
+
+interface HistoryItem {
   sceneId: string;
+
   phase: string;
+
   title: string;
+
   consequence: string;
-  effects: ResultTelemetryItem[];
+
+  primaryWing?:
+    PrimaryWingId;
 }
 
-interface WingMatchResultProps {
-  wingScores: Partial<
-    Record<string, number>
-  >;
 
-  reasoningScores: Partial<
-    Record<string, number>
-  >;
+interface Props {
+  wingScores:
+    WingScores;
+
+  styleScores:
+    StyleScores;
+
+  wingEvidence:
+    WingEvidence;
 
   missionHistory:
-    ResultMissionHistoryItem[];
+    HistoryItem[];
 
-  onRestart?: () => void;
-  onContinue?: () => void;
+  onRestart?:
+    () => void;
+
+  onContinue?:
+    (
+      wingId:
+        PrimaryWingId,
+    ) => void;
 }
 
-interface WingProfile {
-  id: string;
-  name: string;
-  shortName: string;
-  description: string;
 
-  major:
-    | string
-    | string[];
+const ALL_WINGS =
+  Object.keys(
+    WING_PROFILES,
+  ) as PrimaryWingId[];
 
-  projectTitle: string;
-  projectDescription: string;
-
-  extracurricular:
-    string;
-
-  courses: string[];
-
-  evidenceKeywords: string[];
-}
-
-const wingProfiles: Record<
-  string,
-  WingProfile
-> = {
-  systems: {
-    id: "systems",
-    name: "Systems Engineering",
-    shortName: "SYSTEMS",
-
-    description:
-      "You tend to look across the whole mission, balance competing constraints, and ask how one decision changes the rest of the system.",
-
-    major: [
-      "Aerospace Engineering",
-      "Systems Engineering",
-      "Industrial Engineering",
-    ],
-
-    projectTitle:
-      "Build a Mission Tradeoff Simulator",
-
-    projectDescription:
-      "Create a small simulator where mass, power, thermal margin, reliability, and mission value compete for limited resources. Let users change assumptions and watch the best plan change.",
-
-    extracurricular:
-      "Turn the simulator into a documented engineering project, publish it on GitHub, test it with other students, and present the design decisions through TSA, a science fair, engineering club, or independent research portfolio.",
-
-    courses: [
-      "AP Calculus",
-      "Physics",
-      "Computer Science",
-      "Engineering Design",
-    ],
-
-    evidenceKeywords: [
-      "THERMAL",
-      "LANDING",
-      "MISSION COMMAND",
-      "SYSTEM",
-    ],
-  },
-
-  gnc: {
-    id: "gnc",
-    name:
-      "Guidance, Navigation & Control",
-    shortName: "GNC",
-
-    description:
-      "You show interest in how a vehicle senses its state, corrects errors, and stays on the desired trajectory under uncertainty.",
-
-    major: [
-      "Aerospace Engineering",
-      "Mechanical Engineering",
-      "Robotics",
-    ],
-
-    projectTitle:
-      "Build a Lander Control Simulator",
-
-    projectDescription:
-      "Model a simplified lander trying to reach a target attitude or altitude. Let the user tune controller gain and visualize overshoot, settling time, and stability.",
-
-    extracurricular:
-      "Develop the simulator into an engineering portfolio project with experiments, graphs, design iterations, and a short technical report. It can support TSA, robotics, aerospace club, or research applications.",
-
-    courses: [
-      "AP Calculus BC",
-      "AP Physics",
-      "Computer Science",
-      "Linear Algebra later",
-    ],
-
-    evidenceKeywords: [
-      "ENTRY",
-      "SENSOR",
-      "CONTROL",
-      "LANDING",
-    ],
-  },
-
-  avionics: {
-    id: "avionics",
-    name:
-      "Avionics & Embedded Systems",
-    shortName: "AVIONICS",
-
-    description:
-      "You tend to investigate signals, electronics, communication paths, and sensor evidence before deciding what failed.",
-
-    major: [
-      "Aerospace Engineering",
-      "Electrical Engineering",
-      "Computer Engineering",
-    ],
-
-    projectTitle:
-      "Build a Spacecraft Fault Detective",
-
-    projectDescription:
-      "Create a diagnostic system that receives simulated spacecraft telemetry and asks the user or an algorithm to isolate sensor, communication, power, or computer faults.",
-
-    extracurricular:
-      "Turn the diagnostic tool into a technical demonstration with test cases and fault-injection experiments. Publish the results and use them for TSA, robotics, engineering competitions, or independent research.",
-
-    courses: [
-      "Physics",
-      "Computer Science",
-      "Electronics",
-      "Engineering",
-    ],
-
-    evidenceKeywords: [
-      "SENSOR",
-      "AVIONICS",
-      "FAULT",
-      "COMM",
-    ],
-  },
-
-  structures: {
-    id: "structures",
-    name:
-      "Aerospace Structures",
-    shortName: "STRUCTURES",
-
-    description:
-      "You focus on how forces move through a vehicle and how engineers trade mass against strength, stiffness, and failure risk.",
-
-    major: [
-      "Aerospace Engineering",
-      "Mechanical Engineering",
-      "Materials Engineering",
-    ],
-
-    projectTitle:
-      "Design the Lightest Safe Lander Leg",
-
-    projectDescription:
-      "Create several landing-leg designs, estimate their load paths, compare buckling risk and mass, and justify which structure you would actually build.",
-
-    extracurricular:
-      "Document CAD versions, calculations, failure assumptions, and design changes. The project can become a TSA engineering design entry, science fair project, CAD portfolio piece, or research starter.",
-
-    courses: [
-      "AP Physics",
-      "Calculus",
-      "Engineering",
-      "CAD",
-    ],
-
-    evidenceKeywords: [
-      "STRUCTURAL",
-      "LOAD",
-      "LANDING",
-    ],
-  },
-
-  thermal: {
-    id: "thermal",
-    name:
-      "Thermal Engineering",
-    shortName: "THERMAL",
-
-    description:
-      "You pay attention to heat, energy limits, margins, and how protecting one subsystem can create risk somewhere else.",
-
-    major: [
-      "Aerospace Engineering",
-      "Mechanical Engineering",
-    ],
-
-    projectTitle:
-      "Design a Small-Satellite Thermal Model",
-
-    projectDescription:
-      "Model how a CubeSat heats and cools in sunlight and eclipse. Explore how insulation, radiators, electronics power, and orbit assumptions change temperature.",
-
-    extracurricular:
-      "Turn the model into a simulation study with plots, design recommendations, and documented assumptions for an engineering portfolio, science fair, or aerospace research application.",
-
-    courses: [
-      "Physics",
-      "Calculus",
-      "Chemistry",
-      "Engineering",
-    ],
-
-    evidenceKeywords: [
-      "THERMAL",
-      "POWER",
-      "MISSION COMMAND",
-    ],
-  },
-
-  propulsion: {
-    id: "propulsion",
-    name:
-      "Propulsion & Energy Systems",
-    shortName: "PROPULSION",
-
-    description:
-      "You pay attention to the energy required to move a vehicle and the tradeoff between performance, efficiency, heat, and remaining reserves.",
-
-    major: [
-      "Aerospace Engineering",
-      "Mechanical Engineering",
-    ],
-
-    projectTitle:
-      "Build a Rocket Performance Explorer",
-
-    projectDescription:
-      "Create a simulation that compares vehicle mass, thrust, burn time, efficiency, and mission requirements without building an actual rocket.",
-
-    extracurricular:
-      "Turn the model into a safe computational aerospace project with scenario testing, graphs, and technical documentation for competitions, research portfolios, or aerospace clubs.",
-
-    courses: [
-      "Physics",
-      "Calculus",
-      "Chemistry",
-      "Computer Science",
-    ],
-
-    evidenceKeywords: [
-      "ENTRY",
-      "THERMAL",
-      "MISSION COMMAND",
-    ],
-  },
-
-  "mission-design": {
-    id: "mission-design",
-    name:
-      "Mission Design & Space Operations",
-    shortName: "MISSION DESIGN",
-
-    description:
-      "You tend to think about the mission objective itself: where to go, what to prioritize, what risk is acceptable, and what makes the mission worthwhile.",
-
-    major: [
-      "Aerospace Engineering",
-      "Astronomy / Astrophysics",
-      "Systems Engineering",
-    ],
-
-    projectTitle:
-      "Design a Complete Mars Micro-Mission",
-
-    projectDescription:
-      "Choose a scientific objective, landing region, spacecraft constraints, instruments, operating timeline, and mission tradeoffs. Explain why your mission deserves to exist.",
-
-    extracurricular:
-      "Develop it into a mission proposal with maps, CAD or diagrams, trade studies, and a written design review. This can support aerospace competitions, science fairs, research programs, or an independent project portfolio.",
-
-    courses: [
-      "Physics",
-      "Calculus",
-      "Astronomy",
-      "Engineering",
-    ],
-
-    evidenceKeywords: [
-      "LANDING",
-      "MISSION",
-      "SCIENCE",
-    ],
-  },
-};
-
-const reasoningLabels:
-  Record<string, string> = {
-    "systems-integration":
-      "Systems Integration",
-
-    "mission-tradeoffs":
-      "Tradeoff Reasoning",
-
-    optimization:
-      "Optimization",
-
-    iteration:
-      "Iterative Testing",
-
-    "quantitative-reasoning":
-      "Quantitative Reasoning",
-
-    "feedback-control":
-      "Feedback Thinking",
-
-    "thermal-reasoning":
-      "Thermal Reasoning",
-
-    "risk-tolerance":
-      "Risk Judgment",
-  };
-
-function humanizeKey(
-  key: string,
-) {
-  return (
-    reasoningLabels[key] ??
-    key
-      .split("-")
-      .map(
-        (word) =>
-          word.charAt(0).toUpperCase() +
-          word.slice(1),
-      )
-      .join(" ")
-  );
-}
-
-function rankScores(
-  scores:
-    Partial<
-      Record<string, number>
-    >,
-) {
-  return Object.entries(scores)
-    .filter(
-      (
-        entry,
-      ): entry is [
-        string,
-        number,
-      ] =>
-        typeof entry[1] ===
-          "number" &&
-        entry[1] > 0,
-    )
-    .sort(
-      (a, b) =>
-        b[1] - a[1],
-    );
-}
-
-function getProfile(
-  id: string,
-): WingProfile {
-  return (
-    wingProfiles[id] ?? {
-      id,
-
-      name: humanizeKey(id),
-
-      shortName:
-        humanizeKey(
-          id,
-        ).toUpperCase(),
-
-      description:
-        "Your mission behavior produced a meaningful signal in this aerospace pathway.",
-
-      major:
-        "Aerospace Engineering",
-
-      projectTitle:
-        "Build an Aerospace Investigation",
-
-      projectDescription:
-        "Turn one of the mission problems into a real technical project, test multiple approaches, and document what you learned.",
-
-      extracurricular:
-        "Document the work, publish the evidence, and develop it into an engineering portfolio activity.",
-
-      courses: [
-        "Calculus",
-        "Physics",
-        "Computer Science",
-        "Engineering",
-      ],
-
-      evidenceKeywords: [],
-    }
-  );
-}
 
 function WingMatchResult({
   wingScores,
-  reasoningScores,
+  styleScores,
+  wingEvidence,
   missionHistory,
   onRestart,
   onContinue,
-}: WingMatchResultProps) {
-  const rankedWings =
-    rankScores(wingScores);
+}: Props) {
 
-  const rankedReasoning =
-    rankScores(
-      reasoningScores,
-    );
-
-  const maxWingScore =
-    rankedWings[0]?.[1] ?? 1;
-
-  const topWings =
-    rankedWings
-      .slice(0, 3)
+  const wingLandscape =
+    ALL_WINGS
       .map(
-        ([id, score]) => ({
+        (
+          id,
+        ) => ({
+          id,
+
           profile:
-            getProfile(id),
+            WING_PROFILES[
+              id
+            ],
 
-          score,
-
-          relativeStrength:
-            Math.round(
-              (score /
-                maxWingScore) *
-                100,
-            ),
+          score:
+            wingScores[
+              id
+            ] ??
+            0,
         }),
+      )
+      .sort(
+        (
+          a,
+          b,
+        ) =>
+          b.score -
+          a.score,
       );
 
-  const primaryWing =
-    topWings[0]?.profile ??
-    getProfile("systems");
 
-  const primaryScore =
-    topWings[0]?.score ?? 0;
-
-  const alternateWings =
-    topWings.slice(1);
-
-  const topReasoning =
-    rankedReasoning.slice(
-      0,
-      4,
+  const styles =
+    rankScores<
+      ThinkingStyleId
+    >(
+      styleScores,
     );
 
-  const maxReasoningScore =
-    topReasoning[0]?.[1] ??
-    1;
 
-  function reasoningSignal(
-    score: number,
-  ) {
-    const ratio =
-      score /
-      maxReasoningScore;
+  const primary =
+    wingLandscape[0];
 
-    if (ratio >= 0.8) {
-      return "STRONG SIGNAL";
-    }
 
-    if (ratio >= 0.55) {
-      return "SUPPORTING SIGNAL";
-    }
+  const secondary =
+    wingLandscape[1];
 
-    return "EMERGING SIGNAL";
-  }
+
+  const primaryId =
+    primary?.id ??
+    "mission-design";
+
+
+  const primaryProfile =
+    WING_PROFILES[
+      primaryId
+    ];
 
   /*
-   * Prioritize the interactive
-   * decisions students actually
-   * remember making.
+   * MY WING
+   *
+   * The strongest completed WingMatch
+   * signal becomes the student's current
+   * saved Wing.
+   *
+   * It is persistent, but not permanent:
+   * completing WingMatch again can update it.
    */
-  const preferredSceneIds = [
-    "thermal-management",
-    "landing-site-selection",
-    "avionics-fault-isolation",
-    "mission-command",
-  ];
+  useEffect(() => {
 
-  const priorityEvidence =
-    preferredSceneIds
-      .map((sceneId) =>
-        [...missionHistory]
-          .reverse()
-          .find(
-            (item) =>
-              item.sceneId ===
-              sceneId,
-          ),
-      )
-      .filter(
-        (
-          item,
-        ): item is
-          ResultMissionHistoryItem =>
-          Boolean(item),
-      );
+    localStorage.setItem(
+      "altwing-selected-wing-v1",
+      primaryId,
+    );
 
-  const prioritySceneIds =
-    new Set(
-      priorityEvidence.map(
-        (item) =>
-          item.sceneId,
+    localStorage.setItem(
+      "altwing-selected-wing-saved-at-v1",
+      new Date().toISOString(),
+    );
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "altwing:my-wing-changed",
+        {
+          detail: {
+            wingId:
+              primaryId,
+          },
+        },
       ),
     );
 
-  const fallbackEvidence =
-    [...missionHistory]
-      .reverse()
-      .filter(
-        (item) =>
-          !prioritySceneIds.has(
-            item.sceneId,
-          ),
+  }, [primaryId]);
+
+
+  const topScore =
+    primary?.score ??
+    1;
+
+
+  const secondScore =
+    secondary?.score ??
+    0;
+
+
+  const scoreGap =
+    topScore -
+    secondScore;
+
+
+  const evidenceCount =
+    wingEvidence[
+      primaryId
+    ] ??
+    0;
+
+
+  const overlapping =
+    scoreGap <
+    0.18;
+
+
+  const confidence =
+    overlapping
+      ? "CLOSE SIGNALS"
+
+      : evidenceCount >=
+          2 &&
+        scoreGap >=
+          0.75
+        ? "REPEATED SIGNAL"
+
+        : evidenceCount >=
+            2 ||
+          scoreGap >=
+            0.35
+          ? "MODERATE SIGNAL"
+
+          : "EARLY SIGNAL";
+
+
+  const topStyle =
+    styles[0]?.[0] ??
+    "systems";
+
+
+  /*
+   * Opportunity Radar uses the
+   * student's THREE strongest
+   * Wing signals, not only #1.
+   *
+   * This prevents the result page
+   * from artificially narrowing
+   * the student's next options.
+   */
+
+  const radarWings =
+    wingLandscape
+      .slice(
+        0,
+        3,
+      )
+      .map(
+        (
+          item,
+        ) =>
+          item.id,
       );
 
-  const evidenceToShow = [
-    ...priorityEvidence,
-    ...fallbackEvidence,
-  ].slice(0, 4);
+
+  const relevantMoments =
+    missionHistory
+      .filter(
+        (
+          item,
+        ) =>
+          radarWings.includes(
+            item.primaryWing ??
+            primaryId,
+          ),
+      )
+      .slice(
+        0,
+        4,
+      );
+
+
+  function relative(
+    score: number,
+  ) {
+    if (
+      topScore <= 0
+    ) {
+      return 0;
+    }
+
+    return Math.round(
+      (
+        score /
+        topScore
+      ) *
+      100,
+    );
+  }
+
+
+  function signalLabel(
+    score: number,
+    index: number,
+  ) {
+    if (
+      index === 0
+    ) {
+      return "STRONGEST TODAY";
+    }
+
+    const ratio =
+      topScore > 0
+        ? score /
+          topScore
+        : 0;
+
+
+    if (
+      ratio >= .86
+    ) {
+      return "VERY CLOSE";
+    }
+
+    if (
+      ratio >= .63
+    ) {
+      return "POSSIBLE";
+    }
+
+    return "LOWER SIGNAL";
+  }
+
 
   return (
-    <main className="result-shell">
-      <section className="result-reveal">
-        <div className="result-reveal__kicker">
-          MISSION COMPLETE
-        </div>
+    <main className="v5-result v5-result--landscape">
 
-        <div className="result-reveal__label">
-          YOUR WING
-        </div>
+      <section className="v5-result-hero v5-result-hero--mascot">
 
-        <h1>
-          {primaryWing.name}
-        </h1>
+        <div className="v5-result-hero-copy">
 
-        <p className="result-reveal__description">
-          {
-            primaryWing.description
-          }
-        </p>
-
-        <div className="result-reveal__rule" />
-
-        <p className="result-reveal__method">
-          This is not a personality
-          label. It is the strongest
-          pattern produced by the
-          decisions you made during
-          this mission.
-        </p>
-
-        <div className="result-reveal__signal">
           <span>
-            PRIMARY EVIDENCE SIGNAL
+            WINGMATCH COMPLETE
           </span>
-
-          <strong>
-            {primaryScore} pts
-          </strong>
-        </div>
-      </section>
-
-      <section className="result-section">
-        <div className="result-section-heading">
-          <span>
-            01 / WHY THIS WING
-          </span>
-
-          <h2>
-            Your decisions left
-            evidence.
-          </h2>
 
           <p>
-            These are choices you
-            actually made during the
-            mission — not answers to
-            personality questions.
+            YOUR STRONGEST SIGNAL
+            TODAY
           </p>
+
+          <h1>
+            {
+              primaryProfile
+                .name
+            }
+          </h1>
+
+          <strong>
+            {
+              primaryProfile
+                .simple
+            }
+          </strong>
+
+
+          <div className="v5-result-confidence">
+
+            <span>
+              {confidence}
+            </span>
+
+            <small>
+              This is not a verdict.
+              It is the strongest
+              pattern from this
+              mission session.
+            </small>
+
+          </div>
+
         </div>
 
-        <div className="result-debrief-list">
-          {evidenceToShow.map(
+
+        <div className="v5-result-hero-mascot">
+
+          <WingMascot
+            wingId={
+              primaryId
+            }
+            size="hero"
+          />
+
+          <span>
+            {
+              primaryProfile
+                .shortName
+            }
+            {" "}FLIGHT CREW
+          </span>
+
+        </div>
+
+      </section>
+
+
+      <section className="v5-result-section v5-wing-landscape">
+
+        <span>
+          WHAT YOU COULD HAVE
+          GOTTEN
+        </span>
+
+        <h2>
+          Your full Wing landscape.
+        </h2>
+
+        <p>
+          AltWing does not assume
+          one quiz result defines
+          you. These are all six
+          aerospace signals from
+          the same mission.
+        </p>
+
+
+        <div className="v5-wing-landscape-grid">
+
+          {wingLandscape.map(
             (
               item,
               index,
-            ) => (
-              <article
-                className="result-debrief-card"
-                key={
-                  `${item.sceneId}-${index}`
-                }
-              >
-                <div className="result-debrief-card__top">
-                  <div>
-                    <span>
-                      {String(
-                        index + 1,
-                      ).padStart(
-                        2,
-                        "0",
-                      )}
-                      {" / "}
-                      {item.phase}
-                    </span>
+            ) => {
 
-                    <h3>
-                      {item.title}
-                    </h3>
-                  </div>
+              const width =
+                relative(
+                  item.score,
+                );
 
-                  <div className="result-debrief-card__status">
-                    DECISION EVIDENCE
-                  </div>
-                </div>
-
-                <p>
-                  {
-                    item.consequence
-                  }
-                </p>
-
-                {item.effects.length >
-                  0 && (
-                  <div className="result-evidence-metrics">
-                    {item.effects
-                      .slice(0, 5)
-                      .map(
-                        (
-                          effect,
-                          effectIndex,
-                        ) => (
-                          <div
-                            className={[
-                              "result-evidence-metric",
-
-                              effect.status ===
-                              "warning"
-                                ? "result-evidence-metric--warning"
-                                : "",
-                            ]
-                              .filter(
-                                Boolean,
-                              )
-                              .join(
-                                " ",
-                              )}
-                            key={
-                              `${effect.label}-${effectIndex}`
-                            }
-                          >
-                            <span>
-                              {
-                                effect.label
-                              }
-                            </span>
-
-                            <strong>
-                              {
-                                effect.value
-                              }
-                            </strong>
-                          </div>
-                        ),
-                      )}
-                  </div>
-                )}
-              </article>
-            ),
-          )}
-        </div>
-      </section>
-
-      <section className="result-section result-pattern-section">
-        <div className="result-section-heading">
-          <span>
-            02 / YOUR ENGINEERING PATTERN
-          </span>
-
-          <h2>
-            How you tended to
-            reason.
-          </h2>
-
-          <p>
-            These signals compare
-            patterns inside your own
-            mission run. They are not
-            aptitude scores.
-          </p>
-        </div>
-
-        <div className="reasoning-grid">
-          {topReasoning.map(
-            (
-              [id, score],
-              index,
-            ) => (
-              <article
-                className="reasoning-card result-reasoning-card"
-                key={id}
-              >
-                <span>
-                  0{index + 1}
-                </span>
-
-                <strong>
-                  {
-                    humanizeKey(
-                      id,
-                    )
-                  }
-                </strong>
-
-                <div className="result-reasoning-signal">
-                  {
-                    reasoningSignal(
-                      score,
-                    )
-                  }
-                </div>
-
-                <small>
-                  {score} evidence
-                  points
-                </small>
-              </article>
-            ),
-          )}
-        </div>
-      </section>
-
-      {alternateWings.length >
-        0 && (
-        <section className="result-section">
-          <div className="result-section-heading">
-            <span>
-              03 / OTHER SIGNALS
-            </span>
-
-            <h2>
-              You are not one
-              fixed Wing.
-            </h2>
-
-            <p>
-              Different decisions
-              could strengthen
-              different engineering
-              pathways on another
-              mission run.
-            </p>
-          </div>
-
-          <div className="result-alternate-grid">
-            {alternateWings.map(
-              ({
-                profile,
-                score,
-              }) => (
+              return (
                 <article
-                  className="result-alternate-card"
                   key={
-                    profile.id
+                    item.id
+                  }
+                  className={
+                    index === 0
+                      ? "primary"
+                      : ""
                   }
                 >
-                  <span>
-                    SUPPORTING WING
-                  </span>
 
-                  <h3>
-                    {
-                      profile.name
+                  <WingMascot
+                    wingId={
+                      item.id
                     }
-                  </h3>
+                    size="card"
+                  />
 
-                  <p>
-                    {
-                      profile.description
-                    }
-                  </p>
+
+                  <div className="v5-wing-landscape-copy">
+
+                    <small>
+                      {
+                        signalLabel(
+                          item.score,
+                          index,
+                        )
+                      }
+                    </small>
+
+                    <strong>
+                      {
+                        item.profile
+                          .name
+                      }
+                    </strong>
+
+                    <p>
+                      {
+                        item.profile
+                          .simple
+                      }
+                    </p>
+
+
+                    <div className="v5-wing-signal-track">
+
+                      <i
+                        style={{
+                          width:
+                            `${width}%`,
+                        }}
+                      />
+
+                    </div>
+
+
+                    {onContinue && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          localStorage.setItem(
+                            "altwing-selected-wing-v1",
+                            item.id,
+                          );
+
+                          onContinue(
+                            item.id,
+                          );
+                        }}
+                      >
+                        TRY THIS WING →
+                      </button>
+                    )}
+
+                  </div>
+
+                </article>
+              );
+            },
+          )}
+
+        </div>
+
+
+        <p className="v5-relative-note">
+          Bars show relative signal
+          strength within this
+          session. They are not
+          probabilities, aptitude
+          percentages, or claims
+          about what career you
+          should choose.
+        </p>
+
+      </section>
+
+
+      <section className="v5-result-section">
+
+        <span>
+          HOW YOU APPROACHED
+          THE MISSION
+        </span>
+
+        <h2>
+          {
+            STYLE_NAMES[
+              topStyle
+            ]
+          }
+        </h2>
+
+        <p>
+          Thinking Style is
+          separate from Wing.
+          Someone can approach GNC,
+          Structures, Propulsion,
+          or any other field with
+          the same thinking style.
+        </p>
+
+
+        <div className="v5-style-grid">
+
+          {styles
+            .slice(
+              0,
+              3,
+            )
+            .map(
+              (
+                [
+                  id,
+                  score,
+                ],
+                index,
+              ) => (
+                <article
+                  key={id}
+                >
 
                   <small>
-                    {score} evidence
-                    points
+                    SIGNAL{" "}
+                    {index + 1}
                   </small>
+
+                  <strong>
+                    {
+                      STYLE_NAMES[
+                        id
+                      ]
+                    }
+                  </strong>
+
+                  <span>
+                    Relative
+                    behavioral
+                    signal{" "}
+                    {
+                      score
+                        .toFixed(
+                          1,
+                        )
+                    }
+                  </span>
+
                 </article>
               ),
             )}
-          </div>
-        </section>
-      )}
 
-      <section className="result-section result-pathway">
-        <div className="result-section-heading">
-          <span>
-            04 / TEST THIS WING
-          </span>
-
-          <h2>
-            Don't believe the
-            result. Build something
-            and test it.
-          </h2>
         </div>
 
-        <div className="pathway-hero">
-          <div>
-            <span>
-              PRIMARY WING
-            </span>
+      </section>
 
-            <h3>
-              {primaryWing.name}
-            </h3>
 
-            <p>
-              The next step is not
-              another quiz. Build a
-              small project that lets
-              you experience this kind
-              of engineering for real.
-            </p>
-          </div>
+      <section className="v5-result-section">
 
-          <div className="pathway-majors">
-            <span>
-              RELATED MAJORS
-            </span>
+        <span>
+          WHAT SHAPED THE RESULT
+        </span>
 
-            {(Array.isArray(
-              primaryWing.major,
+        <h2>
+          Decisions that created
+          your strongest signals.
+        </h2>
+
+
+        <div className="v5-result-moments">
+
+          {relevantMoments.length >
+          0
+            ? relevantMoments.map(
+                (
+                  item,
+                  index,
+                ) => (
+                  <article
+                    key={
+                      `${item.sceneId}-${index}`
+                    }
+                  >
+
+                    <small>
+                      {
+                        item.phase
+                      }
+                    </small>
+
+                    <strong>
+                      {
+                        item.title
+                      }
+                    </strong>
+
+                    <p>
+                      {
+                        item.consequence
+                      }
+                    </p>
+
+                  </article>
+                ),
+              )
+
+            : missionHistory
+                .slice(
+                  0,
+                  3,
+                )
+                .map(
+                  (
+                    item,
+                    index,
+                  ) => (
+                    <article
+                      key={
+                        `${item.sceneId}-${index}`
+                      }
+                    >
+
+                      <small>
+                        {
+                          item.phase
+                        }
+                      </small>
+
+                      <strong>
+                        {
+                          item.title
+                        }
+                      </strong>
+
+                      <p>
+                        {
+                          item.consequence
+                        }
+                      </p>
+
+                    </article>
+                  ),
+                )}
+
+        </div>
+
+      </section>
+
+
+      <section className="v5-method-note">
+
+        <span>
+          HOW TO READ THIS
+        </span>
+
+        <h2>
+          Exploration signal —
+          not an aptitude score.
+        </h2>
+
+        <p>
+          AltWing uses
+          situational choices,
+          randomized option order,
+          and mini behavior tasks
+          to reduce simple
+          self-report and obvious-
+          answer bias. It is still
+          an exploratory assessment,
+          not a scientifically
+          validated aptitude test.
+        </p>
+
+      </section>
+
+
+      <OpportunityRadar
+        wingIds={
+          radarWings
+        }
+      />
+
+
+      <section className="v5-try">
+
+        <span>
+          NEXT MOVE
+        </span>
+
+        <h2>
+          Test a Wing instead of
+          accepting a label.
+        </h2>
+
+        <p>
+          Try one of your three
+          strongest signals — or
+          choose any Wing from the
+          landscape above.
+        </p>
+
+
+        <div className="v5-try-grid">
+
+          {wingLandscape
+            .slice(
+              0,
+              3,
             )
-              ? primaryWing.major
-              : [
-                  primaryWing.major,
-                ]
-            ).map(
-              (major) => (
-                <strong
-                  key={major}
+            .map(
+              (
+                item,
+              ) => (
+                <article
+                  key={
+                    item.id
+                  }
                 >
-                  {major}
-                </strong>
+
+                  <small>
+                    {
+                      item.profile
+                        .shortName
+                    }
+                    {" "}STARTER
+                  </small>
+
+                  <strong>
+                    {
+                      item.profile
+                        .challenge
+                    }
+                  </strong>
+
+                  {onContinue && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                          localStorage.setItem(
+                            "altwing-selected-wing-v1",
+                            item.id,
+                          );
+
+                          onContinue(
+                            item.id,
+                          );
+                        }}
+                    >
+                      TRY{" "}
+                      {
+                        item.profile
+                          .shortName
+                      }
+                      {" "}→
+                    </button>
+                  )}
+
+                </article>
               ),
             )}
-          </div>
+
         </div>
 
-        <div className="result-project-focus">
-          <span>
-            YOUR 3-WEEK BUILD
-          </span>
+      </section>
 
-          <h3>
-            {
-              primaryWing.projectTitle
+
+      <footer className="v5-result-actions">
+
+        {onRestart && (
+          <button
+            type="button"
+            onClick={
+              onRestart
             }
-          </h3>
+          >
+            Replay with a new
+            option order
+          </button>
+        )}
 
-          <p>
-            {
-              primaryWing.projectDescription
-            }
-          </p>
+      </footer>
 
-          <div>
-            BUILD → TEST → ITERATE →
-            DOCUMENT → SHARE
-          </div>
-        </div>
-
-        <div className="action-grid">
-          <article className="action-card">
-            <span>
-              MAKE IT REAL
-            </span>
-
-            <h3>
-              Turn the project into
-              evidence.
-            </h3>
-
-            <p>
-              {
-                primaryWing.extracurricular
-              }
-            </p>
-          </article>
-
-          <article className="action-card">
-            <span>
-              WHY THIS PROJECT
-            </span>
-
-            <h3>
-              Test the pattern you
-              just revealed.
-            </h3>
-
-            <p>
-              Your mission behavior
-              suggests this Wing is
-              worth exploring. The
-              build is how you find
-              out whether you actually
-              enjoy doing the work.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section className="result-section">
-        <div className="result-section-heading">
-          <span>
-            05 / ACADEMIC RUNWAY
-          </span>
-
-          <h2>
-            Prepare for the work,
-            not just the major name.
-          </h2>
-        </div>
-
-        <div className="college-launch-grid">
-          <article>
-            <span>
-              HIGH-SCHOOL
-              FOUNDATION
-            </span>
-
-            <div className="course-tags">
-              {primaryWing.courses.map(
-                (course) => (
-                  <strong
-                    key={course}
-                  >
-                    {course}
-                  </strong>
-                ),
-              )}
-            </div>
-          </article>
-
-          <article>
-            <span>
-              NEXT EVIDENCE
-            </span>
-
-            <h3>
-              Leave proof behind.
-            </h3>
-
-            <p>
-              Build something,
-              test it, document what
-              failed, and show what
-              changed because of your
-              decisions.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section className="result-footer result-footer--v3">
-        <div>
-          <span>
-            EXPLORE. BUILD.
-            LAUNCH.
-          </span>
-
-          <h2>
-            Your Wing can change
-            when your decisions
-            change.
-          </h2>
-
-          <p>
-            Replay the mission with
-            different tradeoffs, or
-            take this Wing into a real
-            build.
-          </p>
-        </div>
-
-        <div className="result-actions">
-          {onRestart && (
-            <button
-              type="button"
-              className="result-button result-button--secondary"
-              onClick={
-                onRestart
-              }
-            >
-              Replay with different choices
-            </button>
-          )}
-
-          {onContinue && (
-            <button
-              type="button"
-              className="result-button result-button--primary"
-              onClick={
-                onContinue
-              }
-            >
-              Build this Wing →
-            </button>
-          )}
-        </div>
-      </section>
     </main>
   );
 }
+
 
 export default WingMatchResult;

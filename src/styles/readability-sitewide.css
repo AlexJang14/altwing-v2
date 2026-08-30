@@ -1,0 +1,375 @@
+
+/* =========================================================
+   ALTWING — SITE-WIDE READABILITY FLOOR
+   Loaded LAST.
+
+   Goal:
+   - No 4px / 6px / 8px unreadable copy.
+   - Keep existing layout/colors.
+   - Increase small supporting text everywhere.
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   BASE
+   --------------------------------------------------------- */
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+
+/* ---------------------------------------------------------
+   NORMAL BODY COPY
+   --------------------------------------------------------- */
+
+:where(
+  .app,
+  .path-shell,
+  .wingmatch-shell,
+  .v5-result,
+  .readiness-shell,
+  .college-shell,
+  .activity-shell,
+  .leadership-shell,
+  .course-shell,
+  .final-decision-shell,
+  .build-shell,
+  .project-portfolio,
+  .my-universe-page,
+  .my-universe-panel,
+  .opportunity-radar
+) p {
+  font-size: max(14px, .875rem);
+  line-height: 1.6;
+}
+
+
+/* ---------------------------------------------------------
+   SMALL / SECONDARY COPY
+   --------------------------------------------------------- */
+
+:where(
+  .app,
+  .path-shell,
+  .wingmatch-shell,
+  .v5-result,
+  .readiness-shell,
+  .college-shell,
+  .activity-shell,
+  .leadership-shell,
+  .course-shell,
+  .final-decision-shell,
+  .build-shell,
+  .project-portfolio,
+  .my-universe-page,
+  .my-universe-panel,
+  .opportunity-radar
+) small {
+  font-size: max(11px, .6875rem) !important;
+  line-height: 1.45 !important;
+  opacity: .92;
+}
+
+
+/* ---------------------------------------------------------
+   LABELS / EYEBROWS / METADATA
+   --------------------------------------------------------- */
+
+:where(
+  .app,
+  .path-shell,
+  .wingmatch-shell,
+  .v5-result,
+  .readiness-shell,
+  .college-shell,
+  .activity-shell,
+  .leadership-shell,
+  .course-shell,
+  .final-decision-shell,
+  .build-shell,
+  .project-portfolio,
+  .my-universe-page,
+  .my-universe-panel,
+  .opportunity-radar
+)
+:where(
+  [class*="eyebrow"],
+  [class*="kicker"],
+  [class*="label"],
+  [class*="meta"],
+  [class*="number"],
+  [class*="badge"],
+  [class*="status"],
+  [class*="tag"]
+) {
+  font-size: max(10px, .625rem) !important;
+  line-height: 1.35 !important;
+  opacity: .95;
+}
+
+
+/* ---------------------------------------------------------
+   CARD BODY TEXT
+   Covers TSA / Robotics / activities / colleges / readiness
+   --------------------------------------------------------- */
+
+:where(
+  .path-card,
+  .activity-card,
+  .leadership-card,
+  .course-card,
+  .college-card,
+  .readiness-card,
+  .gateway-card,
+  .journey-card,
+  .outcome-card,
+  .opportunity-grid article,
+  .portfolio-project-grid article,
+  .portfolio-ownership-grid article,
+  .v5-wing-landscape-grid article,
+  .v5-style-grid article,
+  .v5-result-moments article
+) p {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  opacity: 1 !important;
+}
+
+
+/* ---------------------------------------------------------
+   CARD TITLES
+   --------------------------------------------------------- */
+
+:where(
+  .path-card,
+  .activity-card,
+  .leadership-card,
+  .course-card,
+  .college-card,
+  .readiness-card,
+  .gateway-card,
+  .journey-card,
+  .outcome-card,
+  .opportunity-grid article
+)
+:where(h2, h3, strong) {
+  line-height: 1.3;
+}
+
+
+/* ---------------------------------------------------------
+   BUTTON / LINK TEXT
+   --------------------------------------------------------- */
+
+:where(
+  .app,
+  .path-shell,
+  .wingmatch-shell,
+  .v5-result,
+  .readiness-shell,
+  .college-shell,
+  .activity-shell,
+  .leadership-shell,
+  .course-shell,
+  .final-decision-shell,
+  .build-shell,
+  .project-portfolio,
+  .my-universe-page,
+  .my-universe-panel
+)
+:where(button, a) {
+  font-size: max(12px, .75rem);
+}
+
+
+/* ---------------------------------------------------------
+   FORM LABELS + INPUTS
+   --------------------------------------------------------- */
+
+:where(
+  .readiness-shell,
+  .explorer-profile-card,
+  .build-project-context,
+  .college-shell
+) label > span {
+  font-size: 11px !important;
+  line-height: 1.4 !important;
+}
+
+:where(
+  .readiness-shell,
+  .explorer-profile-card,
+  .build-project-context,
+  .college-shell
+)
+:where(input, select, textarea) {
+  font-size: 14px !important;
+}
+
+
+/* ---------------------------------------------------------
+   DARK SCREEN CONTRAST
+   Only dark interfaces.
+   Does NOT recolor Home white cards.
+   --------------------------------------------------------- */
+
+:where(
+  .path-shell,
+  .wingmatch-shell,
+  .v5-result,
+  .readiness-shell,
+  .activity-shell,
+  .leadership-shell,
+  .course-shell,
+  .final-decision-shell,
+  .build-shell,
+  .project-portfolio,
+  .my-universe-page,
+  .my-universe-panel,
+  .opportunity-radar
+) p {
+  opacity: 1 !important;
+}
+
+:where(
+  .path-shell,
+  .wingmatch-shell,
+  .v5-result,
+  .readiness-shell,
+  .activity-shell,
+  .leadership-shell,
+  .course-shell,
+  .final-decision-shell,
+  .build-shell,
+  .project-portfolio,
+  .my-universe-page,
+  .my-universe-panel,
+  .opportunity-radar
+)
+:where(
+  small,
+  [class*="description"],
+  [class*="detail"],
+  [class*="note"]
+) {
+  opacity: .9 !important;
+}
+
+
+/* ---------------------------------------------------------
+   ACTIVITY PAGE — example shown in screenshot
+   --------------------------------------------------------- */
+
+.activity-shell .activity-card p,
+.activity-shell article p {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+.activity-shell .activity-card small,
+.activity-shell article small {
+  font-size: 11px !important;
+}
+
+.activity-shell [class*="fit"] {
+  font-size: 10px !important;
+}
+
+
+/* ---------------------------------------------------------
+   WINGMATCH — stronger floor because this is the game
+   --------------------------------------------------------- */
+
+.wingmatch-shell p {
+  font-size: 14px !important;
+}
+
+.wingmatch-shell small {
+  font-size: 11px !important;
+}
+
+.wingmatch-shell button {
+  font-size: 13px !important;
+}
+
+.wingmatch-shell
+:where(
+  [class*="option"],
+  [class*="choice"]
+) p {
+  font-size: 14px !important;
+}
+
+.wingmatch-shell
+:where(
+  [class*="option"],
+  [class*="choice"]
+)
+:where(strong, h3) {
+  font-size: 18px !important;
+}
+
+
+/* ---------------------------------------------------------
+   MY UNIVERSE / COSMIC
+   --------------------------------------------------------- */
+
+.my-universe-panel p,
+.my-universe-page p {
+  font-size: 14px !important;
+}
+
+.my-universe-panel small,
+.my-universe-page small {
+  font-size: 11px !important;
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+  body {
+    font-size: 15px;
+  }
+
+  :where(
+    .app,
+    .path-shell,
+    .wingmatch-shell,
+    .v5-result,
+    .readiness-shell,
+    .activity-shell,
+    .leadership-shell,
+    .course-shell,
+    .build-shell,
+    .project-portfolio,
+    .my-universe-page
+  ) p {
+    font-size: 14px !important;
+  }
+
+  :where(
+    .app,
+    .path-shell,
+    .wingmatch-shell,
+    .v5-result,
+    .readiness-shell,
+    .activity-shell,
+    .leadership-shell,
+    .course-shell,
+    .build-shell,
+    .project-portfolio,
+    .my-universe-page
+  ) small {
+    font-size: 11px !important;
+  }
+}

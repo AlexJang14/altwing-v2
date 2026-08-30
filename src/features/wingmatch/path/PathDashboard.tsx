@@ -15,6 +15,112 @@ export type FlightSection =
   | "readiness"
   | "decide";
 
+
+interface ExplorerProfile {
+  grade: string;
+  state: string;
+  major: string;
+  experience: string;
+}
+
+
+const EXPLORER_PROFILE_KEY =
+  "altwing-explorer-profile-v1";
+
+
+const DEFAULT_EXPLORER_PROFILE:
+  ExplorerProfile = {
+  grade: "",
+  state: "",
+  major: "",
+  experience: "",
+};
+
+
+const US_STATES = [
+  ["", "Choose later"],
+  ["AL", "Alabama"],
+  ["AK", "Alaska"],
+  ["AZ", "Arizona"],
+  ["AR", "Arkansas"],
+  ["CA", "California"],
+  ["CO", "Colorado"],
+  ["CT", "Connecticut"],
+  ["DE", "Delaware"],
+  ["FL", "Florida"],
+  ["GA", "Georgia"],
+  ["HI", "Hawaii"],
+  ["ID", "Idaho"],
+  ["IL", "Illinois"],
+  ["IN", "Indiana"],
+  ["IA", "Iowa"],
+  ["KS", "Kansas"],
+  ["KY", "Kentucky"],
+  ["LA", "Louisiana"],
+  ["ME", "Maine"],
+  ["MD", "Maryland"],
+  ["MA", "Massachusetts"],
+  ["MI", "Michigan"],
+  ["MN", "Minnesota"],
+  ["MS", "Mississippi"],
+  ["MO", "Missouri"],
+  ["MT", "Montana"],
+  ["NE", "Nebraska"],
+  ["NV", "Nevada"],
+  ["NH", "New Hampshire"],
+  ["NJ", "New Jersey"],
+  ["NM", "New Mexico"],
+  ["NY", "New York"],
+  ["NC", "North Carolina"],
+  ["ND", "North Dakota"],
+  ["OH", "Ohio"],
+  ["OK", "Oklahoma"],
+  ["OR", "Oregon"],
+  ["PA", "Pennsylvania"],
+  ["RI", "Rhode Island"],
+  ["SC", "South Carolina"],
+  ["SD", "South Dakota"],
+  ["TN", "Tennessee"],
+  ["TX", "Texas"],
+  ["UT", "Utah"],
+  ["VT", "Vermont"],
+  ["VA", "Virginia"],
+  ["WA", "Washington"],
+  ["WV", "West Virginia"],
+  ["WI", "Wisconsin"],
+  ["WY", "Wyoming"],
+  ["DC", "Washington, DC"],
+] as const;
+
+
+function readExplorerProfile():
+  ExplorerProfile {
+
+  try {
+    const raw =
+      localStorage.getItem(
+        EXPLORER_PROFILE_KEY,
+      );
+
+    if (!raw) {
+      return {
+        ...DEFAULT_EXPLORER_PROFILE,
+      };
+    }
+
+    return {
+      ...DEFAULT_EXPLORER_PROFILE,
+      ...JSON.parse(raw),
+    };
+
+  } catch {
+    return {
+      ...DEFAULT_EXPLORER_PROFILE,
+    };
+  }
+}
+
+
 interface PathDashboardProps {
   wingName?: string;
   major?: string;
@@ -106,24 +212,318 @@ const flightCards: {
   },
 ];
 
+
+const ALTWING_SELECTED_WING_KEY =
+  "altwing-selected-wing-v1";
+
+const ALTWING_WINGMATCH_STATE_KEY =
+  "altwing-wingmatch-v3-state";
+
+const ALTWING_WING_NAMES:
+  Record<string, string> = {
+  systems:
+    "Systems Engineering",
+
+  gnc:
+    "Guidance, Navigation & Control",
+
+  avionics:
+    "Avionics",
+
+  structures:
+    "Structures",
+
+  thermal:
+    "Thermal Engineering",
+
+  propulsion:
+    "Propulsion",
+
+  "mission-design":
+    "Mission Design",
+};
+
+
+function readPersistedWingName():
+  string | null {
+
+  try {
+    /*
+     * First priority:
+     * a Wing the student explicitly chose
+     * on the WingMatch result screen.
+     */
+    const selected =
+      localStorage.getItem(
+        ALTWING_SELECTED_WING_KEY,
+      );
+
+    if (selected) {
+      if (
+        ALTWING_WING_NAMES[
+          selected
+        ]
+      ) {
+        return (
+          ALTWING_WING_NAMES[
+            selected
+          ]
+        );
+      }
+
+      if (
+        Object.values(
+          ALTWING_WING_NAMES,
+        ).includes(
+          selected,
+        )
+      ) {
+        return selected;
+      }
+    }
+
+
+    /*
+     * Migration / recovery:
+     * old WingMatch sessions already
+     * stored wingScores, so recover
+     * the strongest completed result.
+     */
+    const raw =
+      localStorage.getItem(
+        ALTWING_WINGMATCH_STATE_KEY,
+      );
+
+    if (!raw) {
+      return null;
+    }
+
+    const parsed =
+      JSON.parse(
+        raw,
+      ) as {
+        wingScores?:
+          Record<
+            string,
+            number
+          >;
+      };
+
+
+    const ranked =
+      Object.entries(
+        parsed.wingScores ??
+          {},
+      )
+        .filter(
+          (
+            [, score],
+          ) =>
+            typeof score ===
+            "number",
+        )
+        .sort(
+          (
+            [, a],
+            [, b],
+          ) =>
+            b - a,
+        );
+
+
+    const topWingId =
+      ranked[0]?.[0];
+
+    if (!topWingId) {
+      return null;
+    }
+
+    return (
+      ALTWING_WING_NAMES[
+        topWingId
+      ] ??
+      null
+    );
+
+  } catch {
+    return null;
+  }
+}
+
+
 function PathDashboard({
-  wingName = "Systems Engineering",
+  wingName = "Not selected yet",
   major = "Aerospace Engineering",
-  grade = 11,
+  grade = 0,
   onBack,
   onOpenSection,
 }: PathDashboardProps) {
   const [activeSection, setActiveSection] =
     useState<FlightSection | null>(null);
 
+  const FLIGHT_PLAN_SCROLL_KEY =
+    "altwing-flight-plan-scroll";
+
+
+  function openFlightSection(
+    section:
+      FlightSection,
+  ) {
+
+    sessionStorage.setItem(
+      FLIGHT_PLAN_SCROLL_KEY,
+      String(
+        window.scrollY,
+      ),
+    );
+
+    setActiveSection(
+      section,
+    );
+
+    window.scrollTo({
+      top: 0,
+      behavior: "auto",
+    });
+  }
+
+
+  function returnToFlightPlan() {
+
+    const savedPosition =
+      Number(
+        sessionStorage.getItem(
+          FLIGHT_PLAN_SCROLL_KEY,
+        ) ?? 0,
+      );
+
+
+    setActiveSection(
+      null,
+    );
+
+
+    /*
+     * Wait until the Flight Plan
+     * has rendered again before
+     * restoring the old position.
+     */
+    requestAnimationFrame(
+      () => {
+        requestAnimationFrame(
+          () => {
+            window.scrollTo({
+              top:
+                savedPosition,
+              behavior:
+                "auto",
+            });
+          },
+        );
+      },
+    );
+  }
+
+  const [
+    explorerProfile,
+    setExplorerProfile,
+  ] =
+    useState<ExplorerProfile>(
+      () =>
+        readExplorerProfile(),
+    );
+
+
+  const [
+    profileOpen,
+    setProfileOpen,
+  ] =
+    useState(true);
+
+
+  function updateExplorerProfile(
+    key:
+      keyof ExplorerProfile,
+
+    value:
+      string,
+  ) {
+
+    const next = {
+      ...explorerProfile,
+      [key]:
+        value,
+    };
+
+
+    setExplorerProfile(
+      next,
+    );
+
+
+    localStorage.setItem(
+      EXPLORER_PROFILE_KEY,
+      JSON.stringify(
+        next,
+      ),
+    );
+
+
+    /*
+     * Opportunity Radar already
+     * reads this state preference.
+     */
+    if (
+      key === "state"
+    ) {
+      if (value) {
+        localStorage.setItem(
+          "altwing-opportunity-state",
+          value,
+        );
+      } else {
+        localStorage.removeItem(
+          "altwing-opportunity-state",
+        );
+      }
+    }
+  }
+
+  const resolvedWingName =
+    wingName.trim() &&
+    !wingName
+      .toLowerCase()
+      .startsWith(
+        "not selected",
+      )
+      ? wingName
+      : (
+          readPersistedWingName() ??
+          "Not selected yet"
+        );
+
+
+
+  const resolvedMajor =
+    explorerProfile.major ||
+    major;
+
+
+  const resolvedGrade =
+    explorerProfile.grade
+      ? Number(
+          explorerProfile.grade,
+        )
+      : grade;
+
   if (activeSection === "academics") {
     return (
       <CoursePlan
-        wingName={wingName}
-        major={major}
-        grade={grade}
+        wingName={resolvedWingName}
+        major={resolvedMajor}
+        grade={resolvedGrade}
         onBack={() =>
-          setActiveSection(null)
+          returnToFlightPlan()
         }
       />
     );
@@ -132,10 +532,10 @@ function PathDashboard({
   if (activeSection === "activities") {
     return (
       <ActivityPlan
-        wingName={wingName}
-        major={major}
+        wingName={resolvedWingName}
+        major={resolvedMajor}
         onBack={() =>
-          setActiveSection(null)
+          returnToFlightPlan()
         }
       />
     );
@@ -144,10 +544,10 @@ function PathDashboard({
   if (activeSection === "leadership") {
     return (
       <LeadershipPlan
-        wingName={wingName}
-        major={major}
+        wingName={resolvedWingName}
+        major={resolvedMajor}
         onBack={() =>
-          setActiveSection(null)
+          returnToFlightPlan()
         }
       />
     );
@@ -156,14 +556,14 @@ function PathDashboard({
   if (activeSection === "colleges") {
     return (
       <CollegeMatch
-        major={major}
+        major={resolvedMajor}
         onAnalyzeReadiness={() =>
           setActiveSection(
             "readiness",
           )
         }
         onBack={() =>
-          setActiveSection(null)
+          returnToFlightPlan()
         }
       />
     );
@@ -172,9 +572,9 @@ function PathDashboard({
   if (activeSection === "readiness") {
     return (
       <ReadinessPlan
-        major={major}
+        major={resolvedMajor}
         onBack={() =>
-          setActiveSection(null)
+          returnToFlightPlan()
         }
       />
     );
@@ -183,9 +583,9 @@ function PathDashboard({
   if (activeSection === "decide") {
     return (
       <FinalDecision
-        major={major}
+        major={resolvedMajor}
         onBack={() =>
-          setActiveSection(null)
+          returnToFlightPlan()
         }
       />
     );
@@ -212,37 +612,288 @@ function PathDashboard({
         </span>
 
         <h1>
-          You found a Wing.
+          Build your flight plan.
           <br />
-          Now build a path around it.
+          Start anywhere.
         </h1>
 
         <p>
-          AltWing should not stop at
-          telling you what interests you.
-          Build the classes, activities,
-          leadership, college strategy,
-          and decisions that turn that
-          interest into a real direction.
+          Explore academics, activities,
+          leadership, colleges, readiness,
+          and final decisions. You can use
+          WingMatch first for a personalized
+          direction, or explore the path
+          before choosing a Wing.
         </p>
 
         <div className="path-profile">
           <div>
             <span>WING</span>
-            <strong>{wingName}</strong>
+            <strong>{resolvedWingName}</strong>
           </div>
 
           <div>
             <span>INTENDED MAJOR</span>
-            <strong>{major}</strong>
+            <strong>{resolvedMajor}</strong>
           </div>
 
           <div>
             <span>GRADE</span>
-            <strong>{grade}</strong>
+            <strong>
+              {resolvedGrade > 0
+                ? resolvedGrade
+                : "Add later"}
+            </strong>
           </div>
         </div>
       </section>
+
+
+      <section className="explorer-profile-card">
+
+        <div className="explorer-profile-heading">
+
+          <div>
+
+            <span>
+              OPTIONAL PROFILE
+            </span>
+
+            <h2>
+              Tell us a little
+              about yourself.
+            </h2>
+
+            <p>
+              This helps AltWing
+              personalize courses,
+              opportunities, and
+              college exploration.
+              It does not change
+              your WingMatch score.
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            onClick={() =>
+              setProfileOpen(
+                !profileOpen,
+              )
+            }
+          >
+            {profileOpen
+              ? "Hide"
+              : "Add info"}
+          </button>
+
+        </div>
+
+
+        {profileOpen && (
+          <div className="explorer-profile-form">
+
+            <label>
+
+              <span>
+                GRADE
+              </span>
+
+              <select
+                value={
+                  explorerProfile
+                    .grade
+                }
+                onChange={(
+                  event,
+                ) =>
+                  updateExplorerProfile(
+                    "grade",
+                    event.target
+                      .value,
+                  )
+                }
+              >
+
+                <option value="">
+                  Choose later
+                </option>
+
+                <option value="8">
+                  Grade 8
+                </option>
+
+                <option value="9">
+                  Grade 9
+                </option>
+
+                <option value="10">
+                  Grade 10
+                </option>
+
+                <option value="11">
+                  Grade 11
+                </option>
+
+                <option value="12">
+                  Grade 12
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <label>
+
+              <span>
+                STATE
+              </span>
+
+              <select
+                value={
+                  explorerProfile
+                    .state
+                }
+                onChange={(
+                  event,
+                ) =>
+                  updateExplorerProfile(
+                    "state",
+                    event.target
+                      .value,
+                  )
+                }
+              >
+
+                {US_STATES.map(
+                  (
+                    [
+                      code,
+                      name,
+                    ],
+                  ) => (
+                    <option
+                      key={
+                        code ||
+                        "none"
+                      }
+                      value={code}
+                    >
+                      {name}
+                    </option>
+                  ),
+                )}
+
+              </select>
+
+            </label>
+
+
+            <label>
+
+              <span>
+                WHAT ARE YOU
+                EXPLORING?
+              </span>
+
+              <select
+                value={
+                  explorerProfile
+                    .major
+                }
+                onChange={(
+                  event,
+                ) =>
+                  updateExplorerProfile(
+                    "major",
+                    event.target
+                      .value,
+                  )
+                }
+              >
+
+                <option value="">
+                  Not sure yet
+                </option>
+
+                <option value="Aerospace Engineering">
+                  Aerospace Engineering
+                </option>
+
+                <option value="Mechanical Engineering">
+                  Mechanical Engineering
+                </option>
+
+                <option value="Physics">
+                  Physics
+                </option>
+
+                <option value="Astronomy / Astrophysics">
+                  Astronomy / Astrophysics
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <label>
+
+              <span>
+                EXPERIENCE
+              </span>
+
+              <select
+                value={
+                  explorerProfile
+                    .experience
+                }
+                onChange={(
+                  event,
+                ) =>
+                  updateExplorerProfile(
+                    "experience",
+                    event.target
+                      .value,
+                  )
+                }
+              >
+
+                <option value="">
+                  Choose later
+                </option>
+
+                <option value="beginner">
+                  New to aerospace
+                </option>
+
+                <option value="exploring">
+                  Tried a few things
+                </option>
+
+                <option value="builder">
+                  Building projects already
+                </option>
+
+              </select>
+
+            </label>
+
+          </div>
+        )}
+
+
+        <p className="explorer-profile-note">
+          Optional — you can use
+          AltWing without sharing
+          any of this information.
+        </p>
+
+      </section>
+
 
       <section className="path-grid">
         {flightCards.map((card) => (
@@ -287,7 +938,7 @@ function PathDashboard({
                     card.id === "readiness" ||
                     card.id === "decide"
                   ) {
-                    setActiveSection(card.id);
+                    openFlightSection(card.id);
                   }
                 }}
                 disabled={

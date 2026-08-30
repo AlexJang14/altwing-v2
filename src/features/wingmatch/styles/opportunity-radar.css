@@ -1,0 +1,540 @@
+.opportunity-radar {
+  width:
+    min(
+      1000px,
+      calc(100% - 30px)
+    );
+
+  margin:
+    12px auto 0;
+
+  padding: 25px;
+
+  border:
+    1px solid
+    rgba(91,141,239,.11);
+
+  border-radius: 21px;
+
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(91,141,239,.08),
+      transparent 32%
+    ),
+    rgba(255,255,255,.018);
+}
+
+
+.opportunity-radar-heading {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  gap: 20px;
+}
+
+
+.opportunity-radar-heading span {
+  color: #5b8def;
+
+  font-size: 7px;
+  font-weight: 950;
+
+  letter-spacing: .14em;
+}
+
+
+.opportunity-radar-heading h2 {
+  margin:
+    6px 0 0;
+
+  font-size: 26px;
+}
+
+
+.opportunity-radar-heading p {
+  max-width: 610px;
+
+  color:
+    rgba(255,255,255,.38);
+
+  font-size: 8px;
+
+  line-height: 1.5;
+}
+
+
+.opportunity-radar-heading > strong {
+  color: #ffc857;
+
+  font-size: 9px;
+}
+
+
+.opportunity-filters {
+  margin-top: 17px;
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+}
+
+
+.opportunity-filters button {
+  padding:
+    7px 10px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.07);
+
+  border-radius: 999px;
+
+  color:
+    rgba(255,255,255,.35);
+
+  background:
+    transparent;
+
+  font-size: 6px;
+
+  cursor: pointer;
+}
+
+
+.opportunity-filters
+button.active {
+  color: white;
+
+  border-color:
+    rgba(91,141,239,.35);
+
+  background:
+    rgba(91,141,239,.09);
+}
+
+
+.opportunity-grid {
+  margin-top: 14px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  gap: 8px;
+}
+
+
+.opportunity-grid > article {
+  padding: 16px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.055);
+
+  border-radius: 15px;
+
+  background:
+    rgba(255,255,255,.022);
+}
+
+
+.opportunity-card-top {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  gap: 10px;
+}
+
+
+.opportunity-card-top > span {
+  color: #5b8def;
+
+  font-size: 6px;
+  font-weight: 950;
+
+  letter-spacing: .1em;
+}
+
+
+.opportunity-card-top b {
+  padding:
+    4px 6px;
+
+  border-radius: 999px;
+
+  color: #ffc857;
+
+  background:
+    rgba(255,200,87,.06);
+
+  font-size: 5px;
+}
+
+
+.opportunity-grid h3 {
+  margin:
+    10px 0 0;
+
+  font-size: 15px;
+
+  line-height: 1.25;
+}
+
+
+.opportunity-grid
+article > small {
+  display: block;
+
+  margin-top: 3px;
+
+  color:
+    rgba(255,255,255,.28);
+
+  font-size: 6px;
+}
+
+
+.opportunity-grid
+article > p {
+  margin:
+    10px 0 0;
+
+  color:
+    rgba(255,255,255,.42);
+
+  font-size: 8px;
+
+  line-height: 1.5;
+}
+
+
+.opportunity-meta {
+  margin-top: 13px;
+
+  display: grid;
+
+  gap: 6px;
+}
+
+
+.opportunity-meta div {
+  padding: 9px;
+
+  border-radius: 9px;
+
+  background:
+    rgba(255,255,255,.022);
+}
+
+
+.opportunity-meta span {
+  display: block;
+
+  color: #5b8def;
+
+  font-size: 5px;
+
+  letter-spacing: .1em;
+}
+
+
+.opportunity-meta strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color:
+    rgba(255,255,255,.56);
+
+  font-size: 7px;
+
+  line-height: 1.45;
+}
+
+
+.opportunity-grid footer {
+  margin-top: 13px;
+
+  padding-top: 11px;
+
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  gap: 10px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.045);
+}
+
+
+.opportunity-grid footer span {
+  color: #ffc857;
+
+  font-size: 6px;
+  font-weight: 950;
+}
+
+
+.opportunity-grid footer small {
+  color:
+    rgba(255,255,255,.22);
+
+  font-size: 5px;
+
+  text-align: right;
+}
+
+
+@media (
+  max-width: 720px
+) {
+
+  .opportunity-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .opportunity-radar-heading {
+    flex-direction:
+      column;
+  }
+}
+
+
+
+/* =========================================================
+   OPPORTUNITY RADAR — STATE / READABILITY
+   ========================================================= */
+
+.opportunity-controls {
+  margin-top: 18px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content:
+    space-between;
+
+  gap: 15px;
+
+  flex-wrap: wrap;
+}
+
+
+.opportunity-controls
+.opportunity-filters {
+  margin-top: 0;
+}
+
+
+.opportunity-state-select {
+  display: grid;
+
+  gap: 5px;
+}
+
+
+.opportunity-state-select > span {
+  color: #7ca5ff;
+
+  font-size: 8px;
+
+  font-weight: 950;
+
+  letter-spacing: .1em;
+}
+
+
+.opportunity-state-select select {
+  min-width: 190px;
+
+  min-height: 38px;
+
+  padding:
+    0 11px;
+
+  border:
+    1px solid
+    rgba(91,141,239,.2);
+
+  border-radius: 9px;
+
+  outline: none;
+
+  color: white;
+
+  background:
+    #101934;
+
+  font-size: 11px;
+}
+
+
+.opportunity-empty {
+  margin-top: 18px;
+
+  padding: 24px;
+
+  border:
+    1px dashed
+    rgba(91,141,239,.16);
+
+  border-radius: 14px;
+
+  text-align: center;
+
+  background:
+    rgba(91,141,239,.025);
+}
+
+
+.opportunity-empty strong {
+  display: block;
+
+  font-size: 15px;
+}
+
+
+.opportunity-empty p {
+  max-width: 590px;
+
+  margin:
+    8px auto;
+
+  color:
+    rgba(255,255,255,.6);
+
+  font-size: 11px;
+
+  line-height: 1.55;
+}
+
+
+.opportunity-empty span {
+  color: #ffc857;
+
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+
+/* readability */
+
+.opportunity-radar-heading span {
+  font-size:
+    9px !important;
+}
+
+
+.opportunity-radar-heading p {
+  color:
+    rgba(255,255,255,.64)
+    !important;
+
+  font-size:
+    12px !important;
+
+  line-height:
+    1.6 !important;
+}
+
+
+.opportunity-filters button {
+  font-size:
+    8px !important;
+}
+
+
+.opportunity-card-top > span {
+  font-size:
+    8px !important;
+}
+
+
+.opportunity-card-top b {
+  font-size:
+    7px !important;
+}
+
+
+.opportunity-grid
+article > small {
+  color:
+    rgba(255,255,255,.48)
+    !important;
+
+  font-size:
+    9px !important;
+}
+
+
+.opportunity-grid
+article > p {
+  color:
+    rgba(255,255,255,.64)
+    !important;
+
+  font-size:
+    11px !important;
+
+  line-height:
+    1.55 !important;
+}
+
+
+.opportunity-meta span {
+  font-size:
+    7px !important;
+}
+
+
+.opportunity-meta strong {
+  color:
+    rgba(255,255,255,.68)
+    !important;
+
+  font-size:
+    10px !important;
+
+  line-height:
+    1.5 !important;
+}
+
+
+.opportunity-grid footer span {
+  font-size:
+    8px !important;
+}
+
+
+.opportunity-grid footer small {
+  color:
+    rgba(255,255,255,.42)
+    !important;
+
+  font-size:
+    7px !important;
+
+  line-height:
+    1.4;
+}
+
