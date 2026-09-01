@@ -1,0 +1,796 @@
+/* =========================================================
+   ALTWING V6 INTERACTIVE ENGINEERING VISUAL
+   ========================================================= */
+
+.aw6-viz-shell {
+  margin-top: 34px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(124, 151, 220, .18);
+
+  border-radius: 24px;
+
+  background:
+    #0b1124;
+
+  box-shadow:
+    0 28px 80px
+    rgba(0, 0, 0, .24);
+}
+
+
+.aw6-viz-header {
+  min-height: 68px;
+
+  padding: 0 24px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.07);
+}
+
+
+.aw6-viz-header > div:first-child {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+}
+
+
+.aw6-viz-header span {
+  color:
+    rgba(160, 184, 238, .70) !important;
+
+  font-size: 11px !important;
+
+  font-weight: 850 !important;
+
+  letter-spacing:
+    .10em !important;
+}
+
+
+.aw6-viz-header strong {
+  color: #f8faff !important;
+
+  font-size: 15px !important;
+
+  font-weight: 800 !important;
+}
+
+
+.aw6-viz-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  color:
+    rgba(238,243,255,.66);
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: .07em;
+}
+
+
+.aw6-viz-status i {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #ffc857;
+
+  box-shadow:
+    0 0 0 5px
+    rgba(255,200,87,.08);
+}
+
+
+.aw6-viz-body {
+  display: grid;
+
+  grid-template-columns:
+    170px minmax(0, 1fr);
+}
+
+
+.aw6-viz-metrics {
+  padding: 22px 18px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  border-right:
+    1px solid
+    rgba(255,255,255,.07);
+
+  background:
+    rgba(255,255,255,.015);
+}
+
+
+.aw6-viz-metric {
+  padding:
+    15px 13px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.07);
+
+  border-radius: 14px;
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+
+.aw6-viz-metric span {
+  display: block;
+
+  color:
+    rgba(175,192,231,.55) !important;
+
+  font-size: 10px !important;
+
+  font-weight: 850 !important;
+
+  letter-spacing:
+    .08em !important;
+}
+
+
+.aw6-viz-metric strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #f7f9ff !important;
+
+  font-size: 18px !important;
+
+  font-weight: 780 !important;
+}
+
+
+.aw6-viz-metric--warning strong {
+  color: #ff7a74 !important;
+}
+
+
+.aw6-viz-metric--good strong {
+  color: #77e1c3 !important;
+}
+
+
+.aw6-viz-canvas {
+  min-height: 390px;
+
+  position: relative;
+
+  background:
+    radial-gradient(
+      circle at 50% 48%,
+      rgba(91,141,239,.09),
+      transparent 40%
+    ),
+    #090f20;
+}
+
+
+.aw6-viz-canvas svg {
+  display: block;
+
+  width: 100%;
+  height: 390px;
+}
+
+
+.aw6-viz-grid line {
+  stroke:
+    rgba(124,151,220,.055);
+
+  stroke-width: 1;
+}
+
+
+.aw6-viz-links path {
+  fill: none;
+
+  stroke:
+    rgba(104,142,232,.17);
+
+  stroke-width: 1.5;
+
+  stroke-dasharray: 5 8;
+
+  transition:
+    stroke
+    .18s ease,
+    stroke-width
+    .18s ease;
+}
+
+
+.aw6-viz-links path.is-active {
+  stroke: #5b8def;
+
+  stroke-width: 2.4;
+}
+
+
+.aw6-viz-node {
+  cursor: pointer;
+
+  outline: none;
+}
+
+
+.aw6-viz-node-ring {
+  fill:
+    rgba(11,17,36,.9);
+
+  stroke:
+    rgba(128,158,232,.35);
+
+  stroke-width: 2;
+
+  transition:
+    stroke
+    .18s ease,
+    fill
+    .18s ease,
+    r
+    .18s ease;
+}
+
+
+.aw6-viz-node-core {
+  fill:
+    #5b8def;
+
+  transition:
+    fill
+    .18s ease,
+    r
+    .18s ease;
+}
+
+
+.aw6-viz-node-number {
+  fill:
+    rgba(193,207,242,.55);
+
+  text-anchor: middle;
+
+  font-size: 14px;
+
+  font-weight: 800;
+
+  letter-spacing: .08em;
+}
+
+
+.aw6-viz-node:hover
+.aw6-viz-node-ring,
+
+.aw6-viz-node:focus
+.aw6-viz-node-ring,
+
+.aw6-viz-node.is-active
+.aw6-viz-node-ring {
+  fill:
+    rgba(91,141,239,.10);
+
+  stroke:
+    #5b8def;
+}
+
+
+.aw6-viz-node:hover
+.aw6-viz-node-core,
+
+.aw6-viz-node:focus
+.aw6-viz-node-core,
+
+.aw6-viz-node.is-active
+.aw6-viz-node-core {
+  r: 12;
+
+  fill: #9ab7ff;
+}
+
+
+.aw6-viz-node.is-selected
+.aw6-viz-node-ring {
+  fill:
+    rgba(255,200,87,.09);
+
+  stroke:
+    #ffc857;
+}
+
+
+.aw6-viz-node.is-selected
+.aw6-viz-node-core {
+  fill:
+    #ffc857;
+}
+
+
+/* =========================================================
+   SCENE DRAWINGS
+   ========================================================= */
+
+.aw6-mars-horizon {
+  fill: url(#aw6Mars);
+  opacity: .92;
+}
+
+
+.aw6-entry-glow {
+  fill: url(#aw6Heat);
+}
+
+
+.aw6-capsule {
+  fill: #dce4f7;
+
+  stroke: #ffffff;
+
+  stroke-width: 2;
+}
+
+
+.aw6-heat-line {
+  fill: none;
+
+  stroke: #ff755f;
+
+  stroke-width: 5;
+
+  stroke-linecap: round;
+}
+
+
+.aw6-trajectory {
+  fill: none;
+
+  stroke: #5b8def;
+
+  stroke-width: 2;
+
+  stroke-dasharray: 7 8;
+}
+
+
+.aw6-target {
+  fill: none;
+
+  stroke: #ffc857;
+
+  stroke-width: 2;
+}
+
+
+.aw6-rover-body,
+.aw6-lander-body,
+.aw6-power-core,
+.aw6-fuel-tank {
+  fill: #b9c7e6;
+
+  stroke:
+    rgba(255,255,255,.65);
+
+  stroke-width: 2;
+}
+
+
+.aw6-rover-wheel {
+  fill: #263656;
+
+  stroke: #5b8def;
+
+  stroke-width: 2;
+}
+
+
+.aw6-rover-sensor {
+  fill: #5b8def;
+}
+
+
+.aw6-sensor-beam {
+  fill: none;
+
+  stroke-width: 2;
+
+  stroke-dasharray: 6 7;
+}
+
+
+.aw6-sensor-beam-a {
+  stroke: #64dfd1;
+}
+
+
+.aw6-sensor-beam-b {
+  stroke: #a67aff;
+}
+
+
+.aw6-reading {
+  fill:
+    rgba(8,14,31,.85);
+
+  stroke-width: 2;
+}
+
+
+.aw6-reading-a {
+  stroke: #64dfd1;
+}
+
+
+.aw6-reading-b {
+  stroke: #a67aff;
+}
+
+
+.aw6-reading-text {
+  fill: #f8faff;
+
+  text-anchor: middle;
+
+  font-size: 17px;
+
+  font-weight: 800;
+}
+
+
+.aw6-fuel-level {
+  fill:
+    rgba(91,141,239,.50);
+}
+
+
+.aw6-engine {
+  fill: none;
+
+  stroke: #dce4f7;
+
+  stroke-width: 6;
+
+  stroke-linejoin: round;
+}
+
+
+.aw6-thrust {
+  fill: none;
+
+  stroke: #ff755f;
+
+  stroke-width: 7;
+
+  stroke-linecap: round;
+}
+
+
+.aw6-gauge {
+  stroke:
+    rgba(255,255,255,.12);
+
+  stroke-width: 16;
+
+  stroke-linecap: round;
+}
+
+
+.aw6-gauge-level {
+  stroke: #ffc857;
+
+  stroke-width: 16;
+
+  stroke-linecap: round;
+}
+
+
+.aw6-leg {
+  stroke: #c9d5ed;
+
+  stroke-width: 7;
+
+  stroke-linecap: round;
+}
+
+
+.aw6-leg-alert {
+  stroke: #ff746f;
+}
+
+
+.aw6-vibration {
+  fill: none;
+
+  stroke: #ff746f;
+
+  stroke-width: 3;
+}
+
+
+.aw6-power-fill {
+  fill:
+    rgba(119,225,195,.34);
+
+  stroke: #77e1c3;
+
+  stroke-width: 2;
+}
+
+
+.aw6-power-line {
+  fill: none;
+
+  stroke: #5b8def;
+
+  stroke-width: 3;
+}
+
+
+.aw6-subsystem {
+  fill: #101b37;
+
+  stroke: #5b8def;
+
+  stroke-width: 2;
+}
+
+
+.aw6-terrain-line {
+  fill: none;
+
+  stroke: #d56c4f;
+
+  stroke-width: 5;
+
+  stroke-linejoin: round;
+}
+
+
+.aw6-route {
+  fill: none;
+
+  stroke: #5b8def;
+
+  stroke-width: 2;
+
+  stroke-dasharray: 7 8;
+}
+
+
+.aw6-site {
+  fill:
+    rgba(255,200,87,.08);
+
+  stroke: #ffc857;
+
+  stroke-width: 2;
+}
+
+
+.aw6-site-label {
+  fill: #ffc857;
+
+  text-anchor: middle;
+
+  font-size: 17px;
+
+  font-weight: 900;
+}
+
+
+.aw6-fault-box {
+  fill:
+    rgba(91,141,239,.08);
+
+  stroke:
+    rgba(91,141,239,.48);
+
+  stroke-width: 2;
+}
+
+
+.aw6-fault-box-alert {
+  fill:
+    rgba(255,107,107,.08);
+
+  stroke: #ff6b6b;
+}
+
+
+.aw6-fault-label {
+  fill: #f8faff;
+
+  text-anchor: middle;
+
+  font-size: 13px;
+
+  font-weight: 800;
+}
+
+
+.aw6-fault-link {
+  stroke:
+    rgba(139,163,222,.42);
+
+  stroke-width: 2;
+}
+
+
+.aw6-priority-triangle {
+  fill:
+    rgba(91,141,239,.04);
+
+  stroke:
+    rgba(91,141,239,.45);
+
+  stroke-width: 2;
+}
+
+
+.aw6-priority-node {
+  fill: #101a35;
+
+  stroke: #5b8def;
+
+  stroke-width: 2;
+}
+
+
+.aw6-priority-text {
+  fill: #f8faff;
+
+  text-anchor: middle;
+
+  font-size: 12px;
+
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.aw6-viz-footer {
+  min-height: 54px;
+
+  padding: 0 24px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.07);
+}
+
+
+.aw6-viz-footer span {
+  color:
+    rgba(211,220,244,.50) !important;
+
+  font-size: 12px !important;
+}
+
+
+.aw6-viz-footer strong {
+  color: #ffc857 !important;
+
+  font-size: 11px !important;
+
+  font-weight: 900 !important;
+
+  letter-spacing:
+    .09em !important;
+}
+
+
+@media (
+  max-width: 800px
+) {
+
+  .aw6-viz-body {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .aw6-viz-metrics {
+    display: grid;
+
+    grid-template-columns:
+      repeat(3, 1fr);
+
+    border-right: 0;
+
+    border-bottom:
+      1px solid
+      rgba(255,255,255,.07);
+  }
+
+
+  .aw6-viz-canvas,
+  .aw6-viz-canvas svg {
+    min-height: 310px;
+
+    height: 310px;
+  }
+
+}
+
+
+@media (
+  max-width: 560px
+) {
+
+  .aw6-viz-header {
+    padding:
+      16px;
+
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 8px;
+  }
+
+
+  .aw6-viz-metrics {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .aw6-viz-canvas,
+  .aw6-viz-canvas svg {
+    min-height: 260px;
+
+    height: 260px;
+  }
+
+
+  .aw6-viz-footer {
+    padding:
+      12px 16px;
+
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 5px;
+  }
+
+}

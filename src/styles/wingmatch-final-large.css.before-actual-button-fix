@@ -1,0 +1,202 @@
+
+/* =========================================================
+   WINGMATCH — FINAL LARGE TYPE
+   NO ROOT WRAPPER DEPENDENCY
+   ========================================================= */
+
+
+/* =========================================================
+   CURRENT V5 CHOICE CARDS
+   ========================================================= */
+
+.wm-choice-card {
+  min-height: 290px !important;
+
+  padding:
+    32px 30px
+    28px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+
+  text-align: left !important;
+}
+
+
+/* OPTION 1 */
+
+.wm-choice-card small {
+  color: rgba(170, 195, 255, .95) !important;
+
+  opacity: 1 !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+
+  line-height: 1.35 !important;
+
+  letter-spacing: .08em !important;
+}
+
+
+/* TITLE */
+
+.wm-choice-card strong {
+  display: block !important;
+
+  margin-top: 22px !important;
+
+  color: #ffffff !important;
+
+  opacity: 1 !important;
+
+  font-size: 32px !important;
+  font-weight: 800 !important;
+
+  line-height: 1.18 !important;
+
+  letter-spacing: -.02em !important;
+}
+
+
+/* DESCRIPTION */
+
+.wm-choice-card p {
+  display: block !important;
+
+  margin: 14px 0 0 !important;
+
+  max-width: 96% !important;
+
+  color: rgba(245, 247, 255, .9) !important;
+
+  opacity: 1 !important;
+
+  font-size: 20px !important;
+  font-weight: 500 !important;
+
+  line-height: 1.5 !important;
+}
+
+
+/* CHOOSE */
+
+.wm-choice-card b {
+  margin-top: auto !important;
+
+  padding-top: 26px !important;
+
+  color: #ffc857 !important;
+
+  opacity: 1 !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+
+  line-height: 1.3 !important;
+
+  letter-spacing: .06em !important;
+}
+
+
+/* =========================================================
+   QUESTION
+   ========================================================= */
+
+.wm-question h2,
+.wm-mission-question h2 {
+  color: #ffffff !important;
+
+  font-size: 46px !important;
+
+  line-height: 1.08 !important;
+}
+
+
+.wm-question-kicker,
+.wm-mission-question > span {
+  color: #ffc857 !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+
+  letter-spacing: .1em !important;
+}
+
+
+/* =========================================================
+   OLD MISSION OPTION FORMAT
+   ========================================================= */
+
+.decision-option-copy strong {
+  color: #ffffff !important;
+
+  font-size: 30px !important;
+
+  line-height: 1.2 !important;
+}
+
+
+.decision-option-copy p {
+  color: rgba(245,247,255,.88) !important;
+
+  font-size: 19px !important;
+
+  line-height: 1.5 !important;
+}
+
+
+.decision-option-number,
+.decision-option-go {
+  font-size: 13px !important;
+}
+
+
+/* =========================================================
+   VISUAL MICROCOPY
+   ========================================================= */
+
+.wm-game-visual-top span {
+  color: rgba(177,200,255,.94) !important;
+
+  font-size: 13px !important;
+
+  opacity: 1 !important;
+}
+
+
+.wm-game-visual-top strong {
+  color: #ffffff !important;
+
+  font-size: 16px !important;
+
+  opacity: 1 !important;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 720px) {
+
+  .wm-choice-card {
+    min-height: 235px !important;
+
+    padding: 24px !important;
+  }
+
+  .wm-choice-card strong {
+    font-size: 25px !important;
+  }
+
+  .wm-choice-card p {
+    font-size: 17px !important;
+  }
+
+  .wm-choice-card small,
+  .wm-choice-card b {
+    font-size: 12px !important;
+  }
+}

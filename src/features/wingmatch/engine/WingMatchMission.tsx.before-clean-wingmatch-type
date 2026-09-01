@@ -37,7 +37,7 @@ import {
 import "../styles/beginner-first.css";
 import "../styles/wingmatch-game-v4.css";
 import "../styles/wingmatch-v5.css";
-import "../../../styles/wingmatch-final-large.css";
+import "../../../styles/wingmatch-readable.css";
 
 
 interface Props {

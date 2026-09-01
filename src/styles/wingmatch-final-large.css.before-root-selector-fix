@@ -1,0 +1,325 @@
+
+/* =========================================================
+   ALTWING WINGMATCH
+   CLEAN LARGE TYPOGRAPHY
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   MAIN QUESTION
+   --------------------------------------------------------- */
+
+.wingmatch-shell h1 {
+  color: #ffffff !important;
+
+  font-size:
+    clamp(
+      46px,
+      5vw,
+      72px
+    ) !important;
+
+  line-height: 1.04 !important;
+}
+
+
+.wingmatch-shell h2 {
+  color: #ffffff !important;
+
+  font-size:
+    clamp(
+      38px,
+      3.5vw,
+      54px
+    ) !important;
+
+  line-height: 1.1 !important;
+}
+
+
+/* YOUR MOVE */
+
+.wingmatch-shell
+:where(
+  .wm-question-kicker,
+  [class*="question-kicker"],
+  [class*="move-label"]
+) {
+  color: #ffc857 !important;
+
+  opacity: 1 !important;
+
+  font-size: 14px !important;
+
+  font-weight: 900 !important;
+
+  letter-spacing: .1em !important;
+}
+
+
+/* =========================================================
+   CURRENT CHOICE CARDS
+   ========================================================= */
+
+.wingmatch-shell .wm-choice-card {
+  min-height: 290px !important;
+
+  padding:
+    32px 30px
+    28px !important;
+
+  display: flex !important;
+
+  flex-direction: column !important;
+
+  align-items:
+    flex-start !important;
+
+  text-align: left !important;
+}
+
+
+/* OPTION 1 / OPTION 2 / OPTION 3 */
+
+.wingmatch-shell
+.wm-choice-card small {
+  color:
+    rgba(
+      170,
+      195,
+      255,
+      .95
+    ) !important;
+
+  opacity: 1 !important;
+
+  font-size: 14px !important;
+
+  font-weight: 900 !important;
+
+  line-height: 1.35 !important;
+
+  letter-spacing:
+    .08em !important;
+}
+
+
+/* A SCIENCE-VALUE MAP */
+
+.wingmatch-shell
+.wm-choice-card strong {
+  display: block !important;
+
+  margin-top: 22px !important;
+
+  color: #ffffff !important;
+
+  opacity: 1 !important;
+
+  font-size: 32px !important;
+
+  font-weight: 800 !important;
+
+  line-height: 1.18 !important;
+
+  letter-spacing:
+    -.02em !important;
+}
+
+
+/* See which site contains... */
+
+.wingmatch-shell
+.wm-choice-card p {
+  display: block !important;
+
+  margin-top: 14px !important;
+
+  color:
+    rgba(
+      245,
+      247,
+      255,
+      .88
+    ) !important;
+
+  opacity: 1 !important;
+
+  font-size: 20px !important;
+
+  font-weight: 500 !important;
+
+  line-height: 1.5 !important;
+}
+
+
+/* CHOOSE */
+
+.wingmatch-shell
+.wm-choice-card b {
+  margin-top: auto !important;
+
+  padding-top: 26px !important;
+
+  color: #ffc857 !important;
+
+  opacity: 1 !important;
+
+  font-size: 14px !important;
+
+  font-weight: 900 !important;
+
+  line-height: 1.3 !important;
+
+  letter-spacing:
+    .06em !important;
+}
+
+
+/* =========================================================
+   OLD V4 DECISION CARDS
+   Some missions still use these.
+   ========================================================= */
+
+.wingmatch-shell
+.decision-option-copy strong {
+  color: #ffffff !important;
+
+  font-size: 30px !important;
+
+  line-height: 1.2 !important;
+}
+
+
+.wingmatch-shell
+.decision-option-copy p {
+  color:
+    rgba(
+      245,
+      247,
+      255,
+      .86
+    ) !important;
+
+  font-size: 19px !important;
+
+  line-height: 1.5 !important;
+}
+
+
+.wingmatch-shell
+.decision-option-number {
+  font-size: 13px !important;
+}
+
+
+.wingmatch-shell
+.decision-option-go {
+  font-size: 13px !important;
+}
+
+
+/* =========================================================
+   GAME VISUAL
+   ========================================================= */
+
+.wingmatch-shell
+:where(
+  .wm-game-visual-top,
+  [class*="visual-top"]
+) span {
+  color:
+    rgba(
+      177,
+      200,
+      255,
+      .94
+    ) !important;
+
+  opacity: 1 !important;
+
+  font-size: 13px !important;
+
+  font-weight: 900 !important;
+}
+
+
+.wingmatch-shell
+:where(
+  .wm-game-visual-top,
+  [class*="visual-top"]
+) strong {
+  color: #ffffff !important;
+
+  opacity: 1 !important;
+
+  font-size: 16px !important;
+}
+
+
+/* =========================================================
+   NO MORE MICROSCOPIC TEXT
+   ========================================================= */
+
+.wingmatch-shell small {
+  font-size: 12px !important;
+
+  line-height: 1.4 !important;
+}
+
+
+.wingmatch-shell
+:where(
+  [class*="hint"],
+  [class*="note"],
+  [class*="helper"],
+  [class*="description"],
+  [class*="disclaimer"]
+) {
+  color:
+    rgba(
+      235,
+      241,
+      255,
+      .72
+    ) !important;
+
+  opacity: 1 !important;
+
+  font-size: 14px !important;
+
+  line-height: 1.55 !important;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 720px) {
+
+  .wingmatch-shell
+  .wm-choice-card {
+    min-height: 240px !important;
+
+    padding: 24px !important;
+  }
+
+  .wingmatch-shell
+  .wm-choice-card strong {
+    font-size: 25px !important;
+  }
+
+  .wingmatch-shell
+  .wm-choice-card p {
+    font-size: 17px !important;
+  }
+
+  .wingmatch-shell
+  .wm-choice-card small,
+
+  .wingmatch-shell
+  .wm-choice-card b {
+    font-size: 12px !important;
+  }
+}

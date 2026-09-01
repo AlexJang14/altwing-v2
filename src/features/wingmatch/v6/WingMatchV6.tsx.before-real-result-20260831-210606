@@ -1,0 +1,1038 @@
+import {
+  useMemo,
+  useState,
+} from "react";
+
+import MissionVisual from "./MissionVisual";
+
+import "./wingmatch-v6.css";
+
+
+interface WingMatchV6Props {
+  onExit: () => void;
+}
+
+
+interface WingOption {
+  id: string;
+
+  title: string;
+
+  description: string;
+
+  consequence: string;
+}
+
+
+interface WingScene {
+  id: string;
+
+  phase: string;
+
+  eyebrow: string;
+
+  situation: string;
+
+  question: string;
+
+  options: WingOption[];
+}
+
+
+const SCENES: WingScene[] = [
+
+  {
+    id: "entry-heat",
+
+    phase:
+      "MARS ENTRY",
+
+    eyebrow:
+      "MISSION 01 / THERMAL TRADEOFF",
+
+    situation:
+      "Your lander is entering the Martian atmosphere. Heating is climbing faster than predicted, but changing course now could make the landing less accurate.",
+
+    question:
+      "What would you protect first?",
+
+    options: [
+      {
+        id:
+          "reduce-heating",
+
+        title:
+          "Reduce the heating",
+
+        description:
+          "Change the flight path to lower thermal stress, even if the landing becomes less precise.",
+
+        consequence:
+          "Thermal margin improves, but the vehicle gives up some control over exactly where it will land.",
+      },
+
+      {
+        id:
+          "hold-path",
+
+        title:
+          "Hold the landing path",
+
+        description:
+          "Keep the planned trajectory and accept a smaller thermal margin.",
+
+        consequence:
+          "The landing solution remains predictable, but the heat shield must tolerate the higher load.",
+      },
+
+      {
+        id:
+          "rebalance-system",
+
+        title:
+          "Rebalance the whole system",
+
+        description:
+          "Look for smaller changes across trajectory, power, and thermal limits instead of making one large correction.",
+
+        consequence:
+          "No single subsystem gets everything it wants, but the mission keeps more overall flexibility.",
+      },
+    ],
+  },
+
+
+  {
+    id:
+      "sensor-conflict",
+
+    phase:
+      "DESCENT",
+
+    eyebrow:
+      "MISSION 02 / SENSOR CONFLICT",
+
+    situation:
+      "Two altitude sensors disagree while the landing burn is getting closer. You have enough time for one additional move.",
+
+    question:
+      "How would you handle the disagreement?",
+
+    options: [
+      {
+        id:
+          "independent-sensor",
+
+        title:
+          "Get an independent reading",
+
+        description:
+          "Use another sensor to check which measurement is more believable.",
+
+        consequence:
+          "You gain another piece of evidence, but spend precious time before the burn.",
+      },
+
+      {
+        id:
+          "motion-model",
+
+        title:
+          "Use the motion prediction",
+
+        description:
+          "Compare both readings with how the vehicle should be moving according to the flight model.",
+
+        consequence:
+          "The vehicle model becomes your reference, but a bad model could mislead the decision.",
+      },
+
+      {
+        id:
+          "mission-context",
+
+        title:
+          "Use what the next maneuver needs",
+
+        description:
+          "Judge which uncertainty matters most for the upcoming burn and act around that risk.",
+
+        consequence:
+          "You make a mission-focused decision without fully resolving which sensor is wrong.",
+      },
+    ],
+  },
+
+
+  {
+    id:
+      "fuel-margin",
+
+    phase:
+      "POWERED DESCENT",
+
+    eyebrow:
+      "MISSION 03 / PROPULSION",
+
+    situation:
+      "The lander is consuming fuel slightly faster than expected. You can still reach the surface, but the original reserve is disappearing.",
+
+    question:
+      "Where would you accept the tradeoff?",
+
+    options: [
+      {
+        id:
+          "save-fuel",
+
+        title:
+          "Protect the fuel reserve",
+
+        description:
+          "Use a more efficient descent even if it gives the guidance system less freedom to correct later.",
+
+        consequence:
+          "Fuel margin grows, while the final descent becomes less flexible.",
+      },
+
+      {
+        id:
+          "keep-control",
+
+        title:
+          "Protect maneuvering freedom",
+
+        description:
+          "Keep enough thrust available for late corrections, even if the reserve becomes smaller.",
+
+        consequence:
+          "The vehicle stays responsive, but has less fuel left for unexpected problems.",
+      },
+
+      {
+        id:
+          "change-objective",
+
+        title:
+          "Change the mission target",
+
+        description:
+          "Accept a less demanding landing objective so several systems can operate with more margin.",
+
+        consequence:
+          "The mission gives up some original ambition in exchange for a more forgiving descent.",
+      },
+    ],
+  },
+
+
+  {
+    id:
+      "structure-vibration",
+
+    phase:
+      "LOW ALTITUDE",
+
+    eyebrow:
+      "MISSION 04 / STRUCTURES",
+
+    situation:
+      "A vibration appears in one landing-leg assembly. The structure is still within limits, but the signal is growing.",
+
+    question:
+      "What would you do with the remaining margin?",
+
+    options: [
+      {
+        id:
+          "reinforce-load",
+
+        title:
+          "Protect the load path",
+
+        description:
+          "Shift or reinforce how the landing force will travel through the structure.",
+
+        consequence:
+          "Structural confidence improves, but the change adds mass or complexity.",
+      },
+
+      {
+        id:
+          "reduce-impact",
+
+        title:
+          "Reduce landing impact",
+
+        description:
+          "Change the descent so the landing gear experiences a smaller peak load.",
+
+        consequence:
+          "The structure receives less stress, but the flight profile becomes more restrictive.",
+      },
+
+      {
+        id:
+          "inspect-pattern",
+
+        title:
+          "Study the vibration pattern",
+
+        description:
+          "Use the remaining time to determine whether the vibration is local or part of a larger system problem.",
+
+        consequence:
+          "You gain diagnostic information, but delay committing to a physical fix.",
+      },
+    ],
+  },
+
+
+  {
+    id:
+      "power-shortage",
+
+    phase:
+      "SURFACE STARTUP",
+
+    eyebrow:
+      "MISSION 05 / POWER",
+
+    situation:
+      "After landing, available electrical power is lower than predicted. Navigation, communications, and science cannot all operate at full capacity.",
+
+    question:
+      "How would you allocate the limited power?",
+
+    options: [
+      {
+        id:
+          "communications-first",
+
+        title:
+          "Keep communications strongest",
+
+        description:
+          "Protect the link to Earth and operate the other systems at reduced power.",
+
+        consequence:
+          "The mission stays connected, but local science and autonomy slow down.",
+      },
+
+      {
+        id:
+          "science-first",
+
+        title:
+          "Protect the science window",
+
+        description:
+          "Use the limited opportunity to gather the highest-value measurements first.",
+
+        consequence:
+          "Science return increases, but less power remains for communication and reserve.",
+      },
+
+      {
+        id:
+          "balanced-cycles",
+
+        title:
+          "Run systems in cycles",
+
+        description:
+          "Schedule navigation, communications, and science at different times instead of running everything together.",
+
+        consequence:
+          "Peak demand falls, but mission operations become more complicated.",
+      },
+    ],
+  },
+
+
+  {
+    id:
+      "landing-site",
+
+    phase:
+      "SURFACE MISSION",
+
+    eyebrow:
+      "MISSION 06 / MISSION DESIGN",
+
+    situation:
+      "Two nearby sites are reachable. One is scientifically exciting but rough. The other is easier to operate in but has lower expected science value.",
+
+    question:
+      "Which information matters most before choosing?",
+
+    options: [
+      {
+        id:
+          "terrain-map",
+
+        title:
+          "Study the terrain risk",
+
+        description:
+          "Compare slopes, obstacles, and mobility limits before committing the rover.",
+
+        consequence:
+          "Operational uncertainty decreases, but the safer site may not be the most scientifically valuable.",
+      },
+
+      {
+        id:
+          "science-map",
+
+        title:
+          "Study the science value",
+
+        description:
+          "Find out which site contains the strongest target for the mission's main research question.",
+
+        consequence:
+          "Mission value becomes clearer, but difficult terrain may still threaten access.",
+      },
+
+      {
+        id:
+          "resource-map",
+
+        title:
+          "Study the resource cost",
+
+        description:
+          "Compare power, travel time, communication, and thermal demands for both sites.",
+
+        consequence:
+          "You understand the system-wide cost, but still have to decide how much risk the science is worth.",
+      },
+    ],
+  },
+
+
+  {
+    id:
+      "fault-isolation",
+
+    phase:
+      "ROVER OPERATIONS",
+
+    eyebrow:
+      "MISSION 07 / AVIONICS",
+
+    situation:
+      "A rover wheel command was sent, but the expected motion did not occur. The problem could be the sensor, electronics, software, or mechanism.",
+
+    question:
+      "Where would you start?",
+
+    options: [
+      {
+        id:
+          "check-signal",
+
+        title:
+          "Trace the electrical signal",
+
+        description:
+          "Check whether the command reached the actuator and whether the sensors responded.",
+
+        consequence:
+          "You narrow the electronic path first, while mechanical causes remain unresolved.",
+      },
+
+      {
+        id:
+          "test-behavior",
+
+        title:
+          "Run a controlled behavior test",
+
+        description:
+          "Send a small safe command and compare the real response with the expected model.",
+
+        consequence:
+          "The system itself becomes the experiment, but another test consumes time and energy.",
+      },
+
+      {
+        id:
+          "isolate-subsystems",
+
+        title:
+          "Separate the possible causes",
+
+        description:
+          "Design tests that distinguish software, electronics, sensing, and mechanical faults one by one.",
+
+        consequence:
+          "Diagnosis becomes systematic, but it may take longer than trying the most likely fix first.",
+      },
+    ],
+  },
+
+
+  {
+    id:
+      "final-priority",
+
+    phase:
+      "FINAL SOL",
+
+    eyebrow:
+      "MISSION 08 / FINAL DECISION",
+
+    situation:
+      "Only one major operation remains before the mission ends. You cannot maximize safety margin, science return, and system experimentation at the same time.",
+
+    question:
+      "What would you want the final operation to prove?",
+
+    options: [
+      {
+        id:
+          "reliable-finish",
+
+        title:
+          "Prove the system can finish reliably",
+
+        description:
+          "Choose the operation with the strongest overall mission margin and the fewest unresolved dependencies.",
+
+        consequence:
+          "The mission finishes with strong reliability evidence, but leaves some ambitious opportunities unused.",
+      },
+
+      {
+        id:
+          "science-finish",
+
+        title:
+          "Capture the highest-value science",
+
+        description:
+          "Use the remaining resources on the observation that could matter most scientifically.",
+
+        consequence:
+          "The final operation may create the strongest scientific result, but with less reserve.",
+      },
+
+      {
+        id:
+          "engineering-finish",
+
+        title:
+          "Test the most uncertain system",
+
+        description:
+          "Use the final opportunity to learn something that could improve the next vehicle or mission.",
+
+        consequence:
+          "The mission becomes an engineering experiment, trading immediate return for future knowledge.",
+      },
+    ],
+  },
+];
+
+
+function shuffle<T>(
+  items: T[],
+): T[] {
+  const copy =
+    [...items];
+
+  for (
+    let i =
+      copy.length - 1;
+    i > 0;
+    i -= 1
+  ) {
+    const j =
+      Math.floor(
+        Math.random() *
+          (i + 1),
+      );
+
+    [
+      copy[i],
+      copy[j],
+    ] = [
+      copy[j],
+      copy[i],
+    ];
+  }
+
+  return copy;
+}
+
+
+function WingMatchV6({
+  onExit,
+}: WingMatchV6Props) {
+
+  const [
+    runNumber,
+    setRunNumber,
+  ] = useState(0);
+
+  const [
+    sceneIndex,
+    setSceneIndex,
+  ] = useState(0);
+
+  const [
+    selected,
+    setSelected,
+  ] =
+    useState<WingOption | null>(
+      null,
+    );
+
+
+  const [
+    hoveredOptionId,
+    setHoveredOptionId,
+  ] =
+    useState<string | null>(
+      null,
+    );
+
+  const [
+    complete,
+    setComplete,
+  ] = useState(false);
+
+
+  const scenes =
+    useMemo(
+      () =>
+        SCENES.map(
+          (scene) => ({
+            ...scene,
+
+            options:
+              shuffle(
+                scene.options,
+              ),
+          }),
+        ),
+      [runNumber],
+    );
+
+
+  const scene =
+    scenes[sceneIndex];
+
+
+  const progress =
+    (
+      (
+        sceneIndex +
+        (selected ? 1 : 0)
+      ) /
+      scenes.length
+    ) *
+    100;
+
+
+  function choose(
+    option: WingOption,
+  ) {
+    if (selected) {
+      return;
+    }
+
+    setSelected(
+      option,
+    );
+  }
+
+
+  function next() {
+    if (!selected) {
+      return;
+    }
+
+    if (
+      sceneIndex ===
+      scenes.length - 1
+    ) {
+      setComplete(
+        true,
+      );
+
+      return;
+    }
+
+    setSceneIndex(
+      (current) =>
+        current + 1,
+    );
+
+    setSelected(
+      null,
+    );
+
+    setHoveredOptionId(
+      null,
+    );
+
+    setHoveredOptionId(
+      null,
+    );
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+
+  function restart() {
+    setRunNumber(
+      (current) =>
+        current + 1,
+    );
+
+    setSceneIndex(
+      0,
+    );
+
+    setSelected(
+      null,
+    );
+
+    setComplete(
+      false,
+    );
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+
+  if (complete) {
+    return (
+      <main className="aw6-shell">
+        <header className="aw6-topbar">
+          <button
+            type="button"
+            className="aw6-exit"
+            onClick={onExit}
+          >
+            ← ALTWING
+          </button>
+
+          <div className="aw6-brand">
+            Alt<span>Wing</span>
+          </div>
+        </header>
+
+        <section className="aw6-complete">
+          <img
+            src="/brand/altwing-penguin.png"
+            alt=""
+          />
+
+          <span className="aw6-kicker">
+            WINGMATCH V6
+          </span>
+
+          <h1>
+            Eight decisions.
+            <br />
+            One complete flight.
+          </h1>
+
+          <p>
+            The new mission interface is
+            working. Next we connect these
+            decisions to the hidden Wing
+            scoring engine and your existing
+            result page.
+          </p>
+
+          <div className="aw6-complete-actions">
+            <button
+              type="button"
+              onClick={restart}
+            >
+              REPLAY V6
+            </button>
+
+            <button
+              type="button"
+              onClick={onExit}
+            >
+              BACK TO ALTWING
+            </button>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+
+  return (
+    <main className="aw6-shell">
+
+      <header className="aw6-topbar">
+
+        <button
+          type="button"
+          className="aw6-exit"
+          onClick={onExit}
+        >
+          ← EXIT
+        </button>
+
+        <div className="aw6-brand">
+          Alt<span>Wing</span>
+        </div>
+
+        <div className="aw6-count">
+          {String(
+            sceneIndex + 1,
+          ).padStart(
+            2,
+            "0",
+          )}
+          {" / "}
+          {String(
+            scenes.length,
+          ).padStart(
+            2,
+            "0",
+          )}
+        </div>
+
+      </header>
+
+
+      <div className="aw6-progress">
+        <span
+          style={{
+            width:
+              `${progress}%`,
+          }}
+        />
+      </div>
+
+
+      <section className="aw6-stage">
+
+        <div className="aw6-mission-meta">
+          <span>
+            {scene.eyebrow}
+          </span>
+
+          <b>
+            {scene.phase}
+          </b>
+        </div>
+
+
+        <p className="aw6-situation">
+          {scene.situation}
+        </p>
+
+
+        <h1 className="aw6-question">
+          {scene.question}
+        </h1>
+
+
+        <p className="aw6-instruction">
+          There is no perfect answer.
+          Choose the tradeoff you would
+          actually accept.
+        </p>
+
+
+        <MissionVisual
+          sceneId={
+            scene.id
+          }
+          options={
+            scene.options
+          }
+          activeOptionId={
+            selected?.id ??
+            hoveredOptionId
+          }
+          selectedOptionId={
+            selected?.id ??
+            null
+          }
+          onHover={
+            setHoveredOptionId
+          }
+          onChoose={
+            (
+              optionId,
+            ) => {
+              const option =
+                scene.options.find(
+                  (
+                    item,
+                  ) =>
+                    item.id ===
+                    optionId,
+                );
+
+              if (option) {
+                choose(
+                  option,
+                );
+              }
+            }
+          }
+        />
+
+
+        <div className="aw6-options">
+
+          {scene.options.map(
+            (
+              option,
+              index,
+            ) => {
+
+              const isSelected =
+                selected?.id ===
+                option.id;
+
+              return (
+                <button
+                  key={
+                    option.id
+                  }
+                  type="button"
+                  className={[
+                    "aw6-option",
+
+                    isSelected
+                      ? "aw6-option--selected"
+                      : "",
+
+                    selected &&
+                    !isSelected
+                      ? "aw6-option--dimmed"
+                      : "",
+                  ]
+                    .filter(
+                      Boolean,
+                    )
+                    .join(
+                      " ",
+                    )}
+                  disabled={
+                    Boolean(
+                      selected,
+                    )
+                  }
+                  onMouseEnter={() =>
+                    setHoveredOptionId(
+                      option.id,
+                    )
+                  }
+                  onMouseLeave={() =>
+                    setHoveredOptionId(
+                      null,
+                    )
+                  }
+                  onFocus={() =>
+                    setHoveredOptionId(
+                      option.id,
+                    )
+                  }
+                  onBlur={() =>
+                    setHoveredOptionId(
+                      null,
+                    )
+                  }
+                  onClick={() =>
+                    choose(
+                      option,
+                    )
+                  }
+                >
+
+                  <span className="aw6-option-number">
+                    OPTION{" "}
+                    {index + 1}
+                  </span>
+
+
+                  <span className="aw6-option-title">
+                    {
+                      option.title
+                    }
+                  </span>
+
+
+                  <span className="aw6-option-description">
+                    {
+                      option.description
+                    }
+                  </span>
+
+
+                  <span className="aw6-option-action">
+                    {isSelected
+                      ? "SELECTED ✓"
+                      : "CHOOSE →"}
+                  </span>
+
+                </button>
+              );
+            },
+          )}
+
+        </div>
+
+
+        {selected && (
+          <section className="aw6-consequence">
+
+            <span>
+              YOUR DECISION
+            </span>
+
+            <h2>
+              {
+                selected.title
+              }
+            </h2>
+
+            <p>
+              {
+                selected.consequence
+              }
+            </p>
+
+            <button
+              type="button"
+              onClick={next}
+            >
+              {sceneIndex ===
+              scenes.length - 1
+                ? "COMPLETE FLIGHT →"
+                : "NEXT DECISION →"}
+            </button>
+
+          </section>
+        )}
+
+      </section>
+
+    </main>
+  );
+}
+
+
+export default WingMatchV6;
