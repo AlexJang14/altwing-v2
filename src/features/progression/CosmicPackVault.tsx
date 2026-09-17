@@ -36,8 +36,8 @@ function packInfo(
 
     case "EVIDENCE":
       return {
-        name: "EVIDENCE PACK",
-        tag: "PROOF REWARD",
+        name: "ENGINEERING PACK",
+        tag: "PROOF OF FLIGHT REWARD",
         boost: "HIGH RARE / EPIC",
       };
 
@@ -187,7 +187,7 @@ interface RevealProps {
 }
 
 
-function PackReveal({
+export function PackReveal({
   result,
   onClose,
 }: RevealProps) {

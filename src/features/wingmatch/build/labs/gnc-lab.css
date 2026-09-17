@@ -1,0 +1,365 @@
+.gnclab {
+  margin-top: 28px;
+}
+
+.gnclab-intro {
+  max-width: 760px;
+}
+
+.gnclab-intro > span,
+.gnclab-live-estimate > span {
+  color: #6f9dff;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  letter-spacing: .11em;
+}
+
+.gnclab-intro h3 {
+  margin: 9px 0 0;
+
+  color: #fff;
+
+  font-size: 29px;
+
+  line-height: 1.08;
+
+  letter-spacing: -.03em;
+}
+
+.gnclab-intro p {
+  color:
+    rgba(237,243,255,.65);
+
+  font-size: 14px;
+
+  line-height: 1.6;
+}
+
+.gnclab-disclosure {
+  margin-top: 18px;
+
+  padding: 14px 16px;
+
+  border-left:
+    3px solid #ffc857;
+
+  background:
+    rgba(255,200,87,.04);
+}
+
+.gnclab-disclosure strong {
+  color: #ffc857;
+
+  font-size: 9px;
+
+  letter-spacing: .09em;
+}
+
+.gnclab-disclosure p {
+  margin: 6px 0 0;
+
+  color:
+    rgba(234,241,255,.55);
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+.gnclab-sensors {
+  margin-top: 22px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 10px;
+}
+
+.gnclab-sensors article {
+  padding: 18px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.07);
+
+  border-radius: 13px;
+
+  background:
+    rgba(255,255,255,.02);
+}
+
+.gnclab-sensors span {
+  color: #82a9ff;
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+  letter-spacing: .09em;
+}
+
+.gnclab-sensors strong {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #fff;
+
+  font-size: 24px;
+}
+
+.gnclab-sensors p {
+  margin: 9px 0 0;
+
+  color:
+    rgba(231,239,255,.48);
+
+  font-size: 11px;
+
+  line-height: 1.45;
+}
+
+.gnclab-controls {
+  margin-top: 14px;
+
+  padding: 20px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.07);
+
+  border-radius: 15px;
+
+  background:
+    #0b1228;
+}
+
+.gnclab-slider + .gnclab-slider {
+  margin-top: 18px;
+}
+
+.gnclab-slider > div {
+  display: flex;
+
+  justify-content: space-between;
+}
+
+.gnclab-slider span {
+  color:
+    rgba(231,239,255,.58);
+
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+.gnclab-slider strong {
+  color: #ffc857;
+
+  font-size: 11px;
+}
+
+.gnclab-slider input {
+  width: 100%;
+
+  margin-top: 8px;
+
+  accent-color: #5b8def;
+}
+
+.gnclab-live-estimate {
+  margin-top: 14px;
+
+  padding: 20px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  border:
+    1px solid
+    rgba(91,141,239,.16);
+
+  border-radius: 13px;
+
+  background:
+    rgba(91,141,239,.045);
+}
+
+.gnclab-live-estimate strong {
+  color: #fff;
+
+  font-size: 26px;
+}
+
+.gnclab-run,
+.gnclab-after button {
+  width: 100%;
+
+  min-height: 48px;
+
+  margin-top: 14px;
+
+  border: 0;
+
+  border-radius: 11px;
+
+  color: #0d132b;
+
+  background: #ffc857;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.gnclab-result {
+  margin-top: 16px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
+
+  border-radius: 14px;
+}
+
+.gnclab-result > div {
+  padding: 16px;
+
+  border-right:
+    1px solid
+    rgba(255,255,255,.07);
+}
+
+.gnclab-result > div:last-child {
+  border-right: 0;
+}
+
+.gnclab-result span {
+  color:
+    rgba(227,235,255,.42);
+
+  font-size: 8px;
+
+  font-weight: 900;
+}
+
+.gnclab-result strong {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #fff;
+
+  font-size: 17px;
+}
+
+.gnclab-result .good {
+  color: #77e1c3;
+}
+
+.gnclab-result .okay {
+  color: #ffc857;
+}
+
+.gnclab-result .poor {
+  color: #ff7474;
+}
+
+.gnclab-after {
+  margin-top: 14px;
+
+  padding: 17px;
+
+  border-radius: 12px;
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+.gnclab-after p {
+  margin: 0;
+
+  color:
+    rgba(236,242,255,.59);
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+.gnclab-locked {
+  margin-top: 14px;
+
+  padding: 18px;
+
+  border:
+    1px solid
+    rgba(119,225,195,.18);
+
+  border-radius: 12px;
+
+  background:
+    rgba(119,225,195,.045);
+}
+
+.gnclab-locked span {
+  color: #77e1c3;
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+  letter-spacing: .09em;
+}
+
+.gnclab-locked strong {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #fff;
+
+  font-size: 23px;
+}
+
+.gnclab-locked p {
+  margin: 5px 0 0;
+
+  color:
+    rgba(235,242,255,.55);
+
+  font-size: 11px;
+}
+
+@media (max-width: 720px) {
+
+  .gnclab-sensors,
+  .gnclab-result {
+    grid-template-columns: 1fr;
+  }
+
+  .gnclab-result > div {
+    border-right: 0;
+
+    border-bottom:
+      1px solid
+      rgba(255,255,255,.07);
+  }
+
+}

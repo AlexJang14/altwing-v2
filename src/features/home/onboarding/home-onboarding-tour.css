@@ -1,0 +1,456 @@
+.aw-tour-root {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 20000;
+
+  pointer-events: none;
+}
+
+
+.aw-tour-dim {
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    rgba(4, 8, 19, .72);
+
+  backdrop-filter:
+    blur(1px);
+}
+
+
+.aw-tour-spotlight {
+  position: fixed;
+
+  z-index: 2;
+
+  border:
+    2px solid #ffc857;
+
+  border-radius: 15px;
+
+  pointer-events: none;
+
+  box-shadow:
+    0 0 0 5px
+    rgba(255, 200, 87, .09),
+    0 12px 45px
+    rgba(0, 0, 0, .28);
+
+  transition:
+    left .25s ease,
+    top .25s ease,
+    width .25s ease,
+    height .25s ease;
+}
+
+
+.aw-tour-pointer {
+  position: fixed;
+
+  z-index: 3;
+
+  min-width: 84px;
+
+  color: #ffc857;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  letter-spacing: .07em;
+
+  text-align: center;
+
+  animation:
+    awTourPoint
+    1s ease-in-out
+    infinite;
+}
+
+
+@keyframes awTourPoint {
+
+  0%,
+  100% {
+    transform:
+      translateY(0);
+  }
+
+  50% {
+    transform:
+      translateY(5px);
+  }
+
+}
+
+
+.aw-tour-pointer.is-below {
+  animation-name:
+    awTourPointUp;
+}
+
+
+@keyframes awTourPointUp {
+
+  0%,
+  100% {
+    transform:
+      translateY(0);
+  }
+
+  50% {
+    transform:
+      translateY(-5px);
+  }
+
+}
+
+
+/*
+ * KEY CHANGE:
+ * Instruction card is completely separate
+ * from the highlighted UI target.
+ */
+
+.aw-tour-card {
+  width:
+    min(
+      520px,
+      calc(100vw - 32px)
+    );
+
+  position: fixed;
+
+  left: 50%;
+
+  bottom: 24px;
+
+  z-index: 5;
+
+  transform:
+    translateX(-50%);
+
+  padding:
+    22px 24px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, .12);
+
+  border-radius:
+    18px;
+
+  color:
+    #ffffff;
+
+  background:
+    #111a36;
+
+  box-shadow:
+    0 22px 70px
+    rgba(0, 0, 0, .42);
+
+  pointer-events: auto;
+}
+
+
+.aw-tour-bars {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  gap: 5px;
+}
+
+
+.aw-tour-bars span {
+  height: 3px;
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(255,255,255,.10);
+}
+
+
+.aw-tour-bars span.is-active {
+  background:
+    #5b8def;
+}
+
+
+.aw-tour-count {
+  margin-top: 10px;
+
+  color:
+    rgba(235, 241, 255, .38);
+
+  font-size: 9px;
+
+  font-weight: 850;
+
+  text-align: right;
+}
+
+
+.aw-tour-eyebrow {
+  display: block;
+
+  margin-top: -8px;
+
+  color: #ffc857;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: .11em;
+}
+
+
+.aw-tour-card h3 {
+  margin: 9px 0 0;
+
+  color: #ffffff;
+
+  font-size: 24px;
+
+  line-height: 1.08;
+
+  letter-spacing: -.035em;
+}
+
+
+.aw-tour-card > p {
+  max-width: 440px;
+
+  margin: 10px 0 0;
+
+  color:
+    rgba(236, 242, 255, .68);
+
+  font-size: 13px;
+
+  line-height: 1.55;
+}
+
+
+.aw-tour-actions {
+  margin-top: 20px;
+
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+
+.aw-tour-actions > div {
+  display: flex;
+
+  gap: 7px;
+}
+
+
+.aw-tour-actions button {
+  min-height: 41px;
+
+  padding: 0 13px;
+
+  border-radius: 9px;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: .05em;
+
+  cursor: pointer;
+}
+
+
+.aw-tour-skip,
+.aw-tour-back {
+  border:
+    1px solid
+    rgba(255,255,255,.11);
+
+  color:
+    rgba(255,255,255,.66);
+
+  background:
+    transparent;
+}
+
+
+.aw-tour-next {
+  min-width: 82px;
+
+  border: 0;
+
+  color: #0d132b;
+
+  background: #ffc857;
+}
+
+
+.aw-tour-replay {
+  position: fixed;
+
+  right: 18px;
+
+  bottom: 18px;
+
+  z-index: 5000;
+
+  min-height: 40px;
+
+  padding: 0 13px;
+
+  border:
+    1px solid
+    rgba(91,141,239,.22);
+
+  border-radius: 999px;
+
+  color: #5b8def;
+
+  background:
+    rgba(255,255,255,.96);
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: .07em;
+
+  cursor: pointer;
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
+  .aw-tour-pointer {
+    animation: none;
+  }
+
+}
+
+
+@media (
+  max-width: 620px
+) {
+
+  .aw-tour-card {
+    width:
+      calc(100vw - 24px);
+
+    bottom: 12px;
+
+    padding:
+      19px;
+  }
+
+
+  .aw-tour-pointer {
+    display: none;
+  }
+
+}
+
+/* =========================================================
+   TOUR V3 — TRUE CLEAR SPOTLIGHT
+   Keep the real UI bright inside the highlighted area.
+   ========================================================= */
+
+.aw-tour-dim {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+
+.aw-tour-spotlight {
+  background: transparent !important;
+
+  /*
+   * The giant shadow dims everything OUTSIDE
+   * the target instead of placing a dark layer
+   * over the entire page.
+   */
+  box-shadow:
+    0 0 0 9999px rgba(4, 8, 19, .74),
+    0 0 0 5px rgba(255, 200, 87, .10),
+    0 16px 50px rgba(0, 0, 0, .30) !important;
+
+  border:
+    2px solid #ffc857 !important;
+}
+
+
+.aw-tour-pointer {
+  padding:
+    5px 8px;
+
+  border-radius:
+    7px;
+
+  background:
+    #111a36;
+
+  box-shadow:
+    0 5px 18px
+    rgba(0, 0, 0, .24);
+}
+
+
+/* Make tutorial card slightly calmer / more premium */
+
+.aw-tour-card {
+  border:
+    1px solid
+    rgba(130, 169, 255, .20);
+
+  background:
+    linear-gradient(
+      145deg,
+      #111a36,
+      #0d152e
+    );
+
+  box-shadow:
+    0 24px 75px
+    rgba(0, 0, 0, .48);
+}
+
+
+.aw-tour-next {
+  transition:
+    transform .15s ease,
+    filter .15s ease;
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+
+  .aw-tour-next:hover {
+    transform:
+      translateY(-1px);
+
+    filter:
+      brightness(1.04);
+  }
+
+}

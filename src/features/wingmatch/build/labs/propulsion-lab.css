@@ -1,0 +1,436 @@
+.plab {
+  margin-top: 27px;
+}
+
+.plab-intro {
+  max-width: 760px;
+}
+
+.plab-intro > span,
+.plab-control-head span,
+.plab-comparison header > span {
+  color: #6f9dff;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  letter-spacing: .11em;
+}
+
+.plab-intro h3,
+.plab-comparison h3 {
+  margin: 9px 0 0;
+
+  color: #fff;
+
+  font-size: 29px;
+
+  line-height: 1.08;
+
+  letter-spacing: -.03em;
+}
+
+.plab-intro p {
+  margin: 12px 0 0;
+
+  color: rgba(237,243,255,.66);
+
+  font-size: 14px;
+
+  line-height: 1.6;
+}
+
+.plab-intro p strong {
+  color: #fff;
+}
+
+.plab-disclosure {
+  margin-top: 19px;
+
+  padding: 14px 16px;
+
+  border-left: 3px solid #ffc857;
+
+  background: rgba(255,200,87,.04);
+}
+
+.plab-disclosure strong {
+  color: #ffc857;
+
+  font-size: 9px;
+
+  letter-spacing: .09em;
+}
+
+.plab-disclosure p {
+  margin: 6px 0 0;
+
+  color: rgba(234,241,255,.55);
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+.plab-control {
+  margin-top: 27px;
+
+  padding: 20px;
+
+  border:
+    1px solid rgba(255,255,255,.07);
+
+  border-radius: 15px;
+
+  background: rgba(255,255,255,.02);
+}
+
+.plab-control-head {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-end;
+
+  gap: 25px;
+}
+
+.plab-control-head > div {
+  display: flex;
+
+  flex-direction: column;
+}
+
+.plab-control-head strong {
+  margin-top: 4px;
+
+  color: #fff;
+
+  font-size: 23px;
+}
+
+.plab-control-head small {
+  max-width: 310px;
+
+  color: rgba(231,239,255,.45);
+
+  font-size: 11px;
+
+  line-height: 1.4;
+
+  text-align: right;
+}
+
+.plab-control input {
+  width: 100%;
+
+  margin-top: 20px;
+
+  accent-color: #ffc857;
+}
+
+.plab-scale {
+  margin-top: 5px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  color: rgba(230,238,255,.36);
+
+  font-size: 9px;
+}
+
+.plab-engine-grid {
+  margin-top: 16px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 12px;
+}
+
+.plab-engine {
+  min-height: 280px;
+
+  padding: 23px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  border:
+    1px solid rgba(124,154,229,.16);
+
+  border-radius: 18px;
+
+  background: #0d152e;
+}
+
+.plab-engine.is-selected {
+  border-color: #ffc857;
+
+  box-shadow:
+    0 0 0 2px rgba(255,200,87,.055);
+}
+
+.plab-engine > span {
+  color: #82a9ff;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: .1em;
+}
+
+.plab-engine h4 {
+  margin: 10px 0 0;
+
+  color: #fff;
+
+  font-size: 27px;
+}
+
+.plab-engine-numbers {
+  margin-top: 19px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 8px;
+}
+
+.plab-engine-numbers > div {
+  padding: 12px;
+
+  border-radius: 10px;
+
+  background: rgba(255,255,255,.035);
+}
+
+.plab-engine-numbers small {
+  display: block;
+
+  color: rgba(226,235,255,.4);
+
+  font-size: 8px;
+}
+
+.plab-engine-numbers strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #fff;
+
+  font-size: 15px;
+}
+
+.plab-engine > p {
+  margin: 17px 0 0;
+
+  color: rgba(235,241,255,.58);
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+.plab-result-preview {
+  margin-top: auto;
+
+  padding-top: 20px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 8px;
+}
+
+.plab-result-preview > div {
+  padding: 10px;
+
+  border-radius: 9px;
+
+  background: rgba(91,141,239,.055);
+}
+
+.plab-result-preview span {
+  display: block;
+
+  color: #6f9dff;
+
+  font-size: 8px;
+
+  font-weight: 900;
+}
+
+.plab-result-preview strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #fff;
+
+  font-size: 15px;
+}
+
+.plab-engine button,
+.plab-run {
+  min-height: 46px;
+
+  margin-top: 14px;
+
+  padding: 0 15px;
+
+  border-radius: 10px;
+
+  font-size: 10px;
+
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.plab-engine button {
+  border:
+    1px solid rgba(255,200,87,.24);
+
+  color: #ffc857;
+
+  background: transparent;
+}
+
+.plab-run {
+  width: 100%;
+
+  border: 0;
+
+  color: #0d132b;
+
+  background: #ffc857;
+}
+
+.plab-comparison {
+  margin-top: 22px;
+
+  padding-top: 24px;
+
+  border-top:
+    1px solid rgba(255,255,255,.08);
+}
+
+.plab-compare-grid {
+  margin-top: 16px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 10px;
+}
+
+.plab-compare-grid article {
+  padding: 17px;
+
+  border:
+    1px solid rgba(255,255,255,.07);
+
+  border-radius: 12px;
+
+  background: rgba(255,255,255,.02);
+}
+
+.plab-compare-grid article > span {
+  color: #82a9ff;
+
+  font-size: 9px;
+
+  font-weight: 900;
+}
+
+.plab-compare-grid article > strong {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #fff;
+
+  font-size: 22px;
+}
+
+.plab-compare-grid p {
+  margin: 8px 0 0;
+
+  color: rgba(234,241,255,.55);
+
+  font-size: 11px;
+}
+
+.plab-compare-grid b.pass {
+  color: #77e1c3;
+}
+
+.plab-compare-grid b.warn {
+  color: #ffc857;
+}
+
+.plab-compare-grid b.fail {
+  color: #ff7474;
+}
+
+.plab-insight {
+  margin-top: 12px;
+
+  padding: 17px;
+
+  border-radius: 11px;
+
+  background: rgba(91,141,239,.055);
+}
+
+.plab-insight span {
+  color: #5b8def;
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+  letter-spacing: .09em;
+}
+
+.plab-insight p {
+  margin: 7px 0 0;
+
+  color: rgba(236,242,255,.64);
+
+  font-size: 12px;
+
+  line-height: 1.55;
+}
+
+@media (max-width: 700px) {
+
+  .plab-engine-grid,
+  .plab-compare-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plab-control-head {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .plab-control-head small {
+    text-align: left;
+  }
+}

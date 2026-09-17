@@ -5,6 +5,8 @@ import WingMatchMission from "./features/wingmatch/v7/WingMatchV7";
 import PreFlightBriefing from "./features/wingmatch/briefing/PreFlightBriefing";
 import MyUniversePage from "./features/progression/MyUniversePage";
 import PathDashboard from "./features/wingmatch/path/PathDashboard";
+import SavedWingHomeCard from "./features/wingmatch/result/SavedWingHomeCard";
+import HomeLaunchPad from "./features/home/HomeLaunchPad";
 
 type AppView =
   | "home"
@@ -130,7 +132,7 @@ function App() {
           <div>
             <div className="eyebrow">
               <span className="eyebrow-dot" />
-              AEROSPACE EXPLORATION FOR ANYONE
+              FOR HIGH-SCHOOL STUDENTS CURIOUS ABOUT AEROSPACE
             </div>
 
             <h1>
@@ -142,11 +144,12 @@ function App() {
             </h1>
 
             <p className="hero-copy">
-              Step inside realistic aerospace
-              decisions, discover how you solve
-              problems, build something real,
-              and turn that experience into your
-              next academic move.
+              Not sure what part of aerospace
+              fits you? Start with a five-minute
+              Mars mission. Discover a direction,
+              try the work, build something real,
+              and figure out what to do next for
+              school, clubs, and college.
             </p>
 
             <div className="hero-actions">
@@ -157,7 +160,7 @@ function App() {
                   setView("preflight")
                 }
               >
-                Find My Wing
+                Start WingMatch — 5 min
               </button>
 
               <button
@@ -167,13 +170,13 @@ function App() {
                   setView("path")
                 }
               >
-                Explore Aerospace
+                See How AltWing Works
               </button>
             </div>
 
             <p className="hero-note">
-              Explore. Build. Launch. — no
-              personality test required.
+              No aerospace experience required.
+              Start with curiosity.
             </p>
           </div>
 
@@ -190,6 +193,117 @@ function App() {
           </button>
         </section>
 
+
+
+        <section className="home-value-section">
+
+          <div className="home-value-inner">
+
+            <div className="home-value-heading">
+
+              <span>
+                WHY USE ALTWING?
+              </span>
+
+              <h2>
+                Go from
+                “space sounds cool”
+                to
+                “I actually tried it.”
+              </h2>
+
+              <p>
+                You do not need to know
+                aerospace before you start.
+                That is the point.
+              </p>
+
+            </div>
+
+
+            <div className="home-value-grid">
+
+              <article>
+
+                <b>01</b>
+
+                <strong>
+                  Find a direction.
+                </strong>
+
+                <p>
+                  Try aerospace decisions
+                  and see which kind of
+                  engineering work feels
+                  worth exploring further.
+                </p>
+
+              </article>
+
+
+              <article>
+
+                <b>02</b>
+
+                <strong>
+                  Try the work.
+                </strong>
+
+                <p>
+                  Build a small project
+                  instead of trusting a
+                  career quiz or job title.
+                </p>
+
+              </article>
+
+
+              <article>
+
+                <b>03</b>
+
+                <strong>
+                  Know what to do next.
+                </strong>
+
+                <p>
+                  Connect what you learned
+                  to classes, clubs,
+                  competitions, projects,
+                  and college ideas.
+                </p>
+
+              </article>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <SavedWingHomeCard
+          onOpenUniverse={() =>
+            setView(
+              "universe",
+            )
+          }
+          onRetake={() =>
+            setView(
+              "preflight",
+            )
+          }
+        />
+
+        <HomeLaunchPad
+          onStartWingMatch={() =>
+            setView("preflight")
+          }
+          onOpenUniverse={() =>
+            setView("universe")
+          }
+        />
+
         <section className="simple-gateway">
           <div className="simple-gateway-heading">
             <span>
@@ -197,13 +311,13 @@ function App() {
             </span>
 
             <h2>
-              Three ways into AltWing.
+              Choose the easiest next step.
             </h2>
 
             <p>
-              Play first, browse aerospace,
-              or open everything you&apos;ve
-              already earned.
+              New here? Start with WingMatch.
+              Already exploring aerospace?
+              Browse paths or open your progress.
             </p>
           </div>
 
@@ -227,8 +341,8 @@ function App() {
                 </strong>
 
                 <p>
-                  Play a five-minute
-                  aerospace mission.
+                  A five-minute Mars mission.
+                  No aerospace knowledge needed.
                 </p>
               </div>
 
@@ -287,9 +401,9 @@ function App() {
                 </strong>
 
                 <p>
-                  Level, impact,
-                  Cosmic Atlas, and
-                  discoveries.
+                  See your saved Wing,
+                  projects, progress,
+                  and discoveries.
                 </p>
               </div>
 
@@ -304,20 +418,20 @@ function App() {
         >
           <div className="journey-inner">
             <div className="section-label">
-              The AltWing Loop
+              HOW ALTWING WORKS
             </div>
 
             <h2>
-              Career exploration should end
-              with evidence, not a label.
+              Try it. Build it.
+              Then decide.
             </h2>
 
             <p className="journey-intro">
-              AltWing moves from curiosity to
-              action. Discover how you think,
-              build proof, and use that evidence
-              to make better academic and
-              college decisions.
+              You do not have to choose your
+              future before you have tried the
+              work. Start small, learn from the
+              experience, and use it to make
+              your next decision.
             </p>
 
             <div className="journey-grid">
@@ -327,14 +441,14 @@ function App() {
                 </div>
 
                 <h3>
-                  Test how you think.
+                  Try a mission.
                 </h3>
 
                 <p>
-                  Make decisions inside an
-                  aerospace mission and reveal
-                  the engineering instincts
-                  behind them.
+                  Make real aerospace
+                  tradeoffs and notice which
+                  problems you want to keep
+                  solving.
                 </p>
               </article>
 
@@ -344,14 +458,13 @@ function App() {
                 </div>
 
                 <h3>
-                  Turn curiosity into work.
+                  Build something small.
                 </h3>
 
                 <p>
-                  Take your Wing into a
-                  structured technical build
-                  instead of stopping at a
-                  career recommendation.
+                  Follow a beginner-friendly
+                  project and experience what
+                  the work is actually like.
                 </p>
               </article>
 
@@ -361,14 +474,14 @@ function App() {
                 </div>
 
                 <h3>
-                  Leave evidence.
+                  Keep what you made.
                 </h3>
 
                 <p>
-                  Test, iterate, document, and
-                  turn your work into portfolio
-                  evidence another person can
-                  actually inspect.
+                  Save your design,
+                  screenshots, results, and
+                  improvements so you have
+                  something real to show.
                 </p>
               </article>
 
@@ -378,15 +491,14 @@ function App() {
                 </div>
 
                 <h3>
-                  Build your runway.
+                  Choose your next move.
                 </h3>
 
                 <p>
-                  Connect the evidence to
-                  courses, activities,
-                  leadership, and colleges that
-                  fit the direction you are
-                  testing.
+                  Find classes, clubs,
+                  activities, and colleges that
+                  connect to the direction you
+                  just tested.
                 </p>
               </article>
 
@@ -396,14 +508,14 @@ function App() {
                 </div>
 
                 <h3>
-                  Know what comes next.
+                  Take it outside AltWing.
                 </h3>
 
                 <p>
-                  Build a college shortlist,
-                  compare readiness, and leave
-                  with a focused 90-day action
-                  plan.
+                  Turn the experience into a
+                  competition idea, portfolio
+                  project, leadership move, or
+                  simple 90-day plan.
                 </p>
               </article>
             </div>
@@ -416,21 +528,22 @@ function App() {
         >
           <div className="home-section-shell">
             <div className="section-label">
-              What You Leave With
+              WHAT YOU CAN LEAVE WITH
             </div>
 
             <div className="home-section-heading">
               <h2>
-                Not another result screen.
+                More than a quiz result.
                 <br />
-                A body of work.
+                Something you can actually use.
               </h2>
 
               <p>
-                Every stage is designed to leave
-                behind something useful for your
-                next project, activity, or
-                college-planning decision.
+                Go as far as you want. AltWing
+                can help you leave with a real
+                project, something to show,
+                college ideas, and a clear next
+                step.
               </p>
             </div>
 
@@ -438,77 +551,74 @@ function App() {
               <article className="outcome-card">
                 <span>01</span>
                 <h3>
-                  Engineering Evidence
+                  A Real Project
                 </h3>
                 <p>
-                  Constraints, testing,
-                  iteration, reflection, and a
-                  final technical artifact.
+                  Build, test, and improve
+                  something connected to the
+                  aerospace path you explored.
                 </p>
               </article>
 
               <article className="outcome-card">
                 <span>02</span>
                 <h3>
-                  Project Portfolio
+                  Something You Can Show
                 </h3>
                 <p>
-                  Evidence turned into a project
-                  description, activity draft,
-                  résumé bullet, and exportable
-                  portfolio.
+                  Turn your work into a project
+                  description, portfolio entry,
+                  activity draft, or résumé bullet.
                 </p>
               </article>
 
               <article className="outcome-card">
                 <span>03</span>
                 <h3>
-                  Academic Runway
+                  What to Learn Next
                 </h3>
                 <p>
-                  Courses and preparation
-                  priorities connected to the
-                  technical direction you are
-                  exploring.
+                  See which classes and skills
+                  would help you go deeper in
+                  the direction you tested.
                 </p>
               </article>
 
               <article className="outcome-card">
                 <span>04</span>
                 <h3>
-                  Leadership Path
+                  How to Grow the Project
                 </h3>
                 <p>
-                  Move from simply participating
-                  to owning outcomes, creating
-                  opportunities, and helping
-                  others.
+                  Turn a solo project into a
+                  club activity, team effort,
+                  event, or something that helps
+                  other students.
                 </p>
               </article>
 
               <article className="outcome-card">
                 <span>05</span>
                 <h3>
-                  College Shortlist
+                  Colleges to Explore
                 </h3>
                 <p>
-                  Save aerospace programs,
-                  understand different admission
-                  contexts, and compare schools
-                  that actually fit.
+                  Find aerospace programs and
+                  compare schools that match
+                  what you are starting to care
+                  about.
                 </p>
               </article>
 
               <article className="outcome-card">
                 <span>06</span>
                 <h3>
-                  90-Day Strategy
+                  Your Next 90 Days
                 </h3>
                 <p>
-                  Combine overlapping needs
-                  across your shortlist into a
-                  small number of high-leverage
-                  next actions.
+                  Leave with a short list of
+                  realistic next actions instead
+                  of wondering what to do next.
                 </p>
               </article>
             </div>

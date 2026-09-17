@@ -1034,3 +1034,249 @@ button.gateway-card {
   opacity: 1 !important;
 }
 
+
+
+/* =========================================================
+   HOME BEGINNER CLARITY
+   ========================================================= */
+
+.home-value-section {
+  padding:
+    74px 24px;
+
+  background:
+    #f6f4f0;
+}
+
+
+.home-value-inner {
+  width:
+    min(
+      1160px,
+      100%
+    );
+
+  margin:
+    0 auto;
+}
+
+
+.home-value-heading {
+  max-width:
+    720px;
+}
+
+
+.home-value-heading > span {
+  color:
+    #ff6269;
+
+  font-size:
+    11px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    .12em;
+}
+
+
+.home-value-heading h2 {
+  margin:
+    13px 0 0;
+
+  color:
+    #10172f;
+
+  font-size:
+    clamp(
+      34px,
+      4vw,
+      50px
+    );
+
+  line-height:
+    1.04;
+
+  letter-spacing:
+    -.045em;
+}
+
+
+.home-value-heading p {
+  margin:
+    15px 0 0;
+
+  color:
+    #59637a;
+
+  font-size:
+    17px;
+
+  line-height:
+    1.55;
+}
+
+
+.home-value-grid {
+  margin-top:
+    34px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      1fr
+    );
+
+  gap:
+    15px;
+}
+
+
+.home-value-grid article {
+  min-height:
+    205px;
+
+  padding:
+    27px;
+
+  border:
+    1px solid
+    rgba(
+      13,
+      19,
+      43,
+      .12
+    );
+
+  border-radius:
+    20px;
+
+  background:
+    #ffffff;
+}
+
+
+.home-value-grid b {
+  color:
+    #5b8def;
+
+  font-size:
+    11px;
+
+  letter-spacing:
+    .1em;
+}
+
+
+.home-value-grid strong {
+  display:
+    block;
+
+  margin-top:
+    24px;
+
+  color:
+    #10172f;
+
+  font-size:
+    22px;
+
+  line-height:
+    1.15;
+}
+
+
+.home-value-grid p {
+  margin:
+    11px 0 0;
+
+  color:
+    #5e687d;
+
+  font-size:
+    15px;
+
+  line-height:
+    1.55;
+}
+
+
+/* =========================================================
+   FIX DARK OUTCOMES CONTRAST
+   ========================================================= */
+
+.outcomes-section
+.home-section-heading h2 {
+  color:
+    #f7f9ff !important;
+
+  opacity:
+    1 !important;
+}
+
+
+.outcomes-section
+.home-section-heading p {
+  color:
+    rgba(
+      235,
+      241,
+      255,
+      .72
+    ) !important;
+
+  opacity:
+    1 !important;
+}
+
+
+.outcomes-section
+.section-label {
+  color:
+    #73a4ff !important;
+
+  opacity:
+    1 !important;
+}
+
+
+.outcomes-section
+.outcome-card h3 {
+  color:
+    #10172f !important;
+}
+
+
+.outcomes-section
+.outcome-card p {
+  color:
+    #5e687d !important;
+}
+
+
+/* =========================================================
+   BEGINNER-FRIENDLY MOBILE
+   ========================================================= */
+
+@media (
+  max-width: 760px
+) {
+
+  .home-value-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .home-value-section {
+    padding:
+      52px 16px;
+  }
+
+}
+
