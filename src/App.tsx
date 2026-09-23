@@ -132,7 +132,7 @@ function App() {
           <div>
             <div className="eyebrow">
               <span className="eyebrow-dot" />
-              FOR HIGH-SCHOOL STUDENTS CURIOUS ABOUT AEROSPACE
+              FOR ANYONE CURIOUS ABOUT AEROSPACE
             </div>
 
             <h1>

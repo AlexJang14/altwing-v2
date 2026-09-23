@@ -14,6 +14,9 @@ import PostWingGuide
 import HomeOnboardingTour
   from "./onboarding/HomeOnboardingTour";
 
+import PackReadyBanner
+  from "./PackReadyBanner";
+
 import "./home-launch-pad.css";
 
 interface Props {
@@ -221,6 +224,8 @@ export default function HomeLaunchPad({
           )
         }
       />
+
+      <PackReadyBanner />
 
       <PostWingGuide
         enabled={

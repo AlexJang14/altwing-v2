@@ -14,6 +14,9 @@ import PropulsionLab
 import GNCLab
   from "../labs/GNCLab";
 
+import StructuresLab
+  from "../labs/StructuresLab";
+
 import {
   awardCosmicPack,
   openCosmicPack,
@@ -195,7 +198,11 @@ export default function BuildEngine({
         ? experiment.includes(
             "Final navigation estimate:"
           )
-        : experimentDone;
+        : wingId === "structures"
+          ? experiment.includes(
+              "Final structure decision:"
+            )
+          : experimentDone;
 
 
   const evidenceItems = [
@@ -872,6 +879,15 @@ export default function BuildEngine({
               "gnc" ? (
 
               <GNCLab
+                onEvidence={
+                  setExperiment
+                }
+              />
+
+            ) : wingId ===
+              "structures" ? (
+
+              <StructuresLab
                 onEvidence={
                   setExperiment
                 }

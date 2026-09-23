@@ -1,0 +1,282 @@
+.prb,
+.prb * {
+  box-sizing: border-box;
+}
+
+
+.prb {
+  width:
+    min(
+      1120px,
+      calc(100% - 42px)
+    );
+
+  margin:
+    22px auto 0;
+
+  padding:
+    18px 20px;
+
+  display: grid;
+
+  grid-template-columns:
+    auto 1fr auto auto;
+
+  gap: 18px;
+
+  align-items: center;
+
+  border:
+    1px solid
+    rgba(255,200,87,.27);
+
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      circle at 10% 50%,
+      rgba(91,141,239,.14),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      #111a36,
+      #0b1228
+    );
+
+  box-shadow:
+    0 16px 45px
+    rgba(13,19,43,.12);
+}
+
+
+.prb-signal {
+  width: 60px;
+  height: 60px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 50%;
+
+  background:
+    rgba(91,141,239,.09);
+}
+
+
+.prb-orbit {
+  width: 48px;
+  height: 48px;
+
+  display: grid;
+
+  place-items: center;
+
+  position: relative;
+
+  border:
+    1px solid
+    rgba(91,141,239,.24);
+
+  border-radius: 50%;
+}
+
+
+.prb-orbit::after {
+  content: "";
+
+  position: absolute;
+
+  inset: -5px;
+
+  border:
+    1px dashed
+    rgba(255,200,87,.26);
+
+  border-radius: 50%;
+
+  animation:
+    prbOrbit
+    7s linear
+    infinite;
+}
+
+
+@keyframes prbOrbit {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+
+.prb-orbit img {
+  width: 35px;
+
+  transform:
+    rotate(-11deg);
+}
+
+
+.prb-copy > span {
+  color: #ffc857;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: .11em;
+}
+
+
+.prb-copy h3 {
+  margin:
+    4px 0 0;
+
+  color: #fff;
+
+  font-size: 20px;
+
+  letter-spacing: -.02em;
+}
+
+
+.prb-copy p {
+  margin:
+    4px 0 0;
+
+  color:
+    rgba(236,242,255,.55);
+
+  font-size: 11px;
+}
+
+
+.prb-pack {
+  min-width: 125px;
+
+  padding:
+    12px 14px;
+
+  border:
+    1px solid
+    rgba(255,200,87,.25);
+
+  border-radius: 11px;
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+
+.prb-pack span {
+  display: block;
+
+  color:
+    rgba(236,242,255,.37);
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  letter-spacing: .09em;
+}
+
+
+.prb-pack strong {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #ffc857;
+
+  font-size: 10px;
+
+  letter-spacing: .06em;
+}
+
+
+.prb-pack small {
+  display: block;
+
+  margin-top: 4px;
+
+  color:
+    rgba(236,242,255,.55);
+
+  font-size: 8px;
+}
+
+
+.prb > button {
+  min-height: 46px;
+
+  padding:
+    0 17px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 16px;
+
+  border: 0;
+
+  border-radius: 10px;
+
+  color: #0d132b;
+
+  background: #ffc857;
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: .045em;
+
+  cursor: pointer;
+}
+
+
+.prb > button strong {
+  font-size: 16px;
+}
+
+
+@media (
+  max-width: 720px
+) {
+
+  .prb {
+    grid-template-columns:
+      auto 1fr;
+  }
+
+
+  .prb-pack {
+    display: none;
+  }
+
+
+  .prb > button {
+    grid-column:
+      1 / -1;
+
+    justify-content:
+      space-between;
+  }
+
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
+  .prb-orbit::after {
+    animation: none;
+  }
+
+}
