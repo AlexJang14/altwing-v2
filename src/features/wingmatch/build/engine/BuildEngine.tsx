@@ -1,3 +1,12 @@
+import ThermalLab
+  from "../labs/ThermalLab";
+
+import AvionicsLab
+  from "../labs/AvionicsLab";
+
+import MissionDesignLab
+  from "../labs/MissionDesignLab";
+
 import {
   useMemo,
   useState,
@@ -202,7 +211,24 @@ export default function BuildEngine({
           ? experiment.includes(
               "Final structure decision:"
             )
-          : experimentDone;
+          : wingId === "thermal"
+            ? experiment.includes(
+                "Final thermal decision:"
+              )
+            : wingId === "avionics"
+              ? experiment.includes(
+                  "Final avionics diagnosis:"
+                )
+              : (
+                  build.wingName ===
+                    "Mission Design" ||
+                  wingId ===
+                    "mission-design"
+                )
+                ? experiment.includes(
+                    "Final mission architecture:"
+                  )
+                : experimentDone;
 
 
   const evidenceItems = [
@@ -888,6 +914,37 @@ export default function BuildEngine({
               "structures" ? (
 
               <StructuresLab
+                onEvidence={
+                  setExperiment
+                }
+              />
+
+            ) : wingId ===
+              "thermal" ? (
+
+              <ThermalLab
+                onEvidence={
+                  setExperiment
+                }
+              />
+
+            ) : wingId ===
+              "avionics" ? (
+
+              <AvionicsLab
+                onEvidence={
+                  setExperiment
+                }
+              />
+
+            ) : (
+              build.wingName ===
+                "Mission Design" ||
+              wingId ===
+                "mission-design"
+            ) ? (
+
+              <MissionDesignLab
                 onEvidence={
                   setExperiment
                 }

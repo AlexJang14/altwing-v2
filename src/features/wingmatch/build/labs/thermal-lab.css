@@ -1,0 +1,249 @@
+.thermal-lab {
+  margin-top: 28px;
+}
+
+.thermal-heading {
+  max-width: 760px;
+}
+
+.thermal-heading > span,
+.thermal-label {
+  color: #6f9dff;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .11em;
+}
+
+.thermal-heading h3 {
+  margin: 9px 0 0;
+  color: #fff;
+  font-size: 30px;
+  line-height: 1.06;
+  letter-spacing: -.035em;
+}
+
+.thermal-heading p,
+.thermal-note p,
+.thermal-explain p {
+  color: rgba(237,243,255,.6);
+  line-height: 1.55;
+}
+
+.thermal-heading p {
+  font-size: 14px;
+}
+
+.thermal-note {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-left: 3px solid #ffc857;
+  background: rgba(255,200,87,.04);
+}
+
+.thermal-note strong {
+  color: #ffc857;
+  font-size: 9px;
+  letter-spacing: .09em;
+}
+
+.thermal-note p {
+  margin: 5px 0 0;
+  font-size: 11px;
+}
+
+.thermal-limits,
+.thermal-results {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 8px;
+}
+
+.thermal-limits div,
+.thermal-results article {
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  background: #0a1125;
+}
+
+.thermal-limits span,
+.thermal-results span {
+  display: block;
+  color: rgba(235,242,255,.38);
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.thermal-limits strong,
+.thermal-results strong {
+  display: block;
+  margin-top: 6px;
+  color: #fff;
+  font-size: 16px;
+}
+
+.thermal-label {
+  margin-top: 24px;
+}
+
+.thermal-options {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 8px;
+}
+
+.thermal-options button,
+.thermal-small-options button {
+  border: 1px solid rgba(91,141,239,.15);
+  border-radius: 11px;
+  color: #fff;
+  background: #0c142c;
+  cursor: pointer;
+}
+
+.thermal-options button {
+  min-height: 175px;
+  padding: 15px;
+  text-align: left;
+}
+
+.thermal-options button.selected,
+.thermal-small-options button.selected {
+  border-color: #ffc857;
+}
+
+.thermal-options button > strong {
+  display: block;
+  font-size: 13px;
+}
+
+.thermal-options button > span {
+  display: block;
+  margin-top: 10px;
+  color: #7ea5ff;
+  font-size: 9px;
+}
+
+.thermal-options button p {
+  margin-top: 15px;
+  color: rgba(235,242,255,.47);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.thermal-small-options {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 8px;
+}
+
+.thermal-small-options button {
+  min-height: 55px;
+  font-weight: 800;
+}
+
+.thermal-slider {
+  margin-top: 15px;
+  padding: 17px;
+  border-radius: 11px;
+  background: #0a1125;
+}
+
+.thermal-slider > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.thermal-slider span {
+  color: rgba(235,242,255,.55);
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.thermal-slider strong {
+  color: #ffc857;
+}
+
+.thermal-slider input {
+  width: 100%;
+  margin-top: 12px;
+  accent-color: #5b8def;
+}
+
+.thermal-run,
+.thermal-explain button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 14px;
+  border: 0;
+  border-radius: 10px;
+  color: #0d132b;
+  background: #ffc857;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.thermal-results {
+  grid-template-columns: repeat(4,1fr);
+}
+
+.thermal-results .pass {
+  color: #77e1c3;
+}
+
+.thermal-results .fail {
+  color: #ff7474;
+}
+
+.thermal-explain,
+.thermal-saved {
+  margin-top: 13px;
+  padding: 17px;
+  border-radius: 11px;
+  background: rgba(91,141,239,.05);
+}
+
+.thermal-explain > strong,
+.thermal-saved span {
+  color: #6f9dff;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.thermal-explain p {
+  font-size: 11px;
+}
+
+.thermal-explain > span {
+  display: block;
+  margin-top: 12px;
+  color: #ffc857;
+  font-size: 10px;
+}
+
+.thermal-saved {
+  border: 1px solid rgba(119,225,195,.18);
+}
+
+.thermal-saved span {
+  color: #77e1c3;
+}
+
+.thermal-saved strong {
+  display: block;
+  margin-top: 6px;
+  color: #fff;
+}
+
+@media (max-width:720px) {
+  .thermal-options,
+  .thermal-small-options,
+  .thermal-limits,
+  .thermal-results {
+    grid-template-columns: 1fr;
+  }
+}
