@@ -90,7 +90,9 @@ function App() {
         onBack={() =>
           setView("home")
         }
-        onStartMission={() => setView("explore")}
+        onStartMission={() =>
+          setView("preflight")
+        }
       />
     );
   }
@@ -159,7 +161,7 @@ function App() {
               type="button"
               className="nav-text-button"
               onClick={() =>
-                setView("explore")
+                setView("path")
               }
             >
               Explore
@@ -218,7 +220,7 @@ function App() {
                 type="button"
                 className="button button-secondary"
                 onClick={() =>
-                  setView("explore")
+                  setView("path")
                 }
               >
                 See How AltWing Works
@@ -419,9 +421,9 @@ function App() {
                 </strong>
 
                 <p>
-                  Propulsion, navigation,
-                  structures, thermal,
-                  avionics, and mission design.
+                  Academics, activities,
+                  leadership, colleges,
+                  readiness, and decisions.
                 </p>
               </div>
 

@@ -5,6 +5,12 @@ import {
 } from "react";
 
 import MissionVisual from "../v6/MissionVisual";
+import posthog, {
+  isPostHogConfigured,
+} from "../../../posthog";
+import {
+  posthogLog,
+} from "../../../posthog-logs";
 import "./wingmatch-v7.css";
 
 
@@ -1164,6 +1170,17 @@ function WingMatchV7({
     }
 
 
+    if (isPostHogConfigured) {
+      posthog.capture(
+        "wingmatch_decision_made",
+        {
+          scene_id: scene.id,
+          option_id: option.id,
+          scene_number: sceneIndex + 1,
+        },
+      );
+    }
+
     setSelected(
       option,
     );
@@ -1204,6 +1221,24 @@ function WingMatchV7({
       sceneIndex ===
       scenes.length - 1
     ) {
+
+      if (isPostHogConfigured) {
+        posthog.capture(
+          "wingmatch_completed",
+          {
+            decision_count: scenes.length,
+            recommended_wing_id: recommendedWing.id,
+          },
+        );
+      }
+
+      posthogLog.info(
+        "wingmatch mission completed",
+        {
+          decision_count: scenes.length,
+          recommended_wing_id: recommendedWing.id,
+        },
+      );
 
       setMode(
         "loading",
@@ -1510,6 +1545,16 @@ function WingMatchV7({
 
 
   function finishWingMatch() {
+
+    if (isPostHogConfigured) {
+      posthog.capture(
+        "wingmatch_result_saved",
+        {
+          selected_wing_id: selectedWing.id,
+          recommended_wing_id: recommendedWing.id,
+        },
+      );
+    }
 
     /*
      * Save the Wing the student actually chose,
@@ -1831,11 +1876,22 @@ function WingMatchV7({
                         .join(
                           " ",
                         )}
-                      onClick={() =>
+                      onClick={() => {
+                        if (isPostHogConfigured) {
+                          posthog.capture(
+                            "wing_selected",
+                            {
+                              selected_wing_id: wing.id,
+                              recommended_wing_id:
+                                recommendedWing.id,
+                            },
+                          );
+                        }
+
                         saveWing(
                           wing,
-                        )
-                      }
+                        );
+                      }}
                     >
 
                       <div className="awv7-wing-card-top">

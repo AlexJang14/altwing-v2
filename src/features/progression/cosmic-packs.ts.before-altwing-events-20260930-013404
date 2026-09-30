@@ -1,7 +1,3 @@
-import posthog, {
-  isPostHogConfigured,
-} from "../../posthog";
-
 import {
   CELESTIAL_OBJECTS,
   readCosmicCollection,
@@ -185,7 +181,7 @@ function saveCollection(
 }
 
 
-function awardCosmicPackInternal(
+export function awardCosmicPack(
   sourceId: string,
   type: CosmicPackType,
   sourceLabel: string,
@@ -452,7 +448,7 @@ function addObjectToCollection(
 }
 
 
-function openCosmicPackInternal(
+export function openCosmicPack(
   packId: string,
 ):
   CosmicPackOpenResult | null {
@@ -745,86 +741,3 @@ export function maybeAwardCosmicForMilestone({
 
   return null;
 }
-
-/* ===== ALTWING POSTHOG COSMIC EVENTS ===== */
-
-/**
- * Public Cosmic Pack award API.
- *
- * Analytics is emitted only when a genuinely new
- * pack is awarded. Existing sourceId rewards return
- * awarded: false and are not counted again.
- */
-export function awardCosmicPack(
-  sourceId: string,
-  type: CosmicPackType,
-  sourceLabel: string,
-  guaranteedObjectId?: string,
-) {
-  const result = awardCosmicPackInternal(
-    sourceId,
-    type,
-    sourceLabel,
-    guaranteedObjectId,
-  );
-
-  if (
-    result.awarded &&
-    isPostHogConfigured
-  ) {
-    posthog.capture(
-      "cosmic_pack_earned",
-      {
-        source_id: sourceId,
-        pack_type: type,
-        source_label: sourceLabel,
-      },
-    );
-  }
-
-  return result;
-}
-
-
-/**
- * Public Cosmic Pack open API.
- *
- * The existing engine returns null for an invalid
- * or already-opened pack, so only a successful
- * first opening is counted.
- */
-export function openCosmicPack(
-  packId: string,
-): CosmicPackOpenResult | null {
-  const inventoryBefore =
-    readCosmicPackInventory();
-
-  const packBefore =
-    inventoryBefore.packs.find(
-      (pack) => pack.id === packId,
-    );
-
-  const result =
-    openCosmicPackInternal(packId);
-
-  if (
-    result &&
-    isPostHogConfigured
-  ) {
-    posthog.capture(
-      "cosmic_pack_opened",
-      {
-        pack_id: packId,
-        pack_type:
-          packBefore?.type ??
-          "UNKNOWN",
-        source_id:
-          packBefore?.sourceId ??
-          "UNKNOWN",
-      },
-    );
-  }
-
-  return result;
-}
-

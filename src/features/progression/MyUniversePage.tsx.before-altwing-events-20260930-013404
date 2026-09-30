@@ -1,7 +1,3 @@
-import posthog, {
-  isPostHogConfigured,
-} from "../../posthog";
-
 import MyUniversePanel from "./MyUniversePanel";
 
 import "./my-universe-page.css";
@@ -31,18 +27,7 @@ function MyUniversePage({
 
         <button
           type="button"
-          onClick={() => {
-            if (isPostHogConfigured) {
-              posthog.capture(
-                "explore_another_wing_clicked",
-                {
-                  source: "my_universe",
-                },
-              );
-            }
-
-            onStartMission();
-          }}
+          onClick={onStartMission}
         >
           Explore Wings →
         </button>

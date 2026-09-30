@@ -1,12 +1,3 @@
-import ThermalLab
-  from "../labs/ThermalLab";
-
-import AvionicsLab
-  from "../labs/AvionicsLab";
-
-import MissionDesignLab
-  from "../labs/MissionDesignLab";
-
 import {
   useMemo,
   useState,
@@ -22,26 +13,6 @@ import PropulsionLab
 
 import GNCLab
   from "../labs/GNCLab";
-
-import StructuresLab
-  from "../labs/StructuresLab";
-
-import {
-  awardCosmicPack,
-  openCosmicPack,
-  type CosmicPack,
-  type CosmicPackOpenResult,
-} from "../../../progression/cosmic-packs";
-
-import {
-  PackReveal,
-} from "../../../progression/CosmicPackVault";
-import posthog, {
-  isPostHogConfigured,
-} from "../../../../posthog";
-import {
-  posthogLog,
-} from "../../../../posthog-logs";
 
 import "./build-engine.css";
 
@@ -140,28 +111,6 @@ export default function BuildEngine({
     useState(false);
 
 
-  const [
-    earnedPack,
-    setEarnedPack,
-  ] =
-    useState<
-      CosmicPack | null
-    >(
-      null
-    );
-
-
-  const [
-    packOpenResult,
-    setPackOpenResult,
-  ] =
-    useState<
-      CosmicPackOpenResult | null
-    >(
-      null
-    );
-
-
   const stage:
     Stage =
       STAGES[
@@ -213,28 +162,7 @@ export default function BuildEngine({
         ? experiment.includes(
             "Final navigation estimate:"
           )
-        : wingId === "structures"
-          ? experiment.includes(
-              "Final structure decision:"
-            )
-          : wingId === "thermal"
-            ? experiment.includes(
-                "Final thermal decision:"
-              )
-            : wingId === "avionics"
-              ? experiment.includes(
-                  "Final avionics diagnosis:"
-                )
-              : (
-                  build.wingName ===
-                    "Mission Design" ||
-                  wingId ===
-                    "mission-design"
-                )
-                ? experiment.includes(
-                    "Final mission architecture:"
-                  )
-                : experimentDone;
+        : experimentDone;
 
 
   const evidenceItems = [
@@ -325,53 +253,7 @@ export default function BuildEngine({
   }
 
 
-  function openEarnedPack() {
-
-    if (!earnedPack) {
-      return;
-    }
-
-
-    const result =
-      openCosmicPack(
-        earnedPack.id
-      );
-
-
-    setEarnedPack(
-      null
-    );
-
-
-    if (result) {
-
-      setPackOpenResult(
-        result
-      );
-    }
-  }
-
-
   function saveProof() {
-
-    if (isPostHogConfigured) {
-      posthog.capture(
-        "build_proof_saved",
-        {
-          build_id: buildStorageId,
-          wing_id: build.wingId,
-        },
-      );
-    }
-
-    posthogLog.info(
-      "build proof saved",
-      {
-        build_id: buildStorageId,
-        evidence_item_count: evidenceItems.length,
-        wing_id: build.wingId,
-      },
-    );
 
     const record = {
       buildId:
@@ -424,175 +306,8 @@ export default function BuildEngine({
     );
 
 
-    const packAward =
-      awardCosmicPack(
-        `proof:${buildStorageId}`,
-        "EVIDENCE",
-        `${build.wingName} · ${build.buildTitle} Proof of Flight`,
-      );
-
-
     setSaved(
       true,
-    );
-
-
-    /*
-     * If this Proof already earned and opened
-     * its Pack previously, don't award another.
-     *
-     * If the Pack exists but is still unopened,
-     * remind the student about it.
-     */
-    if (
-      !packAward.pack.openedAt
-    ) {
-
-      setEarnedPack(
-        packAward.pack
-      );
-    }
-  }
-
-
-  if (
-    packOpenResult
-  ) {
-
-    return (
-      <PackReveal
-        result={
-          packOpenResult
-        }
-        onClose={() =>
-          setPackOpenResult(
-            null
-          )
-        }
-      />
-    );
-  }
-
-
-  if (
-    earnedPack
-  ) {
-
-    return (
-      <main className="be-shell">
-
-        <section className="be-pack-earned">
-
-          <span className="be-pack-kicker">
-            PROOF OF FLIGHT COMPLETE
-          </span>
-
-
-          <div className="be-pack-mascot">
-
-            <img
-              src="/brand/altwing-penguin.png"
-              alt=""
-            />
-
-          </div>
-
-
-          <span className="be-pack-signal">
-            REWARD SIGNAL RECEIVED
-          </span>
-
-
-          <h1>
-            Engineering Pack
-            <br />
-            earned.
-          </h1>
-
-
-          <p>
-            You earned this by completing
-            <strong>
-              {" "}
-              {build.buildTitle}
-            </strong>
-            {" "}
-            and saving your engineering
-            evidence.
-          </p>
-
-
-          <div className="be-pack-object">
-
-            <div className="be-pack-object-top">
-
-              <span>
-                ALTWING
-              </span>
-
-              <b>
-                ENGINEERING
-              </b>
-
-            </div>
-
-
-            <div className="be-pack-emblem">
-              ✦
-            </div>
-
-
-            <strong>
-              DEEP SPACE
-              <br />
-              PACK
-            </strong>
-
-
-            <small>
-              3 COSMIC SIGNALS
-            </small>
-
-          </div>
-
-
-          <div className="be-pack-actions">
-
-            <button
-              type="button"
-              className="be-pack-open"
-              onClick={
-                openEarnedPack
-              }
-            >
-              OPEN NOW →
-            </button>
-
-
-            <button
-              type="button"
-              className="be-pack-later"
-              onClick={() =>
-                setEarnedPack(
-                  null
-                )
-              }
-            >
-              SAVE FOR LATER
-            </button>
-
-          </div>
-
-
-          <small className="be-pack-note">
-            One Pack per completed Build.
-            Replaying the same Build will
-            not create another reward.
-          </small>
-
-        </section>
-
-      </main>
     );
   }
 
@@ -930,46 +645,6 @@ export default function BuildEngine({
               "gnc" ? (
 
               <GNCLab
-                onEvidence={
-                  setExperiment
-                }
-              />
-
-            ) : wingId ===
-              "structures" ? (
-
-              <StructuresLab
-                onEvidence={
-                  setExperiment
-                }
-              />
-
-            ) : wingId ===
-              "thermal" ? (
-
-              <ThermalLab
-                onEvidence={
-                  setExperiment
-                }
-              />
-
-            ) : wingId ===
-              "avionics" ? (
-
-              <AvionicsLab
-                onEvidence={
-                  setExperiment
-                }
-              />
-
-            ) : (
-              build.wingName ===
-                "Mission Design" ||
-              wingId ===
-                "mission-design"
-            ) ? (
-
-              <MissionDesignLab
                 onEvidence={
                   setExperiment
                 }

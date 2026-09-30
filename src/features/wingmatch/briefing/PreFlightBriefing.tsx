@@ -1,3 +1,9 @@
+import posthog, {
+  isPostHogConfigured,
+} from "../../../posthog";
+import {
+  posthogLog,
+} from "../../../posthog-logs";
 import "./preflight-briefing.css";
 
 
@@ -139,7 +145,25 @@ function PreFlightBriefing({
         <button
           type="button"
           className="preflight-start"
-          onClick={onStart}
+          onClick={() => {
+            if (isPostHogConfigured) {
+              posthog.capture(
+                "wingmatch_started",
+                {
+                  mission_version: "v7",
+                },
+              );
+            }
+
+            posthogLog.info(
+              "wingmatch mission started",
+              {
+                mission_version: "v7",
+              },
+            );
+
+            onStart();
+          }}
         >
           START WINGMATCH →
         </button>

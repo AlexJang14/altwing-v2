@@ -384,7 +384,8 @@ function MyUniversePanel() {
             )
           }
         >
-          FLIGHT RECORD
+          OVERVIEW
+
           {unopenedCount > 0 && (
             <b>
               {unopenedCount}
@@ -406,11 +407,29 @@ function MyUniversePanel() {
             )
           }
         >
-          COSMIC ATLAS
+          ATLAS
+
           <span>
             {impact.discoveries}
             /36
           </span>
+        </button>
+
+        <button
+          type="button"
+          className={
+            activeTab ===
+            "impact"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setActiveTab(
+              "impact",
+            )
+          }
+        >
+          IMPACT
         </button>
       </nav>
 
@@ -464,16 +483,16 @@ function MyUniversePanel() {
                 {impact.discoveries}
               </b>
               <span>
-                COSMIC FINDS
+                DISCOVERIES
               </span>
             </article>
 
             <article>
               <b>
-                {impact.evidence}
+                {impact.explorerScore}
               </b>
               <span>
-                PROOF OF FLIGHT
+                SCORE
               </span>
             </article>
           </div>
@@ -482,11 +501,11 @@ function MyUniversePanel() {
           <div className="universe-section-heading">
             <div>
               <small>
-                READY TO OPEN
+                REWARDS
               </small>
 
               <strong>
-                Cosmic Packs
+                Deep Space Packs
               </strong>
             </div>
 

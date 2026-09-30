@@ -6,70 +6,16 @@ import PreFlightBriefing from "./features/wingmatch/briefing/PreFlightBriefing";
 import MyUniversePage from "./features/progression/MyUniversePage";
 import PathDashboard from "./features/wingmatch/path/PathDashboard";
 import SavedWingHomeCard from "./features/wingmatch/result/SavedWingHomeCard";
-import HomeLaunchPad from "./features/home/HomeLaunchPad";
-import ExploreAerospace from "./features/explore/ExploreAerospace";
-import BuildEngine from "./features/wingmatch/build/engine/BuildEngine";
-import type { WingId } from "./features/wingmatch/build/catalog/buildCatalog";
 
 type AppView =
   | "home"
   | "preflight"
   | "wingmatch"
-  | "explore"
-  | "build"
   | "path"
   | "universe";
 
 function App() {
   const [view, setView] = useState<AppView>("home");
-
-  const [
-    buildWing,
-    setBuildWing,
-  ] =
-    useState<WingId>(
-      "propulsion",
-    );
-
-  if (view === "explore") {
-    return (
-      <ExploreAerospace
-        onBack={() => {
-          setView("home");
-
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        }}
-        onTryWing={(wingId) => {
-          setBuildWing(wingId);
-          setView("build");
-
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        }}
-      />
-    );
-  }
-
-  if (view === "build") {
-    return (
-      <BuildEngine
-        wingId={buildWing}
-        onBack={() => {
-          setView("explore");
-
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-        }}
-      />
-    );
-  }
 
   if (view === "preflight") {
     return (
@@ -90,7 +36,9 @@ function App() {
         onBack={() =>
           setView("home")
         }
-        onStartMission={() => setView("explore")}
+        onStartMission={() =>
+          setView("preflight")
+        }
       />
     );
   }
@@ -159,7 +107,7 @@ function App() {
               type="button"
               className="nav-text-button"
               onClick={() =>
-                setView("explore")
+                setView("path")
               }
             >
               Explore
@@ -183,7 +131,7 @@ function App() {
           <div>
             <div className="eyebrow">
               <span className="eyebrow-dot" />
-              FOR ANYONE CURIOUS ABOUT AEROSPACE
+              FOR HIGH-SCHOOL STUDENTS CURIOUS ABOUT AEROSPACE
             </div>
 
             <h1>
@@ -218,7 +166,7 @@ function App() {
                 type="button"
                 className="button button-secondary"
                 onClick={() =>
-                  setView("explore")
+                  setView("path")
                 }
               >
                 See How AltWing Works
@@ -346,15 +294,6 @@ function App() {
           }
         />
 
-        <HomeLaunchPad
-          onStartWingMatch={() =>
-            setView("preflight")
-          }
-          onOpenUniverse={() =>
-            setView("universe")
-          }
-        />
-
         <section className="simple-gateway">
           <div className="simple-gateway-heading">
             <span>
@@ -419,9 +358,9 @@ function App() {
                 </strong>
 
                 <p>
-                  Propulsion, navigation,
-                  structures, thermal,
-                  avionics, and mission design.
+                  Academics, activities,
+                  leadership, colleges,
+                  readiness, and decisions.
                 </p>
               </div>
 
