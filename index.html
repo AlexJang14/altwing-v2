@@ -9,5 +9,88 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+  
+    <!-- ALTWING_PRIVACY_LINK -->
+    <a
+      href="/privacy.html"
+      class="altwing-global-privacy-link"
+      aria-label="AltWing Privacy"
+    >
+      Privacy
+    </a>
+
+    <style>
+      .altwing-global-privacy-link {
+        position: fixed;
+        left: 12px;
+        bottom: max(
+          12px,
+          env(safe-area-inset-bottom)
+        );
+        z-index: 99999;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 7px 10px;
+
+        border: 1px solid
+          rgba(255, 255, 255, 0.12);
+
+        border-radius: 999px;
+
+        background:
+          rgba(7, 9, 15, 0.76);
+
+        color:
+          rgba(255, 255, 255, 0.56);
+
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          sans-serif;
+
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+
+        text-decoration: none;
+
+        transition:
+          color 160ms ease,
+          border-color 160ms ease,
+          background 160ms ease;
+      }
+
+      .altwing-global-privacy-link:hover,
+      .altwing-global-privacy-link:focus-visible {
+        color: #fff;
+
+        border-color:
+          rgba(255, 255, 255, 0.28);
+
+        background:
+          rgba(12, 15, 25, 0.92);
+      }
+
+      @media (max-width: 520px) {
+        .altwing-global-privacy-link {
+          left: 8px;
+          bottom: max(
+            8px,
+            env(safe-area-inset-bottom)
+          );
+
+          padding: 6px 8px;
+          font-size: 9px;
+        }
+      }
+    </style>
+
   </body>
 </html>
